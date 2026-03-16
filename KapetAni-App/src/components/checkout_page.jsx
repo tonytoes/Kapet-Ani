@@ -301,20 +301,31 @@ function App() {
                         <h5>Order Summary</h5>
                       </div>
                       <div className="row osBody">
-                        <div className="col orderSumText">
-                          <h6>Subtotal</h6>
-                          <h6>Flat-Rate</h6>
-                          <h6 id="totalText">Total</h6>
-                        </div>
                         <div className="col">
-                          <div className="row ">
-                            <h6 id="subtotal">$ 153.00 USD</h6>
+                          <div className="row" id="SubTotal">
+                            <div className="col">
+                              <h6>Subtotal</h6>
+                            </div>
+                            <div className="col">
+                              <h6 id="subtotal">$ 153.00 USD</h6>
+                            </div>
                           </div>
-                          <div className="row ">
-                            <h6 id="flatrate">$ 18.90 USD</h6>
+
+                          <div className="row" id="FlatRate">
+                            <div className="col">
+                              <h6>Flat-Rate</h6>
+                            </div>
+                            <div className="col">
+                              <h6 id="flatrate">$ 18.90 USD</h6>
+                            </div>
                           </div>
-                          <div className="row">
-                            <h6 id="total">$ 171.90 USD</h6>
+                          <div className="row" id="Total">
+                            <div className="col">
+                              <h6>Total</h6>
+                            </div>
+                            <div className="col">
+                              <h6 id="total">$ 171.90 USD</h6>
+                            </div>
                           </div>
                         </div>
                       </div>
