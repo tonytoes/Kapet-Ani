@@ -1,9 +1,11 @@
 import './App.css'
+import CheckoutPage from './components/checkout_page.jsx';
+import Home from './components/Home.jsx';
 
 function App() {
   return (
     <>
-      <h1>KapetAni</h1>
+      <Home />
     </>
   )
 }
