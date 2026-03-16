@@ -33,6 +33,7 @@ const recentOrders = [
   { id: "#1672", buyer: "MasterChief",  date: "March 4, 12:30 AM", amount: "$14,999", status: "Paid" },
   { id: "#1671", buyer: "Jimboy",       date: "March 2, 1:33 PM",  amount: "$19",     status: "Paid" },
   { id: "#1670", buyer: "TonyMalungay", date: "March 1, 5:56 PM",  amount: "$67",     status: "Paid" },
+  { id: "#1669", buyer: "nigga", date: "March 1, 1:11 PM",  amount: "$61",     status: "Paid" },
 ];
 
 const lowStockItems = [
@@ -40,6 +41,15 @@ const lowStockItems = [
   { no: "#404", name: "Coffee Drugs",  remaining: 0, status: "Unavailable" },
   { no: "#169", name: "Bisaya Coffee", remaining: 1, status: "Available" },
 ];
+
+
+
+
+
+
+
+
+
 
 /* ── HELPERS ──────────────────────────────────────────── */
 function badgeClass(status) {
