@@ -12,6 +12,7 @@ import mug1 from '../assets/images/mug1.png';
 import mug2 from '../assets/images/mug2.png';
 import parallax from '../assets/images/parallax.png';
 import '../styles/home.css';
+import Footer from '../components/layout/Footer.jsx';
 import { useEffect } from "react";
 
 function Home() {
@@ -312,46 +313,7 @@ function Home() {
             </div>
           </section>
 
-          {/* FOOTER */}
-          <footer>
-            <div className="footer-inner">
-              <div className="footer-brand">
-                <a href="#" className="logo">
-                  <img src={logo} alt="Kape't Pamana" height={70} />
-                  <span className="logo-text">Kape't Pamana</span>
-                </a>
-                <p className="footer-tagline">Delivering the best coffee life since 1996. From coffee geeks to the real ones.</p>
-              </div>
-              <div className="footer-col">
-                <h4>Menu</h4>
-                <ul>
-                  <li><a href="#">Home</a></li>
-                  <li><a href="#">Our Products</a></li>
-                  <li><a href="#">About</a></li>
-                  <li><a href="#">Contact</a></li>
-                  <li><a href="#">Styleguide</a></li>
-                </ul>
-              </div>
-              <div className="footer-col">
-                <h4>Follow Us</h4>
-                <ul>
-                  <li><a href="#">Facebook</a></li>
-                  <li><a href="#">Instagram</a></li>
-                  <li><a href="#">Pinterest</a></li>
-                  <li><a href="#">Twitter</a></li>
-                </ul>
-              </div>
-              <div className="footer-col">
-                <h4>Contact Us</h4>
-                <p className="footer-contact-label">We're Always Happy to Help</p>
-                <p className="footer-email">kapetpamana@gmail.com</p>
-                <p className="footer-powered">Powered by Webflow</p>
-              </div>
-            </div>
-            <div className="footer-bottom">
-              <p className="footer-copy">Kape't Pamana @ 2026</p>
-            </div>
-          </footer>
+          <Footer/>
         </>
     </div>
   );
