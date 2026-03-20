@@ -12,7 +12,7 @@ a{
     color:#7c5b3c;
     text-decoration: none;
 }
-body p, body h5{
+body p{
    font-size:1rem;
 }
 
@@ -38,12 +38,15 @@ body h6{
 .upperSection{
     text-align:left;
     background-color: var(--bg);
-    /* margin: 0 0 0.094rem 0%; */
     margin-bottom:0.094rem;
     padding-left:0.625rem;
     padding-top:0.625rem;
     padding-bottom:0.625rem;
     color:#7c5b3c;
+}
+
+.upperSection h5{
+    font-size:1.25rem;
 }
 .bottomSection{
     padding-bottom:1rem;
@@ -86,7 +89,9 @@ body h6{
     margin-right:1%;
     color:black;
 }
-
+#customerInfo h5{
+    font-size:1rem
+}
 #shippingMethod{
     margin-top:1.5%;
     margin-right:1%;
