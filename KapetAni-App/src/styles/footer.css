@@ -1,0 +1,64 @@
+.footer_section {
+  padding-top: 3.125rem;
+  color: white;
+  background-image: url("../assets/images/footer.png");
+  position: relative;
+  overflow: hidden;
+}
+
+.footer_section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(92, 57, 35, 0.755);
+  z-index: 0;
+}
+
+.footer_section > * {
+  position: relative;
+  z-index: 1;
+}
+
+.footer_section h5 {
+  font-size: 1.2rem;
+  color: white;
+}
+
+.footer_section h6 {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.852);
+  padding-top: 0.1rem;
+}
+
+#upperFooter {
+  margin-left: 4%;
+  margin-right: 4%;
+  padding-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+}
+
+#upperFooter img {
+  width: 3.125rem;
+  height: 3.125rem;
+}
+
+#lowerFooter {
+  margin-left: 4%;
+  margin-right: 4%;
+  padding-bottom: 1.875rem;
+}
+
+#logo {
+  display: flex;
+  align-items: center;
+}
+
+#trademark {
+  padding-top: 2.7rem;
+  font-size: 0.7rem;
+  color: rgb(255, 255, 255);
+}
+#trademark p {
+  font-size: 0.7rem;
+}

@@ -1,6 +1,15 @@
 import { useEffect } from "react";
-import "./index.css";
+import Order from "./pages/Order.jsx";
+import Footer from "./components/layout/Footer.jsx";
 
-export default function App() {
-
+function App() {
+  return (
+ <>
+      <div className="App">
+        <Footer/>
+      </div>
+    </>
+  );
 }
+
+export default App;
