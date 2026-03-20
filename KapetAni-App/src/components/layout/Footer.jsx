@@ -60,11 +60,6 @@ function Footer() {
                 <h6>Contact</h6>
               </a>{" "}
             </div>
-            <div className="col">
-              <a href="">
-                <h6>Style Guide</h6>
-              </a>{" "}
-            </div>
           </div>
           <div className="col">
             <div className="col">
