@@ -13,6 +13,8 @@ function App() {
           <title>Checkout Page</title>
           <meta charSet="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          
+          
           <div className="container text-center base">
             <div className="row align-items-start COframe">
               <div className="col">
@@ -308,6 +310,7 @@ function App() {
                               <h6 id="subtotal">$ 153.00 USD</h6>
                             </div>
                           </div>
+
                           <div className="row" id="FlatRate">
                             <div className="col">
                               <h6>Flat-Rate</h6>
@@ -318,7 +321,7 @@ function App() {
                           </div>
                           <div className="row" id="Total">
                             <div className="col">
-                              <h6 id="totalText">Total</h6>
+                              <h6>Total</h6>
                             </div>
                             <div className="col">
                               <h6 id="total">$ 171.90 USD</h6>
@@ -353,19 +356,16 @@ function App() {
                   <h5>Kape't Pamana</h5>
                 </div>
                 <div className="col">
-                  <a href="">
-                    <h6>MENU</h6>
-                  </a>
+                  {" "}
+                  <h6>MENU</h6>
                 </div>
                 <div className="col">
-                  <a href="">
-                    <h6>FOLLOW US</h6>
-                  </a>
+                  {" "}
+                  <h6>FOLLOW US</h6>
                 </div>
                 <div className="col">
-                  <a href="">
-                    <h6>CONTACT US</h6>
-                  </a>
+                  {" "}
+                  <h6>CONTACT US</h6>
                 </div>
               </div>
               <div className="row rows-cols-4" id="lowerFooter">
@@ -382,51 +382,33 @@ function App() {
                 </div>
                 <div className="col">
                   <div className="col">
-                    <a href="">
-                      <h6>Home</h6>
-                    </a>
+                    <h6>Home</h6>
                   </div>
                   <div className="col">
-                    <a href="">
-                      <h6>Our Products</h6>
-                    </a>{" "}
+                    <h6>Our Products</h6>{" "}
                   </div>
                   <div className="col">
-                    <a href="">
-                      <h6>About</h6>
-                    </a>{" "}
+                    <h6>About</h6>{" "}
                   </div>
                   <div className="col">
-                    <a href="">
-                      <h6>Contact</h6>
-                    </a>{" "}
+                    <h6>Contact</h6>{" "}
                   </div>
                   <div className="col">
-                    <a href="">
-                      <h6>Style Guide</h6>
-                    </a>{" "}
+                    <h6>Style Guide</h6>{" "}
                   </div>
                 </div>
                 <div className="col">
                   <div className="col">
-                    <a href="">
-                      <h6>Facebook</h6>
-                    </a>{" "}
+                    <h6>Facebook</h6>{" "}
                   </div>
                   <div className="col">
-                    <a href="">
-                      <h6>Instagram</h6>
-                    </a>{" "}
+                    <h6>Instagram</h6>{" "}
                   </div>
                   <div className="col">
-                    <a href="">
-                      <h6>Pinterest</h6>
-                    </a>{" "}
+                    <h6>Pinterest</h6>{" "}
                   </div>
                   <div className="col">
-                    <a href="">
-                      <h6>Twitter</h6>
-                    </a>{" "}
+                    <h6>Twitter</h6>{" "}
                   </div>
                 </div>
                 <div className="col">

@@ -13,7 +13,7 @@ a{
     text-decoration: none;
 }
 body p, body label{
-   font-size:0.9rem;
+   font-size:0.7rem;
 }
 
 #homeB{
@@ -64,7 +64,6 @@ body p, body label{
 }
 .bottomSection{
     padding-bottom:1rem;
-    padding-top:1rem;
     background-color: var(--bg);
     text-align:left;
 }
@@ -98,8 +97,8 @@ body p, body label{
 
 #itemsInOrder{ 
     text-align:left;
-    margin-top:1.5%; 
-    margin-right:1%;  
+    margin-top:1.5%; /* converted from rem to % for responsiveness */
+    margin-right:1%;  /* converted from rem to % */
 }
 
 .price{
@@ -176,14 +175,11 @@ body p, body label{
     border-color:white;
     border-width: 0.063rem;
     color:white;
-    outline: none;
 }
 
 #subscribe{
     margin:0rem;
     padding:0.4rem;
-    padding-top:0.5rem;
-    padding-bottom:0.3rem;
     font-size:0.7rem;
     color:white;
     background-color: #7c5b3c;
@@ -251,9 +247,6 @@ body p, body label{
     padding-top:2.7rem;
     font-size:0.7rem;
     color:rgb(255, 255, 255);
-}
-#trademark p{
-    font-size:0.7rem;
 }
 
 /* Order Summary */
