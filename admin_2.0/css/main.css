@@ -826,6 +826,15 @@ textarea.form-control {
 .btn-primary {
   background: var(--brand-gradient);
   color: #fff;
+  flex: 1;
+}
+
+.btn-primary:hover { opacity: 0.9; }
+
+/* Add-mode footer has a warm top border to visually distinguish from edit */
+#inventoryPanelFooter-add,
+#usersPanelFooter-add {
+  border-top: 2px solid var(--brand-mid);
 }
 
 .btn-sm {

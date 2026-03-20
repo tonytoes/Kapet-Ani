@@ -27,7 +27,6 @@
       <li><a data-page="users"        href="users.html"><i class="bi bi-people"></i>Users</a></li>
       <li><a data-page="complaints"   href="complaints.html"><i class="bi bi-chat-dots"></i>Complaints</a></li>
       <li><a data-page="transactions" href="transactions.html"><i class="bi bi-receipt"></i>Transactions</a></li>
-      <li><a data-page="pages"        href="pages.html"><i class="bi bi-file-earmark-text"></i>Pages</a></li>
     </ul>
     <div class="sidebar-profile">
       <div class="profile-avatar">C</div>
@@ -98,11 +97,11 @@
 
   </div><!-- /content -->
 
-  <!-- ══ RIGHT PANEL — fixed sidebar ══ -->
+  <!-- ══ EDIT PANEL — opens on row click ══ -->
   <aside class="slide-panel" id="inventoryPanel">
     <div class="panel-scroll">
       <div class="panel-header">
-        <div class="panel-title">Edit Product</div>
+        <div class="panel-title" id="inventoryPanelTitle">Edit Product</div>
         <button class="panel-close-btn" id="panelCancelBtn"><i class="bi bi-x"></i></button>
       </div>
 
@@ -160,9 +159,14 @@
       </div>
     </div>
 
-    <div class="panel-footer">
+    <!-- Footer changes based on mode: edit shows Delete+Update, add shows just Add -->
+    <div class="panel-footer" id="inventoryPanelFooter-edit">
       <button class="btn btn-delete" id="panelDeleteBtn">Delete</button>
       <button class="btn btn-update" id="panelUpdateBtn">Update</button>
+    </div>
+    <div class="panel-footer" id="inventoryPanelFooter-add" style="display:none">
+      <button class="btn btn-cancel" id="panelAddCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="panelAddConfirmBtn">Add Product</button>
     </div>
   </aside>
 </div><!-- /wrapper -->
