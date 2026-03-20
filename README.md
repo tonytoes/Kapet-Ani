@@ -1,29 +1,42 @@
 # Kape-t-Ani
 
+### How to run the project
+
+```javascript
+npm i
+```
+
+and
+
+```javascript
+npm run dev
+```
+
+## Dependencies
+
+- React Router Dom (v7): For declarative routing and navigation within the app.
+
 ## Folder Structure
 
 ```javascript
 React Folder Structure
-.
+
 ├── public
 ├── src
 |    ├── assets
 |    |     ├── icons
 |    |     └── images
 |    ├── components
-|    |     ├── Button
-|    |     |     └── index.jsx
-|    |	   ├── inputs
-|    |     |     └── index.jsx
-|    |     └── index.js
-|    ├── layout
-|    |     ├── Header
-|    |     |     └── index.jsx
-|    |     ├── Navbar.jsx
-|    |     |     └── index.jsx
-|    |     ├── Footer.jsx
-|    |     |     └── index.jsx
-|    |     └── index.js
+|    |     ├── ui
+|    |     |   └── index.jsx
+|    |     ├──layout
+|    |          ├── Header
+|    |          |     └── index.jsx
+|    |          ├── Navbar.jsx
+|    |          |       └── index.jsx
+|    |          ├── Footer.jsx
+|    |          |     └── index.jsx
+|    |          └── index.js
 |    ├── pages
 |    |     ├── Home
 |    |     |     └── index.jsx
@@ -36,7 +49,7 @@ React Folder Structure
 |    |     ├── Error
 |    |     |     └── index.jsx
 |    |     └── index.js
-|    ├── Routers
+|    ├── routers
 |    |     └── Routers.jsx
 |    ├── store
 |    |     ├── slices
@@ -78,7 +91,7 @@ React Folder Structure
 - `pages` : Individual pages or views of your app.
 - `Routers` : Defines the routing structure of the app.
 - `services` : API Operations
-- `store` : Redux store setup and state management.
+- `store` : Redux store setup and state management. (TBD)
 - `utils` : General utility functions and constants.
   - `Constants` : Constants used throughout the app (e.g., API endpoints).
   - `helpers` : Helper functions for various tasks.
