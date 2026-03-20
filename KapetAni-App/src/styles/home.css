@@ -405,7 +405,7 @@ nav.scrolled {
 /* ── PARALLAX BANNER ── */
 .banner-parallax {
   height: 400px;
-  background: url("parallax.png") center/cover fixed no-repeat;
+  background: url("image/parallax.png") center/cover fixed no-repeat;
   position: relative;
   overflow: hidden;
 }
