@@ -1,8 +1,8 @@
-import './order_confirmation.css';
-import rattan_basket from './images/Rattan_Basket.png';
-import bamboo_basket from './images/Bamboo_Basket.png';
-import palm_basket from './images/Palm_Basket.png';
-import kapetanilogowhite from './images/kape\'t_ani_logo_white.png'
+import '../styles/order_confirmation.css';
+import rattan_basket from '../assets/images/Rattan_Basket.png';
+import bamboo_basket from '../assets/images/Bamboo_Basket.png';
+import palm_basket from '../assets/images/Palm_Basket.png';
+import kapetanilogowhite from '../assets/images/kape\'t_ani_logo_white.png'
 
 
 function App() {

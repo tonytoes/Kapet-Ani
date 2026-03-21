@@ -1,3 +1,5 @@
+# Kape-t-Ani
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
@@ -14,3 +16,106 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+### How to run the project
+
+```javascript
+npm i
+```
+
+and
+
+```javascript
+npm run dev
+```
+
+## Dependencies
+
+- React Router Dom (v7): For declarative routing and navigation within the app.
+
+## Folder Structure
+
+```javascript
+React Folder Structure
+
+├── public
+├── src
+|    ├── assets
+|    |     ├── icons
+|    |     └── images
+|    ├── components
+|    |     ├── ui
+|    |     |   └── index.jsx
+|    |     ├──layout
+|    |          ├── Header
+|    |          |     └── index.jsx
+|    |          ├── Navbar.jsx
+|    |          |       └── index.jsx
+|    |          ├── Footer.jsx
+|    |          |     └── index.jsx
+|    |          └── index.js
+|    ├── pages
+|    |     ├── Home
+|    |     |     └── index.jsx
+|    |     ├── Login
+|    |     |     └── index.jsx
+|    |     ├── Signup
+|    |     |     └── index.jsx
+|    |     ├── About
+|    |     |     └── index.jsx
+|    |     ├── Error
+|    |     |     └── index.jsx
+|    |     └── index.js
+|    ├── routers
+|    |     └── Routers.jsx
+|    ├── store
+|    |     ├── slices
+|    |     |     ├── featureSlice1.js
+|    |     |     └── featureSlice2.js
+|    |     ├── rootReducer.js
+|    |     └── store.js
+|    ├── services
+|    |     ├── api.js                 // API request functions
+|    |     └── dataUtils.js           // Data manipulation functions
+|    ├── utils
+|    |     ├── constants
+|    |     |     ├── Strapi.js        // Example
+|    |     |     └── Firebase.js      // Example
+|    |     ├── helpers
+|    |     |     ├── arrays.js        // Example
+|    |     |     └── helpers.js       // Example
+|    |     └── hooks
+|    |           └── useIsMobile.js   // Example
+|    ├── App.jsx
+|    ├── index.css
+|    └── main.jsx
+|
+├── .gitignore
+├── index.html
+├── .env
+├── package-lock.json
+├── package.json
+├── README.md
+└── ...                               // Configuration Files
+```
+
+## Folders include
+
+- `public` : Contains static assets like the HTML entry point and other files.
+- `assests` : Houses icons and images used throughout the application.
+- `components` : Reusable UI components organized by type.
+- `layout` : Reusable layout components.
+- `pages` : Individual pages or views of your app.
+- `Routers` : Defines the routing structure of the app.
+- `services` : API Operations
+- `store` : Redux store setup and state management. (TBD)
+- `utils` : General utility functions and constants.
+  - `Constants` : Constants used throughout the app (e.g., API endpoints).
+  - `helpers` : Helper functions for various tasks.
+  - `hooks` : Custom React hooks (e.g., useIsMobile).
+- `.env`
+- `.eslintrc.cjs`
+- `.prettierrc.cjs`
+- `.gitignore`
+- `package.json`
+- `.vite.config.js`
