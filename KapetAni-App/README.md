@@ -19,9 +19,12 @@ If you are developing a production application, we recommend using TypeScript wi
 
 ### How to run the project
 
+````javascript
+cd kapetani-app
+
 ```javascript
 npm i
-```
+````
 
 and
 
