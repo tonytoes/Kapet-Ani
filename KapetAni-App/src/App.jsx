@@ -3,6 +3,7 @@ import Home from "./pages/Home.jsx";
 import Order from "./pages/Order.jsx";
 import Footer from "./components/layout/Footer.jsx";
 import Blogs from "./pages/Blogs.jsx";
+import Navbar from "./components/layout/Navbar.jsx";
 
 function App() {
   return (
