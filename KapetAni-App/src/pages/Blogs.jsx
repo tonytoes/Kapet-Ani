@@ -42,7 +42,7 @@ function Blogs() {
         <nav id="navbar">
             <div className="nav-inner">
                 <a href="index.html" className="logo">
-                    <img src="images/logo.png" alt="Kape't Pamana" height={70} />
+                    <img src={logo} alt="Kape't Pamana" height={70} />
                     <span className="logo-text">Kape't Pamana</span>
                 </a>
                 <ul className="nav-links">
@@ -382,7 +382,7 @@ function Blogs() {
             <div className="footer-inner">
                 <div className="footer-brand">
                     <a href="index.html" className="logo">
-                        <img src="images/logo.png" alt="Kape't Pamana" height={70} />
+                        <img src={logo} alt="Kape't Pamana" height={70} />
                         <span className="logo-text">Kape't Pamana</span>
                     </a>
                     <p className="footer-tagline">
