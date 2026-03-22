@@ -41,7 +41,7 @@ function Review() {
 
   return (
     <>
-      <Navbar activePage="reviews" />
+      <Navbar activePage="contact" />
       {/* HERO */}
       <section className="hero">
         <div className="hero-bg" />
@@ -154,24 +154,24 @@ function Review() {
                 possible.
               </span>
               <form className="d-flex flex-column">
-                <label for="email" class="form-label" >
-                  NAME
+                <label for="name" class="form-label">
+                  Name
                 </label>
                 <input
                   type="text"
-                  placeholder="Your Name"
+                  placeholder="Your full name"
                   className="form-control px-3 py-3"
                 />
                 <label for="email" class="form-label">
-                  EMAIL
+                  Email
                 </label>
                 <input
                   type="email"
-                  placeholder="Your Email"
+                  placeholder="your@email.com"
                   className="form-control px-3 py-3"
                 />
                 <label for="email" class="form-label">
-                  YOUR MESSAGE
+                  Message
                 </label>
                 <textarea
                   placeholder="Your Message"
@@ -185,8 +185,7 @@ function Review() {
             <div className="contactWrap">
               <div className="contactInfo">
                 <span className="mb-3 label">CONTACT FORM</span>
-                <span className="mb-5 contactHeadline">Kape't Pamana</span>
-                <p>11 Sumulong Highway, Brgy. Sta. Cruz</p>
+                <span className="mb-5 contactHeadline">Kape't Pamana, 11 Sumulong Highway, Brgy. Sta. Cruz</span>
               </div>
               <div className="contactInfo">
                 <span className="label">Call US</span>
