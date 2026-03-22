@@ -1,0 +1,59 @@
+#moreSection {
+  color: white;
+  margin-top: 6.25rem;
+  margin-left: 8%;
+  margin-right: 8%;
+  padding-top: 3.125rem;
+  padding-bottom: 3.125rem;
+  background-image: url("../assets/images/subscribe.png");
+  position: relative;
+  overflow: hidden;
+}
+
+#moreSection::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(92, 57, 35, 0.755);
+  z-index: 0;
+}
+
+#moreSection > * {
+  position: relative;
+  z-index: 1;
+}
+
+#subEmail {
+  background-color: #4c3222;
+  border-color: white;
+  border-width: 0.063rem;
+  color: white;
+  outline: none;
+}
+
+#subscribe {
+  margin: 0rem;
+  padding: 0.4rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.3rem;
+  font-size: 0.7rem;
+  color: white;
+  background-color: #7c5b3c;
+  border: 0rem;
+  border-radius: 0.25rem;
+}
+
+.bottomSection {
+  padding-bottom: 1rem;
+  padding-top: 1rem;
+  background-color: var(--bg);
+  text-align: left;
+}
+.bottomSection input {
+  outline: none;
+  background-color: #fafafa;
+  border: #dddddd solid 0.1rem;
+  border-radius: 0.2rem;
+  padding: 0.5rem;
+  box-sizing: border-box;
+}

@@ -24,7 +24,7 @@ function Navbar({ activePage }) {
           <li><a href="/" className={activePage === 'home' ? 'active' : ''}>Home</a></li>
           <li><a href="/products" className={activePage === 'products' ? 'active' : ''}>Our Products</a></li>
           <li><a href="/blogs" className={activePage === 'blogs' ? 'active' : ''}>Blogs</a></li>
-          <li><a href="/reviews" className={activePage === 'reviews' ? 'active' : ''}>Reviews</a></li>
+          <li><a href="/reviews" className={activePage === 'reviews' ? 'active' : ''}>Contact</a></li>
           <li><a href="/about" className={activePage === 'about' ? 'active' : ''}>About</a></li>
         </ul>
         <div className="nav-cart">
