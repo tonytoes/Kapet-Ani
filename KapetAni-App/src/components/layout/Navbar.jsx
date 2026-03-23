@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import logo from '../../assets/images/logo.png';
+import '../../styles/navbar.css';
 
 function Navbar({ activePage }) {
   useEffect(() => {

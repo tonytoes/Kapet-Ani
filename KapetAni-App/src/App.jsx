@@ -10,7 +10,7 @@ import Navbar from "./components/layout/Navbar.jsx";
 function App() {
   return (
  <>
-      <div className="App">
+      <div className="Home">
         <Blogs/>
       </div>
     </>

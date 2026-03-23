@@ -1,0 +1,28 @@
+#navbar .nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* keeps logo left, links center, cart right */
+  max-width: 1200px;
+  margin: 0 auto;         /* centers the whole inner bar horizontally */
+  padding: 0 24px;
+  width: 100%;
+}
+
+#navbar .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  /* This is the key part — centers the links in the middle of the bar */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Make nav-inner position: relative so nav-links can anchor to it */
+#navbar .nav-inner {
+  position: relative;
+}
