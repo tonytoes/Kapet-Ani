@@ -63,7 +63,7 @@
 }
 
 .nav-links a:hover, .nav-links a.active {
-  color: #451a03;
+  color: #ffffff;
 }
 
 .nav-links a.active {
@@ -136,11 +136,14 @@
 }
 
 .section-label {
-  font-size: 11px;
+  font-size: 36px;
+  font-family: "Lora", sans-serif; 
   text-transform: uppercase;
-  letter-spacing: 0.5em;
-  color: rgba(69, 26, 3, 0.4);
+  font-style: italic;
+  color: rgba(227, 129, 65, 0.4);
   margin-bottom: 40px;
+  letter-spacing: normal;
+  ;
 }
 
 .story-text {
@@ -259,4 +262,130 @@
   .nav-links { display: none; }
   .grid-2, .team-grid { grid-template-columns: 1fr; }
   .grid-2 { gap: 40px; }
+}
+
+/* Timeline Section */
+.timeline-section {
+  padding: 100px 0;
+  background-color: #ffffff;
+  text-align: center;
+}
+
+.timeline-container {
+  max-width: 700px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 80px; /* Space for the line */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Large Background Number */
+.timeline-number {
+  font-family: 'Playfair Display', serif;
+  font-size: 8rem;
+  color: #f3f4f6; /* Very light gray */
+  position: absolute;
+  top: -40px;
+  z-index: 1;
+  user-select: none;
+}
+
+.timeline-date {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: #9ca3af;
+  margin-bottom: 15px;
+  position: relative;
+  z-index: 2;
+}
+
+.timeline-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  color: #2d1b14;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.timeline-desc {
+  font-size: 0.95rem;
+  color: #6b7280;
+  line-height: 1.8;
+  max-width: 500px;
+  position: relative;
+  z-index: 2;
+}
+
+
+.timeline-line {
+  width: 1px;
+  height: 60px; 
+  background-color: #e5e7eb;
+  margin-top: 40px;
+  position: absolute;
+  bottom: 0;
+}
+
+
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+
+@media (max-width: 768px) {
+  .timeline-number {
+    font-size: 5rem;
+    top: -20px;
+  }
+}
+
+
+.grid-section {
+  padding-bottom: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 100px; 
+}
+
+
+.grid-reverse {
+  direction: ltr; 
+}
+
+
+@media (min-width: 769px) {
+  .grid-reverse .grid-image-wrapper {
+    order: 2;
+  }
+  .grid-reverse .grid-text {
+    order: 1;
+    text-align: left; 
+  }
+  
+
+  .image-accent.left {
+    right: auto;
+    left: -24px;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .grid-reverse {
+    display: flex;
+    flex-direction: column;
+  }
+  .grid-reverse .grid-image-wrapper {
+    order: 1;
+  }
+  .grid-reverse .grid-text {
+    order: 2;
+  }
 }

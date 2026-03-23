@@ -1,104 +1,28 @@
-:root {
-  --brown-deep: #2c1a0e;
-  --brown-rich: #5a3825;
-  --brown-mid: #7d5035;
-  --brown-warm: #a0724a;
-  --gold: #b08d57;
-  --gold-light: #c9a96e;
-  --cream: #f5f0e8;
-  --cream-light: #faf7f2;
-  --white: #ffffff;
-  --text-dark: #1e120a;
-  --text-mid: #5a3825;
-  --text-light: #9e8070;
-}
-
-/* ── NAV ── */
-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
+#navbar .nav-inner {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 25px;
-  height: 72px;
-  background: transparent;
-  transition:
-    background 0.4s,
-    backdrop-filter 0.4s;
-}
-nav.scrolled {
-  background: rgba(44, 26, 14, 0.92);
-  backdrop-filter: blur(12px);
-}
-.nav-inner {
-  display: flex;
-  align-items: center;
-  width: 100%;
+  justify-content: space-between; /* keeps logo left, links center, cart right */
   max-width: 1200px;
-}
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--white);
-  text-decoration: none;
-  flex-shrink: 0;
-}
-.logo-icon {
-  width: 36px;
-  height: 36px;
-  opacity: 0.9;
-}
-.logo-text {
-  font-family: "Playfair Display", serif;
-  font-size: 1.15rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  color: #ffffff !important;
+  margin: 0 auto;         /* centers the whole inner bar horizontally */
+  padding: 0 24px;
+  width: 100%;
 }
 
-.nav-links {
+#navbar .nav-links {
   display: flex;
   align-items: center;
-  gap: 36px;
+  gap: 32px;
   list-style: none;
+  margin: 0;
+  padding: 0;
+
+  /* This is the key part — centers the links in the middle of the bar */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
-.nav-links a {
-  color: rgba(255, 255, 255, 0.85);
-  text-decoration: none;
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  transition: color 0.2s;
-}
-.nav-links a:hover {
-  color: var(--gold-light);
-}
-.nav-cart {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-.cart-badge {
-  background: var(--gold);
-  color: var(--white);
-  font-size: 0.6rem;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+/* Make nav-inner position: relative so nav-links can anchor to it */
+#navbar .nav-inner {
+  position: relative;
 }
