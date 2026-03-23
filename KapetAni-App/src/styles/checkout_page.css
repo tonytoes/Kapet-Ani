@@ -9,8 +9,13 @@ body{
 }
 
 a{
-    color:#7c5b3c;
+    color:rgb(215, 167, 118);
     text-decoration: none;
+    transition: color 0.5 ease-in-out;
+}
+a:hover{
+    color:#7c5b3c;
+    transition: background-color 0.5 ease-in-out;
 }
 body p, body label{
    font-size:0.9rem;
@@ -31,7 +36,13 @@ body p, body label{
 }
 
 .paymentBtn{ 
-    margin-right:0.625rem; /* keep as rem for small spacing */
+    margin-right:0.625rem;
+    transition:transform 0.5s ease-in-out;
+}
+
+.paymentBtn:hover{
+    transform:scale(1.02);
+    transition:transform 0.5s ease-in-out;
 }
 
 #paypalB{
@@ -56,7 +67,7 @@ body p, body label{
 .upperSection{
     text-align:left;
     background-color: var(--bg);
-    margin-bottom:0.094rem;
+    margin: 0 0 0.094rem 0%;
     padding-left:0.625rem;
     padding-top:0.625rem;
     padding-bottom:0.625rem;
@@ -146,14 +157,17 @@ body p, body label{
 }
 
 /* Bottom Section */
+
+/* Beginning of More Section and Footer */
 #moreSection{
+    height:300px;
     color:white;
     margin-top: 6.25rem;
-    margin-left: 8%;
-    margin-right: 8%;
-    padding-top:3.125rem;
+    margin-left: 5%;
+    margin-right: 5%;
+    padding-top:6.125rem;
     padding-bottom:3.125rem;
-    background-image: url("images/subscribe.png");
+    background-image: url("../assets/images/subscribe.png");
     position: relative;
     overflow: hidden;
 }
@@ -171,39 +185,81 @@ body p, body label{
     z-index: 1;
 }
 
+#moreSection input{
+    padding:1.5rem;
+}
+#moreSection h5 {
+    font-size:2rem;
+}
+#moreSection h6{
+    font-size:0.95rem;
+    color:rgba(255, 255, 255, 0.652)
+}
+
 #subEmail{
     background-color:#4c3222;
     border-color:white;
     border-width: 0.063rem;
     color:white;
     outline: none;
+    height: 50px;
+    width: 20%;
 }
 
 #subscribe{
+    height: 50px;
+    width: 10%;
     margin:0rem;
-    padding:0.4rem;
-    padding-top:0.5rem;
-    padding-bottom:0.3rem;
-    font-size:0.7rem;
-    color:white;
+    padding:0.2rem;
+    padding-top:0.3rem;
+    padding-bottom:0.1rem;
     background-color: #7c5b3c;
     border:0rem;
     border-radius: 0.25rem;
-}
-
-.footer_section{
-    padding-top:3.125rem;
+    font-size:1rem;
     color:white;
-    background-image: url("images/footer.png");
+    transition: background-color 0.5s ease-in-out;
+}
+#subscribe:hover{
+    background-color:rgb(208, 160, 112);
+    transition: background-color 0.5s ease-in-out;
+}
+.footer_section{
+    height:450px;
+    padding-top:1rem;
+    color:white;
+    background-image: url("../assets/images/footer.png");
     position: relative;
     overflow: hidden;
+}
+
+#upperFooter div{
+    padding-top:0.5rem;
+    padding-bottom:0.5rem;
+    margin-left:0px;
+    margin-right:0px;
+}
+
+#lowerFooter div{
+    padding-top:0.2rem;
+    padding-bottom:0.2rem;
+}
+
+.footer_section a{
+    color:rgba(255, 255, 255, 0.652);
+    transition: color 0.5s ease-in-out;
+}
+
+.footer_section a:hover{
+    color:rgb(170, 126, 91);
+    transition: color 0.5s ease-in-out;
 }
 
 .footer_section::before {
     content: "";
     position: absolute;
     inset: 0;
-    background-color: rgba(92, 57, 35, 0.755);
+    background-color: rgba(76, 49, 33, 0.649);
     z-index: 0;
 }
 
@@ -212,18 +268,14 @@ body p, body label{
     z-index: 1;
 }
 
-.footer_section h5{
-    font-size: 1.2rem;
-    color:white;
-}
-
 .footer_section h6{
-    font-size: 0.7rem;
-    color:rgba(255, 255, 255, 0.852);
+    font-size: 0.8rem;
+    color:rgba(255, 255, 255, 0.652);
     padding-top:0.1rem;
 }
 
 #upperFooter{
+    margin-top:100px;
     margin-left:4%;
     margin-right:4%;
     padding-bottom:1.25rem;
@@ -231,6 +283,9 @@ body p, body label{
     align-items: center;
 }
 
+#upperFooter a{
+    font-size: 0.9rem;
+}
 #upperFooter img{
     width:3.125rem;
     height:3.125rem;
@@ -242,19 +297,39 @@ body p, body label{
     padding-bottom:1.875rem;
 }
 
+#lowerFooter a{
+    font-size: 0.8rem;
+    padding-top:0.1rem;
+}
+
 #logo{
-    display:flex;
-    align-items: center;
+    width:5%
+}
+#logoName{
+    width:19.6%;
+}
+#logoName h5{
+    font-size:1.5rem;
 }
 
 #trademark{
+    margin-top:28%;
     padding-top:2.7rem;
     font-size:0.7rem;
     color:rgb(255, 255, 255);
 }
-#trademark p{
-    font-size:0.7rem;
+#trademark a{
+    font-size:0.9rem;
+    color:white;
 }
+
+#gmailFooter a{
+    font-size:1.5rem;
+    color:white;
+}
+
+/* End of More Section and Footer */
+
 
 /* Order Summary */
 
@@ -286,7 +361,13 @@ body p, body label{
     color:white;
     padding:1rem;
     border-radius: 0.2rem;
+    transition: background-color 0.5s ease-in-out;
 }
+#submit:hover{
+    background-color:rgb(55, 57, 78);
+    transition: background-color 0.5s ease-in-out;
+}
+
 #subtotal, #flatrate{
     text-align:right;
     font-weight:normal;
