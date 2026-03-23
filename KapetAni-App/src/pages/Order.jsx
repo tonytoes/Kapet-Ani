@@ -10,6 +10,9 @@ function App() {
     <div className="App">
       <header className="App-header">
         <>
+          <title>Checkout Page</title>
+          <meta charSet="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <div className="container text-center base">
             <div className="row align-items-start COframe">
             <div className="col">
@@ -205,11 +208,12 @@ function App() {
             </div>
             </div>
         </div>
+        {/* More Section and Footer */}
         <section id="moreSection">
             <div className="container text-center">
-            <h5>
+            <h6>
                 Don't Miss Out On Our Latest News, Update, Tips, And Special Offers
-            </h5>
+            </h6>
             <h5>Subscribe to get the Latest News</h5>
             <input type="text" id="subEmail" />
             <button id="subscribe">Subscribe</button>
@@ -220,21 +224,23 @@ function App() {
             <div className="row row-cols-4" id="upperFooter">
                 <div className="col" id="logo">
                 <img src={kapetanilogowhite} alt="" />
+                </div>
+                <div className="col" id="logoName">
                 <h5>Kape't Pamana</h5>
                 </div>
                 <div className="col">
                 <a href="">
-                    <h6>MENU</h6>
+                    MENU
                 </a>
                 </div>
                 <div className="col">
                 <a href="">
-                    <h6>FOLLOW US</h6>
+                    FOLLOW US
                 </a>
                 </div>
                 <div className="col">
                 <a href="">
-                    <h6>CONTACT US</h6>
+                    CONTACT US
                 </a>
                 </div>
             </div>
@@ -247,69 +253,70 @@ function App() {
                     </h6>
                 </div>
                 <div className="col" id="trademark">
-                    <p>Kape't Pamana @ 2026</p>
+                    <a href="">Kape't Pamana @ 2026</a>
                 </div>
                 </div>
                 <div className="col">
                 <div className="col">
                     <a href="">
-                    <h6>Home</h6>
+                    Home
                     </a>
                 </div>
                 <div className="col">
                     <a href="">
-                    <h6>Our Products</h6>
+                    Our Products
                     </a>{" "}
                 </div>
                 <div className="col">
                     <a href="">
-                    <h6>About</h6>
+                    About
                     </a>{" "}
                 </div>
                 <div className="col">
                     <a href="">
-                    <h6>Contact</h6>
+                    Contact
                     </a>{" "}
                 </div>
                 <div className="col">
                     <a href="">
-                    <h6>Style Guide</h6>
+                 Style Guide
                     </a>{" "}
                 </div>
                 </div>
                 <div className="col">
                 <div className="col">
                     <a href="">
-                    <h6>Facebook</h6>
+                    Facebook
                     </a>{" "}
                 </div>
                 <div className="col">
                     <a href="">
-                    <h6>Instagram</h6>
+                    Instagram
                     </a>{" "}
                 </div>
                 <div className="col">
                     <a href="">
-                    <h6>Pinterest</h6>
+                    Pinterest
                     </a>{" "}
                 </div>
                 <div className="col">
                     <a href="">
-                    <h6>Twitter</h6>
+                    Twitter
                     </a>{" "}
                 </div>
                 </div>
                 <div className="col">
                 <div className="col">
-                    <h6>We're Always Happy to Help</h6>
+                    <a href="">We're Always Happy to Help</a>
                 </div>
-                <div className="col">
-                    <h5>kapetpamana@gmail.com</h5>{" "}
+                <div className="col" id="gmailFooter">
+                    <a href="">kapetpamana@gmail.com</a>{" "}
                 </div>
                 </div>
             </div>
             </div>
         </footer>
+        {/* End of More Section and Footer */}
         </>
       </header>
     </div>
