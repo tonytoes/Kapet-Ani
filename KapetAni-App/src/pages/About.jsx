@@ -14,6 +14,7 @@ import '../styles/navbar.css';
 import aboutcoffee from '../assets/images/aboutcoffee.jpg';
 import aboutcoffee1 from '../assets/images/aboutcoffee1.jpg';
 import Newsletter from '../components/layout/Newsletter';
+import AddToCart from '../components/layout/AddToCart';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
