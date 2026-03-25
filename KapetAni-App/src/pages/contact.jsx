@@ -1,4 +1,3 @@
-import logo from "../assets/images/logo.png";
 import office1 from "../assets/images/office1.jpg";
 import office2 from "../assets/images/office2.jpg";
 import "../styles/review.css";
