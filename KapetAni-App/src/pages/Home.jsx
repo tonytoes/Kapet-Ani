@@ -1,4 +1,4 @@
-import logo from '../assets/images/logo.png';
+import { useEffect } from "react";
 import mangofrappe from '../assets/images/mangofrappe.png';
 import ubefrappe from '../assets/images/ubefrappe.png';
 import basket1 from '../assets/images/basket1.png';
@@ -12,9 +12,10 @@ import mug1 from '../assets/images/mug1.png';
 import mug2 from '../assets/images/mug2.png';
 import parallax from '../assets/images/parallax.png';
 import '../styles/home.css';
-import Footer from '../components/layout/Footer.jsx';
-import { useEffect } from "react";
 import Navbar from '../components/layout/Navbar.jsx';
+import Newsletter from "../components/layout/Newsletter.jsx"; 
+import Footer from '../components/layout/Footer.jsx';
+
 
 function Home() {
 
@@ -276,20 +277,7 @@ function Home() {
             </div>
           </section>
 
-          {/* SUBSCRIBE */}
-          <section className="subscribe-section">
-            <div className="subscribe-card fade-up">
-              <div>
-                <p className="subscribe-eyebrow">Don't miss out on our latest news, updates, tips and special offers!</p>
-                <h2 className="subscribe-headline">Subscribe to get<br />the Latest News</h2>
-              </div>
-              <div className="subscribe-form">
-                <input className="subscribe-input" type="email" placeholder="kapetpamana@gmail.com" />
-                <button className="subscribe-btn">Subscribe</button>
-              </div>
-            </div>
-          </section>
-
+          <Newsletter style={{backgroundColor: 'white' }}/>
           <Footer/>
         </>
     </div>

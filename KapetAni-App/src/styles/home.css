@@ -265,7 +265,7 @@ nav.scrolled {
 .section-rule::before,
 .section-rule::after {
   content: "";
-  width: 40px;  /* shorten this */
+  width: 40px; /* shorten this */
   height: 1px;
   background: var(--brown-warm);
   opacity: 0.4;

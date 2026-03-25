@@ -7,7 +7,7 @@ import Footer from "../components/layout/Footer.jsx";
 import Newsletter from "../components/layout/Newsletter.jsx";
 import { useEffect } from "react";
 
-function Review() {
+function Contact() {
   useEffect(() => {
     const navbar = document.getElementById("navbar");
 
@@ -218,4 +218,4 @@ function Review() {
   );
 }
 
-export default Review;
+export default Contact;
