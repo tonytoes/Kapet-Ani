@@ -41,24 +41,13 @@ function Contact() {
   return (
     <>
       <Navbar activePage="contact" />
-      {/* HERO */}
       <section className="hero">
         <div className="hero-bg" />
         <div className="hero-overlay" />
         <div className="hero-content">
-          <p className="hero-eyebrow">
-            Est. 1996 &nbsp;·&nbsp; Filipino Heritage
-          </p>
           <h1 className="hero-headline">
-            Every cup of Kape't Pamana brews
-            <br />
-            <em>Filipino heritage and craftsmanship,</em>
-            <br />
-            served with pride.
+          Every voice holds a story. <em>Tell us yours.</em>
           </h1>
-          <a href="#featured" className="btn-primary">
-            Explore Our Products
-          </a>
         </div>
         <div className="scroll-hint">
           <div className="scroll-arrow" />
@@ -209,7 +198,7 @@ function Contact() {
               referrerpolicy="no-referrer-when-downgrade"
             ></iframe>
           </div>
-          <Newsletter />
+          <Newsletter/>
           <Footer />
         </div>
       </div>

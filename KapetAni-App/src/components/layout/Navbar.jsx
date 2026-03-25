@@ -50,7 +50,7 @@ function Navbar({ activePage }) {
             </li>
             <li>
               <a
-                href="/reviews"
+                href="/contact"
                 className={activePage === "contact" ? "active" : ""}
               >
                 Contact

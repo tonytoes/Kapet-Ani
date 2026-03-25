@@ -26,6 +26,8 @@
   display: block;
   overflow: hidden;
   padding: 0 30px 0 30px;
+  background: white;
+  width: 100%;
 }
 
 .newsWrap {

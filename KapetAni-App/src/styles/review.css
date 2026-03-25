@@ -185,7 +185,6 @@ nav.scrolled {
 }
 .hero-headline {
   font-family: "Playfair Display", serif;
-  font-size: clamp(2rem, 5vw, 3.4rem);
   font-weight: 600;
   color: var(--white);
   line-height: 1.25;
