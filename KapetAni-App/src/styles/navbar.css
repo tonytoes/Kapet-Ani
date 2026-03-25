@@ -1,3 +1,20 @@
+#navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: auto !important;
+  padding: 12px 40px !important;
+  background: transparent;
+  transition: background 0.4s, backdrop-filter 0.4s;
+}
+
+#navbar.scrolled {
+  background: rgba(44, 26, 14, 0.92);
+  backdrop-filter: blur(12px);
+}
+
 #navbar .nav-inner {
   position: relative;
   display: flex;
@@ -5,7 +22,7 @@
   justify-content: space-between;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0;
   width: 100%;
 }
 
@@ -14,12 +31,17 @@
   align-items: center;
   gap: 32px;
   list-style: none;
-  margin: 0 auto;
+  margin: 0;
   padding: 0;
   position: absolute;
   left: 0;
   right: 0;
   justify-content: center;
+  pointer-events: none;
+}
+
+#navbar .nav-links li {
+  pointer-events: all;
 }
 
 #navbar .nav-links li a {
@@ -29,10 +51,45 @@
   text-transform: uppercase;
   color: #d4c5b0;
   font-weight: 500;
+  position: relative;
+  padding-bottom: 4px;
+}
+
+#navbar .nav-links li a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: #ffffff;
+  transition: width 0.3s ease;
+}
+
+#navbar .nav-links li a:hover::after,
+#navbar .nav-links li a.active::after {
+  width: 100%;
 }
 
 #navbar .nav-links li a:hover,
 #navbar .nav-links li a.active {
+  color: #ffffff;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-icon {
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.85);
+  transition: color 0.2s;
+}
+
+.nav-icon:hover {
   color: #ffffff;
 }
 
@@ -45,4 +102,8 @@
   text-transform: uppercase;
   color: #d4c5b0;
   cursor: pointer;
+}
+
+#navbar .nav-cart:hover {
+  color: #ffffff;
 }
