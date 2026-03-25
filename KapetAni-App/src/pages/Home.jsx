@@ -50,7 +50,7 @@ function Home() {
   return (
     <div className="App">
         <>
-         <Navbar/>
+         <Navbar activePage="home"/>
 
           {/* HERO */}
           <section className="hero">
