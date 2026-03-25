@@ -1,0 +1,151 @@
+/* 1. The Overlay - Darken the background */
+.cart-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  z-index: 9998; /* Just below the drawer */
+}
+
+.cart-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 2. The Drawer - Force it to the side */
+.cart-drawer {
+  position: fixed !important; /* Force fixed positioning */
+  top: 0;
+  right: -100%; /* Hidden off-screen */
+  width: 100%;
+  max-width: 450px;
+  height: 100vh;
+  background-color: #ffffff; /* Explicit background */
+  color: #000;
+  z-index: 9999; /* Highest level */
+  transition: right 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: flex;
+  flex-direction: column;
+  padding: 40px;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box; /* Crucial for padding */
+}
+
+/* Slide it in */
+.cart-drawer.open {
+  right: 0 !important;
+}
+
+/* 3. Layout Parts */
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eeeeee;
+  padding-bottom: 20px;
+  flex-shrink: 0; /* Prevents header from squishing */
+}
+
+.cart-title {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  font-weight: 700;
+  border: 1px solid #000;
+  padding: 6px 12px;
+  text-transform: uppercase;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  line-height: 1;
+  color: #000;
+}
+
+/* 4. Scrollable Items Area */
+.cart-items {
+  flex-grow: 1;
+  padding: 30px 0;
+  overflow-y: auto; /* Allows scrolling inside the cart */
+  text-align: left; /* Fixes the centered text from your screenshot */
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.item-img img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+}
+
+.item-details h4 {
+  font-size: 14px;
+  margin: 0 0 5px 0;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.remove-link {
+  background: none;
+  border: none;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: #a1a1a1;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.qty-input {
+  width: 45px;
+  height: 35px;
+  border: 1px solid #000;
+  text-align: center;
+  font-size: 12px;
+}
+
+/* 5. Footer & Total */
+.cart-footer {
+  border-top: 1px solid #eeeeee;
+  padding-top: 30px;
+  flex-shrink: 0;
+}
+
+.subtotal-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.checkout-btn {
+  width: 100%;
+  background-color: #d19a66; /* Your brand beige/tan */
+  color: white;
+  border: none;
+  padding: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.checkout-btn:hover {
+  background-color: #c08955;
+}

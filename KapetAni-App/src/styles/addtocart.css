@@ -1,0 +1,67 @@
+.atc-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 300px;
+  margin: 20px 0;
+}
+
+.atc-price-display {
+  font-family: 'Inter', sans-serif;
+  color: #2d1b14;
+  font-weight: 500;
+  font-size: 1.25rem;
+}
+
+.atc-button {
+  position: relative;
+  background-color: #451a03; /* Deep Brown */
+  color: #ffffff;
+  border: 1px solid #451a03;
+  padding: 18px 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow: hidden;
+}
+
+.atc-button:hover:not(:disabled) {
+  background-color: transparent;
+  color: #451a03;
+}
+
+.atc-button:disabled {
+  cursor: default;
+}
+
+/* Success State */
+.atc-button.success {
+  background-color: #2d1b14;
+  border-color: #2d1b14;
+  color: #fff;
+}
+
+/* Adding State */
+.atc-button.adding {
+  opacity: 0.7;
+}
+
+/* Optional: Add a very thin underline for that Webflow detail */
+.atc-button::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: #fff;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.atc-button:hover::after {
+  width: 20%;
+}
