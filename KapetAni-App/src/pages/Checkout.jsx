@@ -7,7 +7,7 @@ import kapetanilogowhite from '../assets/images/kape\'t_ani_logo_white.png'
 
 function App() {
   return (
-    <div className="App">
+    <div className="App checkout-page">
       <header className="App-header">
         <>
           <title>Checkout Page</title>
@@ -15,7 +15,7 @@ function App() {
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <div className="container text-center base">
             <div className="row align-items-start COframe">
-              <div className="col">
+              <div className="col" id="#body">
                 <form action="submit">
                   <div className="row">
                     <a href="index.html" id="homeB">

@@ -7,10 +7,10 @@ import kapetanilogowhite from '../assets/images/kape\'t_ani_logo_white.png'
 
 function App() {
   return (
-    <div className="App">
+    <div className="App order-page">
       <header className="App-header">
         <>
-          <title>Checkout Page</title>
+          <title>Order Confirmation Page</title>
           <meta charSet="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <div className="container text-center base">
