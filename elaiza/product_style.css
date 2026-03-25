@@ -187,3 +187,77 @@ footer {
 @media (max-width: 900px) {
     .product-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* Carousel Specific Styles */
+.carousel-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin: 0 auto;
+    max-width: 1200px;
+}
+
+.carousel-viewport {
+    overflow-x: hidden; /* Hide the scrollbar but keep it functional */
+    scroll-behavior: smooth;
+    width: 100%;
+    padding: 20px 0;
+}
+
+/* Update this specific part in your product_style.css */
+.product-grid {
+    display: flex !important; /* Force flex for carousel */
+    gap: 20px;
+    padding: 10px 0;
+    width: max-content; /* Ensures the container expands with the items */
+}
+
+.carousel-viewport {
+    overflow-x: hidden; /* This hides the overflow so it looks like a slider */
+    scroll-behavior: smooth;
+    width: 100%;
+    cursor: grab;
+}
+
+.carousel-viewport:active {
+    cursor: grabbing;
+}
+
+/* Ensure cards stay at a consistent size and don't shrink */
+.product-card {
+    min-width: 220px; 
+    flex: 0 0 auto;
+}
+
+/* Navigation Buttons */
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(139, 94, 60, 0.8); /* Primary Brown with transparency */
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    font-size: 1.2rem;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-btn:hover {
+    background: #2D1B0E; /* Dark Brown */
+}
+
+.prev { left: -50px; }
+.next { right: -50px; }
+
+/* Responsive: Move buttons inside on smaller screens */
+@media (max-width: 1300px) {
+    .prev { left: 10px; }
+    .next { right: 10px; }
+}

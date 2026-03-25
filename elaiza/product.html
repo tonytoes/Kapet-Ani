@@ -34,49 +34,63 @@
 
 <main class="main-content">
     <section class="controls-container">
-        <div class="search-bar">
-            <span class="search-icon"></span>
-            <input type="text" id="searchInput" placeholder="Search products...">
-        </div>
-        <div class="filter-row">
-            <div class="sort-by">
-                <label>Sort by:</label>
-                <select id="sortSelect">
-                    <option>Featured</option>
-                    <option>Price: Low to High</option>
-                    <option>Price: High to Low</option>
-                </select>
-            </div>
-            <p class="product-status">Showing Products</p>
-        </div>
-    </section>
+        </section>
 
     <section class="product-section">
         <h2 class="category-title">Category 1</h2>
-        <div class="product-grid" id="category-1-grid"></div>
+        <div class="carousel-container">
+            <button class="carousel-btn prev" onclick="moveCarousel('category-1-grid', -1)">&#10094;</button>
+            <div class="carousel-viewport">
+                <div class="product-grid" id="category-1-grid"></div>
+            </div>
+            <button class="carousel-btn next" onclick="moveCarousel('category-1-grid', 1)">&#10095;</button>
+        </div>
     </section>
 
     <section class="product-section">
         <h2 class="category-title">Category 2</h2>
-        <div class="product-grid" id="category-2-grid"></div>
+        <div class="carousel-container">
+            <button class="carousel-btn prev" onclick="moveCarousel('category-2-grid', -1)">&#10094;</button>
+            <div class="carousel-viewport">
+                <div class="product-grid" id="category-2-grid"></div>
+            </div>
+            <button class="carousel-btn next" onclick="moveCarousel('category-2-grid', 1)">&#10095;</button>
+        </div>
     </section>
 
     <section class="product-section">
         <h2 class="category-title">Category 3</h2>
-        <div class="product-grid" id="category-3-grid"></div>
+        <div class="carousel-container">
+            <button class="carousel-btn prev" onclick="moveCarousel('category-3-grid', -1)">&#10094;</button>
+            <div class="carousel-viewport">
+                <div class="product-grid" id="category-3-grid"></div>
+            </div>
+            <button class="carousel-btn next" onclick="moveCarousel('category-3-grid', 1)">&#10095;</button>
+        </div>
     </section>
 
     <section class="product-section">
         <h2 class="category-title">Category 4</h2>
-        <div class="product-grid" id="category-4-grid"></div>
+        <div class="carousel-container">
+            <button class="carousel-btn prev" onclick="moveCarousel('category-4-grid', -1)">&#10094;</button>
+            <div class="carousel-viewport">
+                <div class="product-grid" id="category-4-grid"></div>
+            </div>
+            <button class="carousel-btn next" onclick="moveCarousel('category-4-grid', 1)">&#10095;</button>
+        </div>
     </section>
 
     <hr class="dashed-divider">
 
     <section class="product-section seasonal-bg">
         <h2 class="category-title">Category 5</h2>
-        <p class="section-subtitle">category description here</p>
-        <div class="product-grid" id="category-5-grid"></div>
+        <div class="carousel-container">
+            <button class="carousel-btn prev" onclick="moveCarousel('category-5-grid', -1)">&#10094;</button>
+            <div class="carousel-viewport">
+                <div class="product-grid" id="category-5-grid"></div>
+            </div>
+            <button class="carousel-btn next" onclick="moveCarousel('category-5-grid', 1)">&#10095;</button>
+        </div>
     </section>
 </main>
 
