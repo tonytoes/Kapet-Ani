@@ -14,6 +14,7 @@ import parallax from '../assets/images/parallax.png';
 import '../styles/home.css';
 import Footer from '../components/layout/Footer.jsx';
 import { useEffect } from "react";
+import Navbar from '../components/layout/Navbar.jsx';
 
 function Home() {
 
@@ -49,31 +50,7 @@ function Home() {
   return (
     <div className="App">
         <>
-          {/* NAV */}
-          <nav id="navbar">
-            <div className="nav-inner">
-              <a href="#" className="logo">
-                <img src={logo} alt="Kape't Pamana" height={70} />
-              </a>
-              <span className="logo-text">Kape't Pamana</span>
-              <ul className="nav-links">
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Our Products</a></li>
-                <li><a href="#">Blogs</a></li>
-                <li><a href="#">Reviews</a></li>
-                <li><a href="#">About</a></li>
-              </ul>
-              <div className="nav-cart">
-                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                  <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-                  <line x1={3} y1={6} x2={21} y2={6} />
-                  <path d="M16 10a4 4 0 01-8 0" />
-                </svg>
-                Cart
-                <div className="cart-badge">1</div>
-              </div>
-            </div>
-          </nav>
+         <Navbar/>
 
           {/* HERO */}
           <section className="hero">
