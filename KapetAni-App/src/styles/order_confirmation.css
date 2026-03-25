@@ -1,11 +1,28 @@
+
 :root{
     --bg: rgb(255, 255, 255);
 }
 
-body{
-   font-family: "Karla", sans-serif;
+.order-page{
+   font-family: "Karla", sans-serif !important;
+   color:#7c5b3c !important;
+   background-color: #f6f6f6 !important;
+}
+
+.order-page a{
+   color:rgb(215, 167, 118);
+}
+
+.order-page a:hover{
    color:#7c5b3c;
-   background-color: #f6f6f6;
+}
+
+.order-page p, .order-page h5{
+   font-size:1rem;
+}
+
+.order-page h6{
+   font-size:0.8rem;
 }
 
 a{
@@ -17,11 +34,11 @@ a:hover{
     color:#7c5b3c;
     transition: background-color 0.5 ease-in-out;
 }
-body p, body h5{
+p, h5{
    font-size:1rem;
 }
 
-body h6{
+h6{
     font-size:0.8rem;
 }
 

@@ -2,13 +2,13 @@
     --bg: rgb(255, 255, 255);
 }
 
-body{
-   font-family: "Karla", sans-serif;
-   color:#7c5b3c;
-   background-color: #f6f6f6;
+.checkout-page{
+   font-family: "Karla", sans-serif !important;
+   color:#7c5b3c !important;
+   background-color: #f6f6f6 !important;
 }
 
-a{
+.checkout-page a{
     color:rgb(215, 167, 118);
     text-decoration: none;
     transition: color 0.5 ease-in-out;
@@ -17,7 +17,7 @@ a:hover{
     color:#7c5b3c;
     transition: background-color 0.5 ease-in-out;
 }
-body p, body label{
+#body p, #body label{
    font-size:0.9rem;
 }
 
