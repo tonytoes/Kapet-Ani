@@ -35,7 +35,7 @@ function Navbar({ activePage }) {
             <li><a href="/about" className={activePage === 'about' ? 'active' : ''}>About</a></li>
           </ul>
 
-          <div className="nav-cart" onClick={() => setIsCartOpen(true)} style={{ cursor: 'pointer' }}>
+          {/*<div className="nav-cart" onClick={() => setIsCartOpen(true)} style={{ cursor: 'pointer' }}>
             <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
               <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
               <line x1={3} y1={6} x2={21} y2={6} />
@@ -43,14 +43,15 @@ function Navbar({ activePage }) {
             </svg>
             Cart
             <div className="cart-badge">1</div>
-          </div>
+          </div>*/}
         </div>
       </nav>
 
-      <CartDrawer 
+      {/*(<CartDrawer 
         isOpen={isCartOpen} 
         onClose={() => setIsCartOpen(false)} 
-      />
+      />*/}
+
     </>
   );
 }
