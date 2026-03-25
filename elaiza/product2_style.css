@@ -93,7 +93,7 @@ body {
 
 .product-card { 
     width: 215px; 
-    background: #a68d74bc; 
+    background: #fff; 
     border: 1px solid #EEE; 
     padding: 15px; 
     border-radius: 12px; 
@@ -107,7 +107,6 @@ body {
     align-items: center; 
     justify-content: center; 
     background: #fff; 
-    border: 1px solid #F5F5F5;
     margin-bottom: 15px; 
     border-radius: 8px;
 }
