@@ -131,11 +131,10 @@ nav.scrolled {
   justify-content: center;
   overflow: hidden;
 }
-.hero-bg {
+.hero-bg1 {
   position: absolute;
   inset: 0;
-  background: url("../assets/images/LoginPageBackground.png") center/cover
-    no-repeat;
+  background: url("../assets/images/Background5.webp") center/cover no-repeat;
   transform: scale(1.05);
   animation: heroZoom 12s ease-out forwards;
 }

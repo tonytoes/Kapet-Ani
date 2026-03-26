@@ -4,8 +4,6 @@ import About from "../pages/About.jsx";
 import Contact from "../pages/contact.jsx";
 import Product from "../pages/Product.jsx";
 import Checkout from "../pages/Checkout.jsx";
-import Login from "../pages/Login.jsx";
-import Order from "../pages/Order.jsx";
 import Blogs from "../pages/Blogs.jsx";
 import Navbar from "../components/layout/Navbar.jsx";
 import Footer from "../components/layout/Footer.jsx";
@@ -37,36 +35,10 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/product/:id",
+    path: "/product",
     element: (
       <>
-        <Navbar />
         <Product />
-        <Footer />
-      </>
-    ),
-  },
-  {
-    path: "/checkout",
-    element: (
-      <>
-        <Navbar />
-        <Checkout />
-        <Footer />
-      </>
-    ),
-  },
-  {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    path: "/order",
-    element: (
-      <>
-        <Navbar />
-        <Order />
-        <Footer />
       </>
     ),
   },
@@ -78,14 +50,6 @@ const router = createBrowserRouter([
         <Blogs />
         <Newsletter/>
         <Footer />
-      </>
-    ),
-  },
-  {
-    path: "/contact",
-    element: (
-      <>
-        <Contact />
       </>
     ),
   },

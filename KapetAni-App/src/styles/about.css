@@ -2,7 +2,7 @@
 .about-page {
   background-color: #ffffff;
   color: #1d1d1f;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   overflow-x: hidden;
 }
 
@@ -12,96 +12,15 @@
   padding: 0 20px;
 }
 
-/* Navigation */
-.main-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 100;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 40px;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  box-sizing: border-box;
-}
-
-.nav-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.nav-logo img {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-}
-
-.nav-logo span {
-  font-family: 'Jost', sans-serif;
-  font-size: 1.25rem;
-  color: #2d1b14;
-}
-
-.nav-links {
-  display: flex;
-  gap: 40px;
-}
-
-.nav-links a {
-  text-decoration: none;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.3em;
-  color: #9ca3af;
-  font-weight: 600;
-  transition: color 0.3s ease;
-}
-
-.nav-links a:hover, .nav-links a.active {
-  color: #ffffff;
-}
-
-.nav-links a.active {
-  border-bottom: 1px solid rgba(69, 26, 3, 0.2);
-  padding-bottom: 4px;
-}
-
-.nav-cart {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: #9ca3af;
-  font-weight: 700;
-}
-
-.cart-badge {
-  background: #451a03;
-  color: white;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 9px;
-}
-
 /* Hero */
 .hero-section {
   position: relative;
-  height: 85vh;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=2000') center/cover no-repeat;
+  background: url("https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=2000")
+    center/cover no-repeat;
 }
 
 .hero-overlay {
@@ -117,7 +36,7 @@
 }
 
 .hero-content h1 {
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-style: italic;
   font-size: clamp(3rem, 8vw, 5rem);
   margin-bottom: 20px;
@@ -137,13 +56,12 @@
 
 .section-label {
   font-size: 36px;
-  font-family: "Lora", sans-serif; 
+  font-family: "Lora", sans-serif;
   text-transform: uppercase;
   font-style: italic;
   color: rgba(227, 129, 65, 0.4);
   margin-bottom: 40px;
   letter-spacing: normal;
-  ;
 }
 
 .story-text {
@@ -185,7 +103,7 @@
 }
 
 .grid-text h3 {
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 2rem;
   color: #2d1b14;
   margin-bottom: 30px;
@@ -205,7 +123,9 @@
   margin-bottom: 20px;
 }
 
-.italic { font-style: italic; }
+.italic {
+  font-style: italic;
+}
 
 /* Team Section */
 .team-section {
@@ -242,7 +162,7 @@
 }
 
 .team-card h5 {
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1.15rem;
   margin: 0;
   color: #2d1b14;
@@ -259,9 +179,16 @@
 
 /* Responsive Fixes */
 @media (max-width: 768px) {
-  .nav-links { display: none; }
-  .grid-2, .team-grid { grid-template-columns: 1fr; }
-  .grid-2 { gap: 40px; }
+  .nav-links {
+    display: none;
+  }
+  .grid-2,
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
+  .grid-2 {
+    gap: 40px;
+  }
 }
 
 /* Timeline Section */
@@ -287,7 +214,7 @@
 
 /* Large Background Number */
 .timeline-number {
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 8rem;
   color: #f3f4f6; /* Very light gray */
   position: absolute;
@@ -306,7 +233,7 @@
 }
 
 .timeline-title {
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1.5rem;
   color: #2d1b14;
   margin-bottom: 20px;
@@ -323,21 +250,18 @@
   z-index: 2;
 }
 
-
 .timeline-line {
   width: 1px;
-  height: 60px; 
+  height: 60px;
   background-color: #e5e7eb;
   margin-top: 40px;
   position: absolute;
   bottom: 0;
 }
 
-
 .timeline-item:last-child {
   padding-bottom: 0;
 }
-
 
 @media (max-width: 768px) {
   .timeline-number {
@@ -346,19 +270,16 @@
   }
 }
 
-
 .grid-section {
   padding-bottom: 120px;
   display: flex;
   flex-direction: column;
-  gap: 100px; 
+  gap: 100px;
 }
-
 
 .grid-reverse {
-  direction: ltr; 
+  direction: ltr;
 }
-
 
 @media (min-width: 769px) {
   .grid-reverse .grid-image-wrapper {
@@ -366,16 +287,14 @@
   }
   .grid-reverse .grid-text {
     order: 1;
-    text-align: left; 
+    text-align: left;
   }
-  
 
   .image-accent.left {
     right: auto;
     left: -24px;
   }
 }
-
 
 @media (max-width: 768px) {
   .grid-reverse {

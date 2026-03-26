@@ -42,7 +42,7 @@ function Contact() {
     <>
       <Navbar activePage="contact" />
       <section className="hero">
-        <div className="hero-bg" />
+        <div className="hero-bg1" />
         <div className="hero-overlay" />
         <div className="hero-content">
           <h1 className="hero-headline">

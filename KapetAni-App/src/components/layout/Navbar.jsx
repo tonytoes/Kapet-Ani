@@ -34,8 +34,8 @@ function Navbar({ activePage }) {
             </li>
             <li>
               <a
-                href="/products"
-                className={activePage === "products" ? "active" : ""}
+                href="/product"
+                className={activePage === "product" ? "active" : ""}
               >
                 Our Products
               </a>
