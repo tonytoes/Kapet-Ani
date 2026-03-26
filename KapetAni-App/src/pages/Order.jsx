@@ -2,15 +2,17 @@ import '../styles/order_confirmation.css';
 import rattan_basket from '../assets/images/Rattan_Basket.png';
 import bamboo_basket from '../assets/images/Bamboo_Basket.png';
 import palm_basket from '../assets/images/Palm_Basket.png';
-import kapetanilogowhite from '../assets/images/kape\'t_ani_logo_white.png'
+import Navbar from '../components/layout/Navbar.jsx';
+import Newsletter from "../components/layout/Newsletter.jsx"; 
+import Footer from '../components/layout/Footer.jsx';
 
 
 function App() {
   return (
-    <div className="App">
+    <div className="App order-page">
       <header className="App-header">
         <>
-          <title>Checkout Page</title>
+          <title>Order Confirmation Page</title>
           <meta charSet="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <div className="container text-center base">
@@ -219,103 +221,7 @@ function App() {
             <button id="subscribe">Subscribe</button>
             </div>
         </section>
-        <footer className="footer_section" id="wholeFooter">
-            <div className="container">
-            <div className="row row-cols-4" id="upperFooter">
-                <div className="col" id="logo">
-                <img src={kapetanilogowhite} alt="" />
-                </div>
-                <div className="col" id="logoName">
-                <h5>Kape't Pamana</h5>
-                </div>
-                <div className="col">
-                <a href="">
-                    MENU
-                </a>
-                </div>
-                <div className="col">
-                <a href="">
-                    FOLLOW US
-                </a>
-                </div>
-                <div className="col">
-                <a href="">
-                    CONTACT US
-                </a>
-                </div>
-            </div>
-            <div className="row rows-cols-4" id="lowerFooter">
-                <div className="col">
-                <div className="col">
-                    <h6>
-                    Delivering the best coffee life since 1996. From coffee geeks to
-                    the real ones.
-                    </h6>
-                </div>
-                <div className="col" id="trademark">
-                    <a href="">Kape't Pamana @ 2026</a>
-                </div>
-                </div>
-                <div className="col">
-                <div className="col">
-                    <a href="">
-                    Home
-                    </a>
-                </div>
-                <div className="col">
-                    <a href="">
-                    Our Products
-                    </a>{" "}
-                </div>
-                <div className="col">
-                    <a href="">
-                    About
-                    </a>{" "}
-                </div>
-                <div className="col">
-                    <a href="">
-                    Contact
-                    </a>{" "}
-                </div>
-                <div className="col">
-                    <a href="">
-                 Style Guide
-                    </a>{" "}
-                </div>
-                </div>
-                <div className="col">
-                <div className="col">
-                    <a href="">
-                    Facebook
-                    </a>{" "}
-                </div>
-                <div className="col">
-                    <a href="">
-                    Instagram
-                    </a>{" "}
-                </div>
-                <div className="col">
-                    <a href="">
-                    Pinterest
-                    </a>{" "}
-                </div>
-                <div className="col">
-                    <a href="">
-                    Twitter
-                    </a>{" "}
-                </div>
-                </div>
-                <div className="col">
-                <div className="col">
-                    <a href="">We're Always Happy to Help</a>
-                </div>
-                <div className="col" id="gmailFooter">
-                    <a href="">kapetpamana@gmail.com</a>{" "}
-                </div>
-                </div>
-            </div>
-            </div>
-        </footer>
+        <Footer/>
         {/* End of More Section and Footer */}
         </>
       </header>

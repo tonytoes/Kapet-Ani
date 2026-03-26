@@ -131,11 +131,10 @@ nav.scrolled {
   justify-content: center;
   overflow: hidden;
 }
-.hero-bg {
+.hero-bg1 {
   position: absolute;
   inset: 0;
-  background: url("../assets/images/LoginPageBackground.png") center/cover
-    no-repeat;
+  background: url("../assets/images/Background5.webp") center/cover no-repeat;
   transform: scale(1.05);
   animation: heroZoom 12s ease-out forwards;
 }
@@ -185,7 +184,6 @@ nav.scrolled {
 }
 .hero-headline {
   font-family: "Playfair Display", serif;
-  font-size: clamp(2rem, 5vw, 3.4rem);
   font-weight: 600;
   color: var(--white);
   line-height: 1.25;

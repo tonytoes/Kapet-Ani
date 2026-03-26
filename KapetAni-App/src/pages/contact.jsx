@@ -1,4 +1,3 @@
-import logo from "../assets/images/logo.png";
 import office1 from "../assets/images/office1.jpg";
 import office2 from "../assets/images/office2.jpg";
 import "../styles/review.css";
@@ -7,7 +6,7 @@ import Footer from "../components/layout/Footer.jsx";
 import Newsletter from "../components/layout/Newsletter.jsx";
 import { useEffect } from "react";
 
-function Review() {
+function Contact() {
   useEffect(() => {
     const navbar = document.getElementById("navbar");
 
@@ -42,24 +41,13 @@ function Review() {
   return (
     <>
       <Navbar activePage="contact" />
-      {/* HERO */}
       <section className="hero">
-        <div className="hero-bg" />
+        <div className="hero-bg1" />
         <div className="hero-overlay" />
         <div className="hero-content">
-          <p className="hero-eyebrow">
-            Est. 1996 &nbsp;·&nbsp; Filipino Heritage
-          </p>
           <h1 className="hero-headline">
-            Every cup of Kape't Pamana brews
-            <br />
-            <em>Filipino heritage and craftsmanship,</em>
-            <br />
-            served with pride.
+          Every voice holds a story. <em>Tell us yours.</em>
           </h1>
-          <a href="#featured" className="btn-primary">
-            Explore Our Products
-          </a>
         </div>
         <div className="scroll-hint">
           <div className="scroll-arrow" />
@@ -210,7 +198,7 @@ function Review() {
               referrerpolicy="no-referrer-when-downgrade"
             ></iframe>
           </div>
-          <Newsletter />
+          <Newsletter/>
           <Footer />
         </div>
       </div>
@@ -218,4 +206,4 @@ function Review() {
   );
 }
 
-export default Review;
+export default Contact;

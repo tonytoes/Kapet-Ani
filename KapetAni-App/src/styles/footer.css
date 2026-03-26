@@ -1,16 +1,39 @@
 .footer_section {
-  padding-top: 3.125rem;
+  height: 450px;
+  padding-top: 1rem;
   color: white;
   background-image: url("../assets/images/footer.png");
   position: relative;
   overflow: hidden;
 }
 
+#upperFooter div {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+#lowerFooter div {
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+}
+
+.footer_section a {
+  color: rgba(255, 255, 255, 0.652);
+  transition: color 0.5s ease-in-out;
+}
+
+.footer_section a:hover {
+  color: rgb(170, 126, 91);
+  transition: color 0.5s ease-in-out;
+}
+
 .footer_section::before {
   content: "";
   position: absolute;
   inset: 0;
-  background-color: rgba(92, 57, 35, 0.755);
+  background-color: rgba(76, 49, 33, 0.649);
   z-index: 0;
 }
 
@@ -19,18 +42,14 @@
   z-index: 1;
 }
 
-.footer_section h5 {
-  font-size: 1.2rem;
-  color: white;
-}
-
 .footer_section h6 {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.852);
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.652);
   padding-top: 0.1rem;
 }
 
 #upperFooter {
+  margin-top: 100px;
   margin-left: 4%;
   margin-right: 4%;
   padding-bottom: 1.25rem;
@@ -38,6 +57,9 @@
   align-items: center;
 }
 
+#upperFooter a {
+  font-size: 0.9rem;
+}
 #upperFooter img {
   width: 3.125rem;
   height: 3.125rem;
@@ -49,16 +71,35 @@
   padding-bottom: 1.875rem;
 }
 
+#lowerFooter a {
+  font-size: 0.8rem;
+  padding-top: 0.1rem;
+}
+
 #logo {
-  display: flex;
-  align-items: center;
+  width: 5%;
+}
+#logoName {
+  width: 19.6%;
+}
+#logoName h5 {
+  font-size: 1.5rem;
 }
 
 #trademark {
+  margin-top: 28%;
   padding-top: 2.7rem;
   font-size: 0.7rem;
   color: rgb(255, 255, 255);
 }
-#trademark p {
-  font-size: 0.7rem;
+#trademark a {
+  font-size: 0.9rem;
+  color: white;
 }
+
+#gmailFooter a {
+  font-size: 1.5rem;
+  color: white;
+}
+
+/* End of More Section and Footer */

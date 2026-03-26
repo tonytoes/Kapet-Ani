@@ -1,4 +1,4 @@
-import logo from '../assets/images/logo.png';
+import { useEffect } from "react";
 import mangofrappe from '../assets/images/mangofrappe.png';
 import ubefrappe from '../assets/images/ubefrappe.png';
 import basket1 from '../assets/images/basket1.png';
@@ -12,8 +12,10 @@ import mug1 from '../assets/images/mug1.png';
 import mug2 from '../assets/images/mug2.png';
 import parallax from '../assets/images/parallax.png';
 import '../styles/home.css';
+import Navbar from '../components/layout/Navbar.jsx';
+import Newsletter from "../components/layout/Newsletter.jsx"; 
 import Footer from '../components/layout/Footer.jsx';
-import { useEffect } from "react";
+
 
 function Home() {
 
@@ -49,31 +51,7 @@ function Home() {
   return (
     <div className="App">
         <>
-          {/* NAV */}
-          <nav id="navbar">
-            <div className="nav-inner">
-              <a href="#" className="logo">
-                <img src={logo} alt="Kape't Pamana" height={70} />
-              </a>
-              <span className="logo-text">Kape't Pamana</span>
-              <ul className="nav-links">
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Our Products</a></li>
-                <li><a href="#">Blogs</a></li>
-                <li><a href="#">Reviews</a></li>
-                <li><a href="#">About</a></li>
-              </ul>
-              <div className="nav-cart">
-                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                  <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-                  <line x1={3} y1={6} x2={21} y2={6} />
-                  <path d="M16 10a4 4 0 01-8 0" />
-                </svg>
-                Cart
-                <div className="cart-badge">1</div>
-              </div>
-            </div>
-          </nav>
+         <Navbar activePage="home"/>
 
           {/* HERO */}
           <section className="hero">
@@ -299,20 +277,7 @@ function Home() {
             </div>
           </section>
 
-          {/* SUBSCRIBE */}
-          <section className="subscribe-section">
-            <div className="subscribe-card fade-up">
-              <div>
-                <p className="subscribe-eyebrow">Don't miss out on our latest news, updates, tips and special offers!</p>
-                <h2 className="subscribe-headline">Subscribe to get<br />the Latest News</h2>
-              </div>
-              <div className="subscribe-form">
-                <input className="subscribe-input" type="email" placeholder="kapetpamana@gmail.com" />
-                <button className="subscribe-btn">Subscribe</button>
-              </div>
-            </div>
-          </section>
-
+          <Newsletter style={{backgroundColor: 'white' }}/>
           <Footer/>
         </>
     </div>

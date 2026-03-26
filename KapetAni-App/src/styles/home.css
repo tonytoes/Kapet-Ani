@@ -259,11 +259,13 @@ nav.scrolled {
   align-items: center;
   gap: 18px;
   justify-content: center;
+  width: fit-content;
+  margin: 0 auto;
 }
 .section-rule::before,
 .section-rule::after {
   content: "";
-  width: 60px;
+  width: 40px; /* shorten this */
   height: 1px;
   background: var(--brown-warm);
   opacity: 0.4;

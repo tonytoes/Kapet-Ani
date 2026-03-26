@@ -1,10 +1,28 @@
+#navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: auto !important;
+  padding: 12px 40px !important;
+  background: transparent;
+  transition: background 0.4s, backdrop-filter 0.4s;
+}
+
+#navbar.scrolled {
+  background: rgba(44, 26, 14, 0.92);
+  backdrop-filter: blur(12px);
+}
+
 #navbar .nav-inner {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* keeps logo left, links center, cart right */
+  justify-content: space-between;
   max-width: 1200px;
-  margin: 0 auto;         /* centers the whole inner bar horizontally */
-  padding: 0 24px;
+  margin: 0 auto;
+  padding: 0;
   width: 100%;
 }
 
@@ -15,14 +33,77 @@
   list-style: none;
   margin: 0;
   padding: 0;
-
-  /* This is the key part — centers the links in the middle of the bar */
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  justify-content: center;
+  pointer-events: none;
 }
 
-/* Make nav-inner position: relative so nav-links can anchor to it */
-#navbar .nav-inner {
+#navbar .nav-links li {
+  pointer-events: all;
+}
+
+#navbar .nav-links li a {
+  text-decoration: none;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #d4c5b0;
+  font-weight: 500;
   position: relative;
+  padding-bottom: 4px;
+}
+
+#navbar .nav-links li a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: #ffffff;
+  transition: width 0.3s ease;
+}
+
+#navbar .nav-links li a:hover::after,
+#navbar .nav-links li a.active::after {
+  width: 100%;
+}
+
+#navbar .nav-links li a:hover,
+#navbar .nav-links li a.active {
+  color: #ffffff;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-icon {
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.85);
+  transition: color 0.2s;
+}
+
+.nav-icon:hover {
+  color: #ffffff;
+}
+
+#navbar .nav-cart {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #d4c5b0;
+  cursor: pointer;
+}
+
+#navbar .nav-cart:hover {
+  color: #ffffff;
 }

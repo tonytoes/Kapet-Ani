@@ -1,9 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const cat1 = document.getElementById('category-1-grid');
-    const cat2 = document.getElementById('category-2-grid');
-    const cat3 = document.getElementById('category-3-grid');
-    const cat4 = document.getElementById('category-4-grid');
-    const cat5 = document.getElementById('category-5-grid');
+    const categories = [
+        document.getElementById('category-1-grid'),
+        document.getElementById('category-2-grid'),
+        document.getElementById('category-3-grid'),
+        document.getElementById('category-4-grid'),
+        document.getElementById('category-5-grid')
+    ];
 
     const productData = {
         name: "Cozy Cacao Kit",
@@ -24,14 +26,28 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
     }
 
-    for (let i = 0; i < 5; i++) {
-        cat1.innerHTML += createCard(productData);
-        cat2.innerHTML += createCard(productData);
-        cat3.innerHTML += createCard(productData);
-        cat4.innerHTML += createCard(productData);
-        cat5.innerHTML += createCard(productData);
-    }
+    categories.forEach(cat => {
+        if(cat) {
+            for (let i = 0; i < 10; i++) {
+                cat.innerHTML += createCard(productData);
+            }
+        }
+    });
 });
+
+function moveCarousel(gridId, direction) {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+
+    const viewport = grid.parentElement;
+    const card = grid.querySelector('.product-card');
+    const cardWidth = card ? card.offsetWidth + 20 : 300; 
+    
+    viewport.scrollBy({
+        left: (cardWidth * 2) * direction,
+        behavior: 'smooth'
+    });
+}
 
 let count = 1;
 function updateCart() {
