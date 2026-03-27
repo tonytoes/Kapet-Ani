@@ -134,7 +134,10 @@ nav.scrolled {
 .hero-bg1 {
   position: absolute;
   inset: 0;
-  background: url("../assets/images/Background5.webp") center/cover no-repeat;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
   transform: scale(1.05);
   animation: heroZoom 12s ease-out forwards;
 }
@@ -228,11 +231,7 @@ nav.scrolled {
   text-transform: uppercase;
   animation: bounce 2s infinite;
 }
-.scroll-arrow {
-  width: 1px;
-  height: 36px;
-  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.4));
-}
+
 @keyframes bounce {
   0%,
   100% {

@@ -1,5 +1,6 @@
 import office1 from "../assets/images/office1.jpg";
 import office2 from "../assets/images/office2.jpg";
+import coffeeVideo from "../assets/video/coffee_video2.mp4";
 import "../styles/contact.css";
 import Navbar from "../components/layout/Navbar.jsx";
 import Footer from "../components/layout/Footer.jsx";
@@ -41,20 +42,27 @@ function Contact() {
   return (
     <>
       <Navbar activePage="contact" />
-      <section className="hero">
-        <div className="hero-bg1" />
-        <div className="hero-overlay" />
-        <div className="hero-content">
-          <h1 className="hero-headline">
-          Every voice holds a story. <em>Tell us yours.</em>
-          </h1>
-        </div>
-        <div className="scroll-hint">
-          <div className="scroll-arrow" />
-          Scroll
-        </div>
-      </section>
 
+      {/* HERO */}
+             <section className="hero">
+               <video className="hero-bg1" autoPlay muted loop playsInline>
+                 <source src={coffeeVideo} type="video/mp4" />
+               </video>
+               <div className="hero-overlay" />
+               <div className="hero-content">
+                 <p className="hero-eyebrow">Est. 1996 &nbsp;·&nbsp; Filipino Heritage</p>
+                 <h1 className="hero-headline">
+                   From Filipino Hands
+                   <br />
+                   <em>to global streets</em>
+                 </h1>
+                 <a href="#featured" className="btn-primary">Explore Our Products</a>
+               </div>
+               <div className="scroll-hint">
+                 <div className="scroll-arrow" />
+                 Scroll
+               </div>
+             </section>
       <div className="review-content">
         <div className="deco-block">
           <div className="wrap">
