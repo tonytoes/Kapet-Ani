@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Karla:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Karla:wght@400;500;600;700&display=swap");
 
 :root {
   --primary-brown: #8b5e3c;
@@ -7,23 +7,115 @@
   --text-color: #4a321f;
   --divider-color: #d6c7b8;
   --accent-tan: #b59378;
+  --nav-text: #d4c5b0;
+  --nav-text-hover: #ffffff;
 }
 
 body {
-  margin: 0;
   font-family: "Karla", sans-serif;
   background-color: var(--cream-bg);
   color: var(--text-color);
 }
+
+#navbar1 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 12px 40px;
+  background-color: var(--primary-brown);
+  transition:
+    background 0.4s,
+    backdrop-filter 0.4s;
+}
+
+#navbar1.scrolled {
+  background: rgba(44, 26, 14, 0.92);
+  backdrop-filter: blur(12px);
+}
+
+.nav-inner1 {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0;
+  width: 100%;
+}
+
+.logo {
+  color: var(--nav-text-hover);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  left: 0;
+  right: 0;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.nav-links li {
+  pointer-events: all;
+}
+
+.nav-links a {
+  text-decoration: none;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--nav-text);
+  font-weight: 500;
+  position: relative;
+  padding-bottom: 4px;
+}
+
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--nav-text-hover);
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover,
+.nav-links a.nav-active {
+  color: var(--nav-text-hover);
+}
+
+.nav-links a:hover::after,
+.nav-links a.nav-active::after {
+  width: 100%;
+}
+
+/* ── MAIN LAYOUT ── */
 
 .main-wrapper {
   display: flex;
   max-width: 1200px;
   margin: 40px auto;
   gap: 30px;
-  padding: 0 20px;
+  padding: 80px 20px 0;
   align-items: flex-start;
 }
+
+/* ── SIDEBAR ── */
 
 .sidebar {
   width: 280px;
@@ -38,6 +130,10 @@ body {
 
 .category-header {
   font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent-tan);
   border-bottom: 1px solid var(--divider-color);
   padding-bottom: 20px;
   margin-bottom: 25px;
@@ -50,29 +146,44 @@ body {
   padding: 0;
   margin: 0;
 }
+
 .category-list li {
-  padding: 18px 15px;
-  margin-bottom: 10px;
-  border-radius: 10px;
+  padding: 14px 15px;
+  margin-bottom: 4px;
+  border-radius: 6px;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
-  font-size: 0.95rem;
-  transition: 0.2s;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-color);
+  transition:
+    color 0.2s,
+    background 0.2s;
 }
 
 .category-list li:hover {
   background: #f8f3ef;
+  color: var(--dark-brown);
 }
+
 .category-list li.active {
-  background: var(--accent-tan);
-  color: white;
+  background: transparent;
+  color: var(--dark-brown);
+  border-left: 2px solid var(--primary-brown);
+  border-radius: 0;
+  padding-left: 13px;
 }
+
+/* ── CONTENT AREA ── */
 
 .content-area {
   flex: 1;
   min-width: 0;
 }
+
 .hero-banner {
   background: #f3e5d8;
   padding: 15px;
@@ -92,11 +203,14 @@ body {
   border-radius: 8px;
 }
 
+/* ── CAROUSEL ── */
+
 .carousel-container {
   position: relative;
   display: flex;
   align-items: center;
 }
+
 .carousel-viewport {
   overflow-x: hidden;
   scroll-behavior: smooth;
@@ -109,6 +223,8 @@ body {
   width: max-content;
   padding: 10px 0;
 }
+
+/* ── PRODUCT CARD ── */
 
 .product-card1 {
   width: 215px;
@@ -129,6 +245,7 @@ body {
   margin-bottom: 15px;
   border-radius: 8px;
 }
+
 .img-box img {
   max-width: 90%;
   max-height: 90%;
@@ -136,29 +253,53 @@ body {
 }
 
 .shop-btn {
-  background: #a68d74;
-  color: white;
-  border: none;
+  background: transparent;
+  color: var(--dark-brown);
+  border: 1px solid var(--accent-tan);
   width: 100%;
   padding: 12px;
-  border-radius: 6px;
+  border-radius: 0;
   cursor: pointer;
-  font-weight: 700;
+  font-family: "Karla", sans-serif;
+  font-weight: 600;
   text-transform: uppercase;
-  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  transition:
+    background 0.25s,
+    color 0.25s;
 }
 
-.carousel-btn {
+.shop-btn:hover {
   background: var(--dark-brown);
   color: white;
-  border: none;
-  width: 40px;
-  height: 40px;
+  border-color: var(--dark-brown);
+}
+
+/* ── CAROUSEL BUTTONS ── */
+
+.carousel-btn {
+  background: transparent;
+  color: var(--dark-brown);
+  border: 1px solid var(--accent-tan);
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   cursor: pointer;
   position: absolute;
   z-index: 10;
+  font-size: 0.8rem;
+  transition:
+    background 0.25s,
+    color 0.25s;
 }
+
+.carousel-btn:hover {
+  background: var(--dark-brown);
+  color: white;
+  border-color: var(--dark-brown);
+}
+
 .prev {
   left: -20px;
 }

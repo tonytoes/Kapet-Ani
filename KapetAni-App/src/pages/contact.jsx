@@ -1,6 +1,6 @@
 import office1 from "../assets/images/office1.jpg";
 import office2 from "../assets/images/office2.jpg";
-import "../styles/review.css";
+import "../styles/contact.css";
 import Navbar from "../components/layout/Navbar.jsx";
 import Footer from "../components/layout/Footer.jsx";
 import Newsletter from "../components/layout/Newsletter.jsx";

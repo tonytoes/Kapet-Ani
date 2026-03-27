@@ -8,8 +8,8 @@ function Product() {
   return (
     <>
       {/* NAVBAR */}
-      <nav id="navbar">
-        <div className="nav-inner">
+      <nav id="navbar1">
+        <div className="nav-inner1">
           <a href="/" className="logo">
             <img src={logo} alt="Kape't Pamana" height={70} />
             <span className="logo-text">Kape't Pamana</span>
