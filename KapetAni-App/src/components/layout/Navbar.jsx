@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import logo from "../../assets/images/logo.png";
+import logo1 from "../../assets/images/logo_brown_transparent.png";
 import "../../styles/navbar.css";
 import CartDrawer from "../layout/CartDrawer";
 
 function Navbar({ activePage }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const navbar = document.getElementById("navbar");
     const handleScroll = () => {
-      if (navbar) {
-        navbar.classList.toggle("scrolled", window.scrollY > 60);
-      }
+      const scrolled = window.scrollY > 60;
+      setIsScrolled(scrolled);
+      if (navbar) navbar.classList.toggle("scrolled", scrolled);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -22,7 +24,7 @@ function Navbar({ activePage }) {
       <nav id="navbar">
         <div className="nav-inner">
           <a href="/" className="logo">
-            <img src={logo} alt="Kape't Pamana" height={70} />
+            <img src={isScrolled ? logo1 : logo} height={70} />
             <span className="logo-text">Kape't Pamana</span>
           </a>
 
@@ -69,7 +71,7 @@ function Navbar({ activePage }) {
 
           <div className="nav-cart" onClick={() => setIsCartOpen(true)} style={{ cursor: 'pointer' }}>
             <a href="/login" className="nav-icon">
-              <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="#d4c5b0" strokeWidth="1.8">
+              <svg width={24} height={24} viewBox="0 0 24 24" fill="none">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
@@ -80,7 +82,7 @@ function Navbar({ activePage }) {
               <line x1={3} y1={6} x2={21} y2={6} />
               <path d="M16 10a4 4 0 01-8 0" />
             </svg>
-            Cart
+            CART
             <div className="cart-badge">1</div>
           </div>
         </div>
