@@ -11,7 +11,6 @@ import Navbar from "../components/layout/Navbar";
 
 function Blogs() {
   useEffect(() => {
-    const navbar = document.getElementById("navbar");
 
     const handleScroll = () => {
       if (navbar) {
@@ -43,7 +42,7 @@ function Blogs() {
   return (
     <>
       <>
-        <Navbar activePage="blogs"/>
+        <Navbar/>
         {/* HERO */}
         <section className="blog-hero">
           <div className="blog-hero-bg" />

@@ -277,7 +277,6 @@ function Home() {
             </div>
           </div>
         </section>
-
         <Newsletter style={{ backgroundColor: 'white' }} />
         <Footer />
       </>
