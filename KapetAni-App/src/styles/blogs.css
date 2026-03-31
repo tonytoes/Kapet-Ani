@@ -61,7 +61,6 @@
   }
 }
 .blog-hero-content h1 {
-  font-family: "Playfair Display", serif;
   font-size: clamp(1.4rem, 3vw, 2rem);
   font-weight: 600;
   color: var(--white);

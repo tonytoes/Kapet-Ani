@@ -18,12 +18,12 @@ function Newsletter() {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <rect x={6} y={14} width={44} height={30} rx={2} stroke="#111" strokeWidth="2.2" fill="none" />
-          <polyline points="6,14 28,32 50,14" stroke="#111" strokeWidth="2.2" fill="none" />
-          <line x1={6} y1={44} x2={20} y2={30} stroke="#111" strokeWidth={2} />
-          <line x1={50} y1={44} x2={36} y2={30} stroke="#111" strokeWidth={2} />
-          <line x1={20} y1={20} x2={36} y2={20} stroke="#111" strokeWidth="1.5" />
-          <line x1={20} y1={25} x2={36} y2={25} stroke="#111" strokeWidth="1.5" />
+          <rect x={6} y={14} width={44} height={30} rx={2}  stroke= "rgb(151, 80, 48)" strokeWidth="2.2" fill="none" />
+          <polyline points="6,14 28,32 50,14" stroke= "rgb(151, 80, 48)" strokeWidth="2.2" fill="none" />
+          <line x1={6} y1={44} x2={20} y2={30} stroke= "rgb(151, 80, 48)" strokeWidth={2} />
+          <line x1={50} y1={44} x2={36} y2={30} stroke= "rgb(151, 80, 48)" strokeWidth={2} />
+          <line x1={20} y1={20} x2={36} y2={20} stroke= "rgb(151, 80, 48)" strokeWidth="1.5" />
+          <line x1={20} y1={25} x2={36} y2={25} stroke= "rgb(151, 80, 48)" strokeWidth="1.5" />
         </svg>
  
         <div className="nl-headline">

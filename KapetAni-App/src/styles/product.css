@@ -104,39 +104,108 @@ body {
   width: 100%;
 }
 
-/* ── MAIN LAYOUT ── */
-
 .main-wrapper {
   display: flex;
   max-width: 1200px;
   margin: 40px auto;
   gap: 30px;
-  padding: 80px 20px 0;
-  align-items: flex-start;
+  padding: 0 20px;
+}
+.search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Space between pager, search, and select */
 }
 
-/* ── SIDEBAR ── */
+/* Pager Styles */
+.pager-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--primary-brown);
+  flex-shrink: 0; /* Prevents pager from squishing */
+}
 
+.pager-wrap.hide-pager {
+  display: none; /* Only shows when "All Products" is active */
+}
+
+.pager-btn {
+  background: white;
+  border: 1px solid var(--divider-color);
+  color: var(--primary-brown);
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+}
+
+/* Hover effect matches your theme */
+.pager-btn:hover:not(:disabled) {
+  background: var(--accent-tan);
+  color: white;
+  border-color: var(--accent-tan);
+}
+
+.pager-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background: #f5f5f5;
+}
+
+#pageInfo {
+  min-width: 80px;
+  text-align: center;
+  color: var(--text-color);
+}
+
+.shop-btn {
+  background: #a68d74;
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  /* ADD THIS: smooth transition for all properties */
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* THE HOVER EFFECT */
+.shop-btn:hover {
+  background: var(--primary-brown); /* Changes from Tan to your Darker Brown */
+  transform: translateY(-2px); /* Subtle lift effect */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Deeper shadow on hover */
+}
+
+/* Optional: Active (Click) effect */
+.shop-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Sidebar */
 .sidebar {
   width: 280px;
   background: white;
   border: 1px solid #eaeaea;
   border-radius: 12px;
   padding: 30px 20px;
-  height: auto;
-  min-height: 500px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+  height: fit-content;
 }
 
 .category-header {
   font-weight: 700;
-  font-size: 0.7rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--accent-tan);
   border-bottom: 1px solid var(--divider-color);
   padding-bottom: 20px;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
   display: flex;
   justify-content: space-between;
 }
@@ -146,50 +215,45 @@ body {
   padding: 0;
   margin: 0;
 }
-
 .category-list li {
-  padding: 14px 15px;
-  margin-bottom: 4px;
-  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 8px;
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
-  font-size: 0.8rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-color);
-  transition:
-    color 0.2s,
-    background 0.2s;
+  font-size: 0.95rem;
+  transition: 0.3s;
 }
 
 .category-list li:hover {
   background: #f8f3ef;
-  color: var(--dark-brown);
 }
-
 .category-list li.active {
-  background: transparent;
-  color: var(--dark-brown);
-  border-left: 2px solid var(--primary-brown);
-  border-radius: 0;
-  padding-left: 13px;
+  background: var(--accent-tan);
+  color: white;
 }
-
-/* ── CONTENT AREA ── */
 
 .content-area {
   flex: 1;
-  min-width: 0;
 }
 
 .hero-banner {
   background: #f3e5d8;
-  padding: 15px;
+  padding: 25px 15px;
   border-radius: 10px;
   text-align: center;
   margin-bottom: 25px;
+}
+
+/* THE FIXED HERO TEXT */
+.hero-banner h1 {
+  font-size: 1.6rem;
+  margin: 0;
+  color: #4a321f; /* Your chosen color */
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .toolbar {
@@ -197,43 +261,81 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 25px;
-  padding: 1px 20px;
+  padding: 15px 20px;
   background: white;
   border: 1px solid #eee;
   border-radius: 8px;
 }
 
-/* ── CAROUSEL ── */
-
-.carousel-container {
-  position: relative;
-  display: flex;
-  align-items: center;
+.sort-select {
+  color: #8b5e3c;
+  background-color: #ffffff;
+  border: 1px solid #d6c7b8;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-family: "Karla", sans-serif;
+  cursor: pointer;
 }
 
-.carousel-viewport {
-  overflow-x: hidden;
-  scroll-behavior: smooth;
+#productSearch {
+  color: #8b5e3c;
+  border: 1px solid #d6c7b8;
+  padding: 4px 10px;
+  border-radius: 6px;
+  outline: none;
+}
+
+#productSearch::placeholder {
+  color: #a68d74;
+  opacity: 0.7;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
   width: 100%;
 }
 
-.product-grid1 {
-  display: flex;
-  gap: 15px;
-  width: max-content;
-  padding: 10px 0;
-}
-
-/* ── PRODUCT CARD ── */
-
-.product-card1 {
-  width: 215px;
-  background: #fff;
+.product-card {
+  background: #ffffff;
   border: 1px solid #eee;
   padding: 15px;
   border-radius: 12px;
   text-align: center;
-  flex: 0 0 auto;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.product-price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary-brown); /* Matches your Kape't Pamana brown */
+  margin: 10px 0 15px 0; /* Spacing between name and button */
+  font-family: "Karla", sans-serif;
+}
+
+/* Optional: Add a slight hover effect to the price color to match the button */
+.product-card:hover .product-price {
+  color: var(--dark-brown);
+  transition: color 0.3s ease;
+}
+
+/* Ensure the product name doesn't get too crowded */
+.product-name {
+  font-size: 1rem;
+  margin-bottom: 5px;
+  color: var(--text-color);
+}
+
+.product-card.hidden {
+  display: none;
 }
 
 .img-box {
@@ -241,11 +343,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
   margin-bottom: 15px;
-  border-radius: 8px;
 }
-
 .img-box img {
   max-width: 90%;
   max-height: 90%;
@@ -253,69 +352,32 @@ body {
 }
 
 .shop-btn {
-  background: transparent;
-  color: var(--dark-brown);
-  border: 1px solid var(--accent-tan);
+  background: #a68d74;
+  color: white;
+  border: none;
   width: 100%;
   padding: 12px;
-  border-radius: 0;
+  border-radius: 6px;
   cursor: pointer;
-  font-family: "Karla", sans-serif;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-size: 0.75rem;
-  transition:
-    background 0.25s,
-    color 0.25s;
-}
-
-.shop-btn:hover {
-  background: var(--dark-brown);
-  color: white;
-  border-color: var(--dark-brown);
-}
-
-/* ── CAROUSEL BUTTONS ── */
-
-.carousel-btn {
-  background: transparent;
-  color: var(--dark-brown);
-  border: 1px solid var(--accent-tan);
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  cursor: pointer;
-  position: absolute;
-  z-index: 10;
   font-size: 0.8rem;
-  transition:
-    background 0.25s,
-    color 0.25s;
 }
 
-.carousel-btn:hover {
-  background: var(--dark-brown);
-  color: white;
-  border-color: var(--dark-brown);
-}
-
-.prev {
-  left: -20px;
-}
-.next {
-  right: -20px;
-}
-
-.product-card1.hidden {
-  display: none;
-}
-
-@media (max-width: 1300px) {
-  .prev {
-    left: 10px;
+@media (max-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
-  .next {
-    right: 10px;
+}
+@media (max-width: 768px) {
+  .main-wrapper {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .product-grid {
+    grid-template-columns: 1fr;
   }
 }

@@ -42,7 +42,7 @@ function Blogs() {
   return (
     <>
       <>
-        <Navbar/>
+        <Navbar activePage="blogs" />
         {/* HERO */}
         <section className="blog-hero">
           <div className="blog-hero-bg" />
