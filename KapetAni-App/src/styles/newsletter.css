@@ -22,7 +22,7 @@
 
 /* ── Newsletter Banner ── */
 .newsletter-banner {
-  background: #f5f5f5;
+  background: #f2e8e5;
   border-top: 1px solid #e0e0e0;
   padding: 28px 60px;
   display: flex;
@@ -69,11 +69,11 @@
 .nl-form input[type="email"] {
   flex: 1;
   padding: 12px 16px;
-  border: 1px solid #ddd;
+  border: 1px solid rgb(151, 80, 48);
   border-right: none;
   border-radius: 4px 0 0 4px;
   font-size: 0.875rem;
-  background: #ebebeb;
+  background: #f2e8e5;
   color: rgb(151, 80, 48);
   outline: none;
   transition: border-color 0.2s;
