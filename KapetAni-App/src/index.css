@@ -1,9 +1,19 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+html {
+  scroll-behavior: smooth;
 }
 
-body {
-  background-color: white;
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #8b4513;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #5c2e0a;
 }

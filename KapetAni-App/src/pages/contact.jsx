@@ -1,13 +1,13 @@
-import logo from "../assets/images/logo.png";
 import office1 from "../assets/images/office1.jpg";
 import office2 from "../assets/images/office2.jpg";
-import "../styles/review.css";
+import coffeeVideo from "../assets/video/coffee_video2.mp4";
+import "../styles/contact.css";
 import Navbar from "../components/layout/Navbar.jsx";
 import Footer from "../components/layout/Footer.jsx";
 import Newsletter from "../components/layout/Newsletter.jsx";
 import { useEffect } from "react";
 
-function Review() {
+function Contact() {
   useEffect(() => {
     const navbar = document.getElementById("navbar");
 
@@ -42,31 +42,27 @@ function Review() {
   return (
     <>
       <Navbar activePage="contact" />
-      {/* HERO */}
-      <section className="hero">
-        <div className="hero-bg" />
-        <div className="hero-overlay" />
-        <div className="hero-content">
-          <p className="hero-eyebrow">
-            Est. 1996 &nbsp;·&nbsp; Filipino Heritage
-          </p>
-          <h1 className="hero-headline">
-            Every cup of Kape't Pamana brews
-            <br />
-            <em>Filipino heritage and craftsmanship,</em>
-            <br />
-            served with pride.
-          </h1>
-          <a href="#featured" className="btn-primary">
-            Explore Our Products
-          </a>
-        </div>
-        <div className="scroll-hint">
-          <div className="scroll-arrow" />
-          Scroll
-        </div>
-      </section>
 
+      {/* HERO */}
+             <section className="hero">
+               <video className="hero-bg1" autoPlay muted loop playsInline>
+                 <source src={coffeeVideo} type="video/mp4" />
+               </video>
+               <div className="hero-overlay" />
+               <div className="hero-content">
+                 <p className="hero-eyebrow">Est. 1996 &nbsp;·&nbsp; Filipino Heritage</p>
+                 <h1 className="hero-headline">
+                   From Filipino Hands
+                   <br />
+                   <em>to global streets</em>
+                 </h1>
+                 <a href="#featured" className="btn-primary">Explore Our Products</a>
+               </div>
+               <div className="scroll-hint">
+                 <div className="scroll-arrow" />
+                 Scroll
+               </div>
+             </section>
       <div className="review-content">
         <div className="deco-block">
           <div className="wrap">
@@ -210,7 +206,7 @@ function Review() {
               referrerpolicy="no-referrer-when-downgrade"
             ></iframe>
           </div>
-          <Newsletter />
+          <Newsletter/>
           <Footer />
         </div>
       </div>
@@ -218,4 +214,4 @@ function Review() {
   );
 }
 
-export default Review;
+export default Contact;

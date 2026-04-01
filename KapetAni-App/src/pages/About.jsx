@@ -35,7 +35,6 @@ const About = () => {
 
   return (
     <div className="about-page">
-      <Navbar />
      <Navbar activePage="about"/>
       {/* --- HERO --- */}
       <section className="hero-section">
