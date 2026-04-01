@@ -5,14 +5,13 @@ import Contact from "../pages/contact.jsx";
 import Product from "../pages/Product.jsx";
 import Checkout from "../pages/Checkout.jsx";
 import Blogs from "../pages/Blogs.jsx";
-import Navbar from "../components/layout/Navbar.jsx";
 import Footer from "../components/layout/Footer.jsx";
 import Newsletter from "../components/layout/Newsletter.jsx"; 
-import DashboardPage    from "./admin/pages/DashboardPage";
-import InventoryPage    from "./admin/pages/InventoryPage";
-import UsersPage        from "./admin/pages/UsersPage";
-import ComplaintsPage   from "./admin/pages/ComplaintsPage";
-import TransactionsPage from "./admin/pages/TransactionsPage";
+import DashboardPage    from "../admin/pages/DashboardPage.jsx";
+import InventoryPage    from "../admin/pages/InventoryPage.jsx";
+import UsersPage        from "../admin/pages/UsersPage.jsx";
+import ComplaintsPage   from "../admin/pages/ComplaintsPage.jsx";
+import TransactionsPage from "../admin/pages/TransactionsPage.jsx";
 
 const router = createBrowserRouter([
   {
