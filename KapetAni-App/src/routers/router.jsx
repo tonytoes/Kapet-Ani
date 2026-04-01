@@ -8,6 +8,11 @@ import Blogs from "../pages/Blogs.jsx";
 import Navbar from "../components/layout/Navbar.jsx";
 import Footer from "../components/layout/Footer.jsx";
 import Newsletter from "../components/layout/Newsletter.jsx"; 
+import DashboardPage    from "./admin/pages/DashboardPage";
+import InventoryPage    from "./admin/pages/InventoryPage";
+import UsersPage        from "./admin/pages/UsersPage";
+import ComplaintsPage   from "./admin/pages/ComplaintsPage";
+import TransactionsPage from "./admin/pages/TransactionsPage";
 
 const router = createBrowserRouter([
   {
@@ -52,6 +57,47 @@ const router = createBrowserRouter([
       </>
     ),
   },
+  {
+    path: "/admin",
+    element: (
+      <>
+        <DashboardPage />
+      </>
+    ),
+  },
+  {
+    path: "/inventory",
+    element: (
+      <>
+        <InventoryPage />
+      </>
+    ),
+  },
+  {
+    path: "/users",
+    element: (
+      <>
+        <UsersPage />
+      </>
+    ),
+  },
+  {
+    path: "/complaints",
+    element: (
+      <>
+        <ComplaintsPage />
+      </>
+    ),
+  },
+  {
+    path: "/history",
+    element: (
+      <>
+        <TransactionsPage />
+      </>
+    ),
+  },
+  
 ]);
 
 export default router;
