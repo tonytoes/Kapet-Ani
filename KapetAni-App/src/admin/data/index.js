@@ -16,6 +16,13 @@ export const INITIAL_INVENTORY = [
   { id: "#0008", name: "Adrenaline Shot", price: 150, discount: 0,  stock: 4,  category: "Specialty",    status: "Available",   description: "", image: null },
 ];
 
+export const INITIAL_INVENTORY_ALERTS = [
+  { id: "#0001", ruleName: "stock of coffee latte", name: "Coffee Latte",    attribute: "Quantity", condition: "Greater Than or Equal To", discount: 0,  value: 5,  category: "Cold & Specialty Drinks", status: "Available",   description: "It is best to start your day with a cup of coffee.", image: null },
+  { id: "#0002", ruleName: "stock of black coffee", name: "Black Coffee",    attribute: "Quantity", condition: "Greater Than", discount: 0,  value: 5,  category: "Coaster Sets", status: "Available",   description: "", image: null },
+  { id: "#0003", ruleName: "stock of green coffee", name: "Green Coffee",    attribute: "Quantity", condition: "Greater Than", discount: 5,  value: 12, category: "Hand-Made Baskets", status: "Available",   description: "", image: null },
+  { id: "#0004", ruleName: "stock of monster cafe", name: "Monster Cafe",    attribute: "Quantity", condition: "Less Than", discount: 0,  value: 3,  category: "Clay-Pot Mug",    status: "Available",   description: "", image: null }
+];
+
 // ─── COMPLAINTS ───────────────────────────────────────────
 export const INITIAL_COMPLAINTS = [
   { id: "#0001", username: "Yumi Everrete", email: "yumiyumidesu@gmail.com", title: "Wrong Delivery", date: "March 4, 2026 12:30 AM", status: "Pending",  message: "I ordered 50 strong bully maguire coffee but instead i received 1 flaccid coffee that is past its expiry date... please fix this, or just refund my money." },

@@ -2,26 +2,29 @@ import { useState } from "react";
 import STYLES from "./styles";
 import Sidebar from "./components/Sidebar";
 import Topbar from "./components/Topbar";
-import DashboardPage    from "./pages/DashboardPage";
-import InventoryPage    from "./pages/InventoryPage";
-import UsersPage        from "./pages/UsersPage";
-import ComplaintsPage   from "./pages/ComplaintsPage";
-import TransactionsPage from "./pages/TransactionsPage";
+import DashboardPage         from "./pages/DashboardPage";
+import InventoryPage         from "./pages/InventoryPage";
+import InventoryAlertPage    from "./pages/InventoryAlertPage";
+import UsersPage             from "./pages/UsersPage";
+import ComplaintsPage        from "./pages/ComplaintsPage";
+import TransactionsPage      from "./pages/TransactionsPage";
 
 const PAGE_TITLES = {
   dashboard:    "Dashboard",
   inventory:    "Inventory",
+  inventoryalert: "Inventory Alert",
   users:        "Users",
   complaints:   "Complaints",
   transactions: "Transactions",
 };
 
 const PAGES = {
-  dashboard:    <DashboardPage />,
-  inventory:    <InventoryPage />,
-  users:        <UsersPage />,
-  complaints:   <ComplaintsPage />,
-  transactions: <TransactionsPage />,
+  dashboard:      <DashboardPage />,
+  inventory:      <InventoryPage />,
+  inventoryalert: <InventoryAlertPage />,
+  users:          <UsersPage />,
+  complaints:     <ComplaintsPage />,
+  transactions:   <TransactionsPage />,
 };
 
 export default function App() {
