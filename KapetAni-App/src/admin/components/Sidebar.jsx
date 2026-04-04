@@ -1,9 +1,10 @@
 const NAV_ITEMS = [
-  { page: "dashboard",    icon: "bi-grid-1x2-fill", label: "Dashboard" },
-  { page: "inventory",    icon: "bi-box-seam",       label: "Inventory" },
-  { page: "users",        icon: "bi-people",         label: "Users" },
-  { page: "complaints",   icon: "bi-chat-dots",      label: "Complaints" },
-  { page: "transactions", icon: "bi-receipt",        label: "Transactions" },
+  { page: "dashboard",       icon: "bi-grid-1x2-fill", label: "Dashboard" },
+  { page: "inventory",       icon: "bi-box-seam",       label: "Inventory" },
+  { page: "inventoryalert", icon: "bi-box-seam",       label: "Inventory Alert" },
+  { page: "users",           icon: "bi-people",         label: "Users" },
+  { page: "complaints",      icon: "bi-chat-dots",      label: "Complaints" },
+  { page: "transactions",   icon: "bi-receipt",        label: "Transactions" },
 ];
 
 export default function Sidebar({ activePage, onNavigate, collapsed }) {
