@@ -7,7 +7,6 @@ import Navbar2 from "../components/layout/Navbar2.jsx";
 
 
 function Product() {
-  
   return (
     <>
     <Navbar2 activePage="product" />
