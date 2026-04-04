@@ -1,4 +1,3 @@
-import Footer from "../components/layout/Footer.jsx";
 import '../styles/login.css'
 import { useState } from "react";
 
@@ -57,7 +56,6 @@ function Login() {
         </div>
       </section>
 
-      <Footer />
     </>
   );
 }
