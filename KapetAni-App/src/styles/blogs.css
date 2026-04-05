@@ -61,7 +61,6 @@
   }
 }
 .blog-hero-content h1 {
-  font-family: "Playfair Display", serif;
   font-size: clamp(1.4rem, 3vw, 2rem);
   font-weight: 600;
   color: var(--white);
@@ -75,14 +74,12 @@
   padding: 70px 40px 50px;
 }
 .blog-intro h2 {
-  font-family: "Playfair Display", serif;
   font-size: 1.6rem;
   font-weight: 400;
   color: var(--gold);
   margin-bottom: 16px;
 }
 .blog-intro p {
-  font-family: "Cormorant Garamond", serif;
   font-size: 1rem;
   color: var(--text-light);
   line-height: 1.8;
@@ -179,7 +176,6 @@
 
 /* ── POST TEXT ── */
 .post-title {
-  font-family: "Playfair Display", serif;
   font-size: 0.95rem;
   color: var(--gold);
   line-height: 1.45;
@@ -190,7 +186,6 @@
   color: var(--brown-mid);
 }
 .post-excerpt {
-  font-family: "Cormorant Garamond", serif;
   font-size: 0.92rem;
   color: var(--text-mid);
   line-height: 1.65;
@@ -206,7 +201,6 @@
 
 /* ── LATEST POSTS ── */
 .latest-heading {
-  font-family: "Jost", sans-serif;
   font-size: 1rem;
   font-weight: 500;
   color: var(--text-dark);
@@ -252,7 +246,6 @@
   margin-bottom: 44px;
 }
 .sidebar-heading {
-  font-family: "Jost", sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--text-dark);
@@ -264,14 +257,12 @@
   margin-bottom: 20px;
 }
 .sidebar-brand-name {
-  font-family: "Playfair Display", serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-dark);
   margin-bottom: 10px;
 }
 .sidebar-about-text {
-  font-family: "Cormorant Garamond", serif;
   font-size: 0.92rem;
   color: var(--text-light);
   line-height: 1.7;
@@ -290,7 +281,6 @@
   list-style: none;
 }
 .sidebar-categories li {
-  font-family: "Jost", sans-serif;
   font-size: 0.85rem;
   color: var(--text-mid);
   padding: 8px 0;

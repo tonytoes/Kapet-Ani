@@ -13,57 +13,16 @@
   --text-light: #9e8070;
 }
 
-#navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
+#main-navbar {
   height: auto;
   padding: 12px 40px;
-  background: transparent;
-  transition:
-    background 0.4s,
-    backdrop-filter 0.4s;
-}
-
-#navbar.scrolled {
   background: #faf6f4;
   box-shadow:
     rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
     rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
 }
 
-#navbar.scrolled .nav-links li a {
-  color: rgb(151, 80, 48);
-}
-
-#navbar.scrolled .nav-links li a:hover,
-#navbar.scrolled .nav-links li a.active {
-  color: rgb(151, 80, 48);
-}
-
-#navbar.scrolled .nav-links li a::after {
-  background: rgb(151, 80, 48);
-}
-
-#navbar.scrolled .logo-text {
-  color: rgb(151, 80, 48);
-}
-
-#navbar.scrolled .nav-cart {
-  color: rgb(151, 80, 48);
-}
-
-#navbar.scrolled .nav-cart:hover {
-  color: var(--brown-deep);
-}
-
-#navbar.scrolled .nav-icon {
-  stroke: rgb(151, 80, 48);
-}
-
-#navbar .nav-inner {
+#main-navbar .navbar-inner {
   position: relative;
   display: flex;
   align-items: center;
@@ -78,25 +37,20 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: var(--white);
   text-decoration: none;
   flex-shrink: 0;
 }
-.logo-icon {
-  width: 36px;
-  height: 36px;
-  opacity: 0.9;
-}
-.logo-text {
+
+.logo-product {
   font-family: "Playfair Display", serif;
   font-size: 1.15rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   white-space: nowrap;
-  color: #ffffff;
+  color: rgb(151, 80, 48);
 }
 
-#navbar .nav-links {
+#main-navbar .nav-links {
   display: flex;
   align-items: center;
   gap: 30px;
@@ -104,70 +58,77 @@
   margin: 0;
   padding: 0;
   position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   justify-content: center;
   pointer-events: none;
 }
 
-#navbar .nav-links li {
+#main-navbar .nav-links li {
   pointer-events: all;
 }
 
-#navbar .nav-links li a {
+#main-navbar .nav-links li a {
   text-decoration: none;
   font-size: 0.8rem;
   letter-spacing: 0.1em;
-  color: #d4c5b0;
+  color: rgb(151, 80, 48);
   font-weight: 500;
   position: relative;
   padding-bottom: 4px;
 }
 
-#navbar .nav-links li a::after {
+#main-navbar .nav-links li a::after {
   content: "";
   position: absolute;
   bottom: 0;
   left: 0;
   width: 0;
   height: 1px;
-  background: #ffffff;
+  background: rgb(151, 80, 48);
   transition: width 0.3s ease;
 }
 
-#navbar .nav-links li a:hover::after,
-#navbar .nav-links li a.active::after {
+#main-navbar .nav-links li a:hover::after,
+#main-navbar .nav-links li a.active::after {
   width: 100%;
 }
 
-#navbar .nav-links li a:hover,
-#navbar .nav-links li a.active {
-  color: #ffffff;
+#main-navbar .nav-links li a:hover,
+#main-navbar .nav-links li a.active {
+  color: var(--brown-deep);
 }
 
-.nav-icon {
+.nav-actions {
   display: flex;
   align-items: center;
-  color: rgba(255, 255, 255, 0.85);
+  gap: 8px;
+}
+
+.nav-icon1 {
+  display: flex;
+  align-items: center;
   transition: color 0.2s;
-  stroke: #d4c5b0;
+  stroke: rgb(151, 80, 48);
   stroke-width: 2;
 }
 
 .nav-icon:hover {
-  color: #ffffff;
+  stroke: var(--brown-deep);
 }
 
-#navbar .nav-cart {
+#main-navbar .nav-cart {
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 0.75rem;
   letter-spacing: 0.1em;
-  color: #d4c5b0;
+  color: rgb(151, 80, 48);
   cursor: pointer;
 }
 
-#navbar .nav-cart:hover {
-  color: #ffffff;
+#main-navbar .nav-cart:hover {
+  color: var(--brown-deep);
 }
 
 .cart-badge {

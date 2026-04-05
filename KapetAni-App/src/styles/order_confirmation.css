@@ -1,12 +1,13 @@
 
 :root{
     --bg: rgb(255, 255, 255);
+    --bgBodyrgb:(253, 251, 247);
 }
 
-.order-page{
+.checkout-page{
    font-family: "Karla", sans-serif !important;
    color:#7c5b3c !important;
-   background-color: #f6f6f6 !important;
+   background-color:var(--bgBodyrgb) !important;
 }
 
 .order-page a{
