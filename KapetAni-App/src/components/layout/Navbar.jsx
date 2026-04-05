@@ -19,6 +19,8 @@ function Navbar({ activePage }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  
+
   return (
     <>
       <nav id="navbar">
