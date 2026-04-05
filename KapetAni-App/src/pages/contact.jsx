@@ -150,26 +150,29 @@ function Contact() {
                 possible.
               </span>
               <form className="d-flex flex-column">
-                <label for="name" class="form-label">
+                <label htmlFor="name" className="form-label">
                   Name
                 </label>
                 <input
+                  id="name"
                   type="text"
                   placeholder="Your full name"
                   className="form-control px-3 py-3"
                 />
-                <label for="email" class="form-label">
+                <label htmlFor="email" className="form-label">
                   Email
                 </label>
                 <input
+                  id="email"
                   type="email"
                   placeholder="your@email.com"
                   className="form-control px-3 py-3"
                 />
-                <label for="email" class="form-label">
+                <label htmlFor="message" className="form-label">
                   Message
                 </label>
                 <textarea
+                  id="message"
                   placeholder="Your Message"
                   className="form-control px-3 py-3 mb-5"
                 ></textarea>
@@ -201,9 +204,9 @@ function Contact() {
               width="100%"
               height="450"
               style={{ border: "0" }}
-              allowfullscreen=""
+              allowFullScreen
               loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
+              referrerPolicy="no-referrer-when-downgrade"
             ></iframe>
           </div>
           <Newsletter/>

@@ -1,9 +1,62 @@
 import Footer from "../components/layout/Footer.jsx";
 import '../styles/login.css'
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function Login() {
-  const [activeForm, setActiveForm] = useState("login");
+    const [activeForm, setActiveForm] = useState("login");
+  const [error, setError]           = useState("");
+  const navigate                    = useNavigate();
+  const location                    = useLocation();
+
+  const from = location.state?.from || "/";
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    formData.append('login', true);
+
+    const res  = await fetch("http://localhost/backend/controllers/auth.php", {
+      method: "POST",
+      body: formData,
+      credentials: "include"
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // redirect based on role
+      if (data.user.role === 'admin' || data.user.role === 'superadmin') {
+        navigate("/admin");
+      } else {
+        navigate(from); 
+      }
+    } else {
+      setError(data.message);
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    formData.append('register', true);
+
+    const res  = await fetch("http://localhost/backend/controllers/auth.php", {
+      method: "POST",
+      body: formData,
+      credentials: "include"
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      setError("");
+      setActiveForm("login");
+    } else {
+      setError(data.message);
+    }
+  };
+
   return (
     <>
       <section className="login-section">

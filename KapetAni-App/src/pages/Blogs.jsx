@@ -8,9 +8,11 @@ import jmm from "../assets/images/jmm.png";
 import miura from "../assets/images/miura.png";
 import Newsletter from "../components/layout/Newsletter";
 import Navbar from "../components/layout/Navbar";
+import Footer from "../components/layout/Footer";
 
 function Blogs() {
   useEffect(() => {
+    const navbar = document.getElementById("navbar");
 
     const handleScroll = () => {
       if (navbar) {
@@ -349,6 +351,8 @@ function Blogs() {
           </section>
         </div>
 
+        <Newsletter />
+        <Footer />
       </>
     </>
   );
