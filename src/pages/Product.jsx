@@ -5,6 +5,20 @@ import Footer from "../components/layout/Footer.jsx";
 import Navbar2 from "../components/layout/Navbar2.jsx";
 import ProductModal from "../components/layout/ProductModal.jsx";
 
+import bobatea from "../assets/images/bobatea.jpg";
+import chocodrink from "../assets/images/chocodrink.jpg";
+import matchavanilla from "../assets/images/matchavanilla2.jpg";
+import pandangfrappe from "../assets/images/pandangfrappe.jpg";
+import ubefrappe from "../assets/images/ubefrappe.jpg";
+import orangesoda from "../assets/images/orangesoda.jpg";
+
+import basket1 from "../assets/images/basket1.jpg";
+import basket2 from "../assets/images/basket2.jpg";
+import basket3 from "../assets/images/basket3.jpg";
+import basket4 from "../assets/images/basket4.jpg";
+import basket5 from "../assets/images/basket5.jpg";
+import basket6 from "../assets/images/basket6.jpg";
+
 function Product() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,42 +30,42 @@ function Product() {
 const allProductCards = [
   // Cold & Specialty Drinks (6)
   { 
-    id: 1, category: "Cold & Specialty Drinks", name: "Boba Tea", price: 1250.0, originalPrice: 1500.0, onSale: true, img: "../assets/images/bobatea.jpg", image: "../../assets/images/bobatea.jpg", description: "Delicious boba tea with premium tea leaves and chewy tapioca pearls.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
+    id: 1, category: "Cold & Specialty Drinks", name: "Boba Tea", price: 1250.0, originalPrice: 1500.0, onSale: true, img: bobatea, image: bobatea, description: "Delicious boba tea with premium tea leaves and chewy tapioca pearls.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
   },
   { 
-    id: 2, category: "Cold & Specialty Drinks", name: "Iced Chocolate", price: 1250.0, originalPrice: 1500.0, onSale: true, img: "../assets/images/chocodrink.jpg", image: "../../assets/images/chocodrink.jpg", description: "Rich creamy iced chocolate made with premium cocoa.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
+    id: 2, category: "Cold & Specialty Drinks", name: "Iced Chocolate", price: 1250.0, originalPrice: 1500.0, onSale: true, img: chocodrink, image: chocodrink, description: "Rich creamy iced chocolate made with premium cocoa.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
   },
   { 
-    id: 3, category: "Cold & Specialty Drinks", name: "Matcha Vanilla", price: 1250.0, originalPrice: 1500.0, onSale: true, img: "../assets/images/matchavanilla.jpg", image: "../../assets/images/matchavanilla.jpg", description: "Smooth matcha blended with vanilla for unique flavor.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
+    id: 3, category: "Cold & Specialty Drinks", name: "Matcha Vanilla", price: 1250.0, originalPrice: 1500.0, onSale: true, img: matchavanilla, image: matchavanilla, description: "Smooth matcha blended with vanilla for unique flavor.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
   },
   { 
-    id: 4, category: "Cold & Specialty Drinks", name: "Pandan Frappe", price: 1250.0, originalPrice: 1500.0, onSale: true, img: "../assets/images/pandangfrappe.jpg", image: "../../assets/images/pandangfrappe.jpg", description: "Exotic pandan frappe with creamy texture.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
+    id: 4, category: "Cold & Specialty Drinks", name: "Pandan Frappe", price: 1250.0, originalPrice: 1500.0, onSale: true, img: pandangfrappe, image: pandangfrappe, description: "Exotic pandan frappe with creamy texture.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
   },
   { 
-    id: 5, category: "Cold & Specialty Drinks", name: "Ube Frappe", price: 1250.0, originalPrice: 1500.0, onSale: true, img: "../assets/images/ubefrappe.jpg", image: "../../assets/images/ubefrappe.jpg", description: "Purple yam frappe - sweet Filipino favorite.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
+    id: 5, category: "Cold & Specialty Drinks", name: "Ube Frappe", price: 1250.0, originalPrice: 1500.0, onSale: true, img: ubefrappe, image: ubefrappe, description: "Purple yam frappe - sweet Filipino favorite.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
   },
   { 
-    id: 6, category: "Cold & Specialty Drinks", name: "Orange Fizz Soda", price: 1250.0, originalPrice: 1500.0, onSale: true, img: "../assets/images/orangesoda.jpg", image: "../../assets/images/orangesoda.jpg", description: "Sparkling orange soda with citrus burst.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
+    id: 6, category: "Cold & Specialty Drinks", name: "Orange Fizz Soda", price: 1250.0, originalPrice: 1500.0, onSale: true, img: orangesoda, image: orangesoda, description: "Sparkling orange soda with citrus burst.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
   },
 
   // Hand-Made Baskets (6)
   { 
-    id: 7, category: "Hand-Made Baskets", name: "Abaca Basket 1", price: 1250.0, originalPrice: 1500.0, onSale: true, img: "../assets/images/basket1.jpg", image: "../../assets/images/basket1.jpg", description: "Handwoven abaca basket for stylish storage.", dimensions: { length: 12, height: 8, width: 12, weight: 800 }
+    id: 7, category: "Hand-Made Baskets", name: "Abaca Basket 1", price: 1250.0, originalPrice: 1500.0, onSale: true, img: basket1, image: basket1, description: "Handwoven abaca basket for stylish storage.", dimensions: { length: 12, height: 8, width: 12, weight: 800 }
   },
   { 
-    id: 8, category: "Hand-Made Baskets", name: "Abaca Basket 2", price: 1350.0, originalPrice: 1600.0, onSale: true, img: "../assets/images/basket2.jpg", image: "../../assets/images/basket2.jpg", description: "Medium abaca basket with natural patterns.", dimensions: { length: 14, height: 10, width: 14, weight: 900 }
+    id: 8, category: "Hand-Made Baskets", name: "Abaca Basket 2", price: 1350.0, originalPrice: 1600.0, onSale: true, img: basket2, image: basket2, description: "Medium abaca basket with natural patterns.", dimensions: { length: 14, height: 10, width: 14, weight: 900 }
   },
   { 
-    id: 9, category: "Hand-Made Baskets", name: "Abaca Basket 3", price: 1450.0, originalPrice: 1700.0, onSale: true, img: "../assets/images/basket3.jpg", image: "../../assets/images/basket3.jpg", description: "Large abaca basket for laundry storage.", dimensions: { length: 16, height: 12, width: 16, weight: 1100 }
+    id: 9, category: "Hand-Made Baskets", name: "Abaca Basket 3", price: 1450.0, originalPrice: 1700.0, onSale: true, img: basket3, image: basket3, description: "Large abaca basket for laundry storage.", dimensions: { length: 16, height: 12, width: 16, weight: 1100 }
   },
   { 
-    id: 10, category: "Hand-Made Baskets", name: "Rattan Basket", price: 1850.0, originalPrice: 2100.0, onSale: true, img: "../assets/images/basket4.jpg", image: "../../assets/images/basket4.jpg", description: "Elegant rattan basket with sturdy construction.", dimensions: { length: 14, height: 10, width: 14, weight: 950 }
+    id: 10, category: "Hand-Made Baskets", name: "Rattan Basket", price: 1850.0, originalPrice: 2100.0, onSale: true, img: basket4, image: basket4, description: "Elegant rattan basket with sturdy construction.", dimensions: { length: 14, height: 10, width: 14, weight: 950 }
   },
   { 
-    id: 11, category: "Hand-Made Baskets", name: "Bamboo Basket", price: 1350.0, originalPrice: 1600.0, onSale: true, img: "../assets/images/basket5.jpg", image: "../../assets/images/basket5.jpg", description: "Lightweight bamboo basket with traditional weave.", dimensions: { length: 12, height: 8, width: 12, weight: 700 }
+    id: 11, category: "Hand-Made Baskets", name: "Bamboo Basket", price: 1350.0, originalPrice: 1600.0, onSale: true, img: basket5, image: basket5, description: "Lightweight bamboo basket with traditional weave.", dimensions: { length: 12, height: 8, width: 12, weight: 700 }
   },
   { 
-    id: 12, category: "Hand-Made Baskets", name: "Seagrass Basket", price: 1550.0, originalPrice: 1800.0, onSale: true, img: "../assets/images/basket6.jpg", image: "../../assets/images/basket6.jpg", description: "Beautiful seagrass basket with coastal charm.", dimensions: { length: 16, height: 12, width: 16, weight: 1000 }
+    id: 12, category: "Hand-Made Baskets", name: "Seagrass Basket", price: 1550.0, originalPrice: 1800.0, onSale: true, img: basket6, image: basket6, description: "Beautiful seagrass basket with coastal charm.", dimensions: { length: 16, height: 12, width: 16, weight: 1000 }
   },
 
   // Clay-Pot Mug (6)
