@@ -4,20 +4,30 @@ import Newsletter from "../components/layout/Newsletter.jsx";
 import Footer from "../components/layout/Footer.jsx";
 import Navbar2 from "../components/layout/Navbar2.jsx";
 import ProductModal from "../components/layout/ProductModal.jsx";
-
 import bobatea from "../assets/images/bobatea.jpg";
 import chocodrink from "../assets/images/chocodrink.jpg";
 import matchavanilla from "../assets/images/matchavanilla2.jpg";
 import pandangfrappe from "../assets/images/pandangfrappe.jpg";
 import ubefrappe from "../assets/images/ubefrappe.jpg";
 import orangesoda from "../assets/images/orangesoda.jpg";
-
 import basket1 from "../assets/images/basket1.jpg";
 import basket2 from "../assets/images/basket2.jpg";
 import basket3 from "../assets/images/basket3.jpg";
 import basket4 from "../assets/images/basket4.jpg";
 import basket5 from "../assets/images/basket5.jpg";
 import basket6 from "../assets/images/basket6.jpg";
+import banigBento from "../assets/images/Banig Bento.webp";
+import banigBoxy from "../assets/images/Banig Boxy.webp";
+import banigCrossbody from "../assets/images/Banig Crossbody.webp";
+import banigClassic from "../assets/images/Banig Filo Classic Premium.webp";
+import banigTote from "../assets/images/Banig John Tote.webp";
+import banigSmall from "../assets/images/Banig Small Bag.jpg";
+import coaster1 from "../assets/images/coaster1.jpg";
+import coaster2 from "../assets/images/coaster2.jpg";
+import coaster3 from "../assets/images/coaster3.jpg";
+import coaster4 from "../assets/images/coaster4.jpg";
+import coaster5 from "../assets/images/coaster5.jpg";
+import coaster6 from "../assets/images/coaster6.jpg";
 
 function Product() {
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -90,42 +100,42 @@ const allProductCards = [
 
   // Coaster Set (6)
   { 
-    id: 19, category: "Coaster Set", name: "Abaca Coaster Set", price: 650.0, originalPrice: 850.0, onSale: true, img: "../assets/images/coaster4.jpg", image: "../../assets/images/coaster4.jpg", description: "Set of 6 handwoven abaca coasters.", dimensions: { length: 4, height: 0.5, width: 4, weight: 200 }
+    id: 19, category: "Coaster Set", name: "Abaca Coaster Set", price: 650.0, originalPrice: 850.0, onSale: true, img: coaster4, image: coaster4, description: "Set of 6 handwoven abaca coasters.", dimensions: { length: 4, height: 0.5, width: 4, weight: 200 }
   },
   { 
-    id: 20, category: "Coaster Set", name: "Rattan Coaster Set", price: 750.0, originalPrice: 950.0, onSale: true, img: "../assets/images/coaster5.jpg", image: "../../assets/images/coaster5.jpg", description: "Premium rattan coaster set of 6 pieces.", dimensions: { length: 4, height: 0.5, width: 4, weight: 250 }
+    id: 20, category: "Coaster Set", name: "Rattan Coaster Set", price: 750.0, originalPrice: 950.0, onSale: true, img: coaster5, image: coaster5, description: "Premium rattan coaster set of 6 pieces.", dimensions: { length: 4, height: 0.5, width: 4, weight: 250 }
   },
   { 
-    id: 21, category: "Coaster Set", name: "Seagrass Coasters", price: 550.0, originalPrice: 750.0, onSale: true, img: "../assets/images/coaster1.jpg", image: "../../assets/images/coaster1.jpg", description: "Coastal seagrass coaster set (6 pieces).", dimensions: { length: 4, height: 0.5, width: 4, weight: 180 }
+    id: 21, category: "Coaster Set", name: "Seagrass Coasters", price: 550.0, originalPrice: 750.0, onSale: true, img: coaster1, image: coaster1, description: "Coastal seagrass coaster set (6 pieces).", dimensions: { length: 4, height: 0.5, width: 4, weight: 180 }
   },
   { 
-    id: 22, category: "Coaster Set", name: "Bamboo Coasters", price: 600.0, originalPrice: 800.0, onSale: true, img: "../assets/images/coaster3.jpg", image: "../../assets/images/coaster3.jpg", description: "Eco-friendly bamboo coaster set.", dimensions: { length: 4, height: 0.5, width: 4, weight: 220 }
+    id: 22, category: "Coaster Set", name: "Bamboo Coasters", price: 600.0, originalPrice: 800.0, onSale: true, img: coaster3, image: coaster3, description: "Eco-friendly bamboo coaster set.", dimensions: { length: 4, height: 0.5, width: 4, weight: 220 }
   },
   { 
-    id: 23, category: "Coaster Set", name: "Palm Leaf Coasters", price: 700.0, originalPrice: 900.0, onSale: true, img: "../assets/images/coaster2.jpg", image: "../../assets/images/coaster2.jpg", description: "Unique palm leaf coaster set of 6.", dimensions: { length: 4, height: 0.5, width: 4, weight: 210 }
+    id: 23, category: "Coaster Set", name: "Palm Leaf Coasters", price: 700.0, originalPrice: 900.0, onSale: true, img: coaster2, image: coaster2, description: "Unique palm leaf coaster set of 6.", dimensions: { length: 4, height: 0.5, width: 4, weight: 210 }
   },
   { 
-    id: 24, category: "Coaster Set", name: "Clay Coaster Set", price: 800.0, originalPrice: 1000.0, onSale: true, img: "../assets/images/coaster6.png", image: "../../assets/images/coaster6.png", description: "Handmade clay coaster set with natural finish.", dimensions: { length: 4, height: 0.5, width: 4, weight: 300 }
+    id: 24, category: "Coaster Set", name: "Clay Coaster Set", price: 800.0, originalPrice: 1000.0, onSale: true, img: coaster6, image: coaster6, description: "Handmade clay coaster set with natural finish.", dimensions: { length: 4, height: 0.5, width: 4, weight: 300 }
   },
 
   // Hand-Made Bags (6)
   { 
-    id: 25, category: "Hand-Made Bags", name: "Banig Bento", price: 2250.0, originalPrice: 2500.0, onSale: true, img: "../assets/images/Banig Bento.webp", image: "../../assets/images/Banig Bento.webp", description: "Compact banig bento bag for daily essentials.", dimensions: { length: 10, height: 8, width: 4, weight: 400 }
+    id: 25, category: "Hand-Made Bags", name: "Banig Bento", price: 2250.0, originalPrice: 2500.0, onSale: true, img: banigBento, image: banigBento, description: "Compact banig bento bag for daily essentials.", dimensions: { length: 10, height: 8, width: 4, weight: 400 }
   },
   { 
-    id: 26, category: "Hand-Made Bags", name: "Banig Boxy", price: 2450.0, originalPrice: 2700.0, onSale: true, img: "../assets/images/Banig Boxy.webp", image: "../../assets/images/Banig Boxy.webp", description: "Structured boxy banig bag with modern design.", dimensions: { length: 12, height: 10, width: 5, weight: 500 }
+    id: 26, category: "Hand-Made Bags", name: "Banig Boxy", price: 2450.0, originalPrice: 2700.0, onSale: true, img: banigBoxy, image: banigBoxy, description: "Structured boxy banig bag with modern design.", dimensions: { length: 12, height: 10, width: 5, weight: 500 }
   },
   { 
-    id: 27, category: "Hand-Made Bags", name: "Banig Crossbody", price: 1950.0, originalPrice: 2200.0, onSale: true, img: "../assets/images/Banig Crossbody.webp", image: "../../assets/images/Banig Crossbody.webp", description: "Convenient crossbody banig bag.", dimensions: { length: 9, height: 7, width: 3, weight: 350 }
+    id: 27, category: "Hand-Made Bags", name: "Banig Crossbody", price: 1950.0, originalPrice: 2200.0, onSale: true, img: banigCrossbody, image: banigCrossbody, description: "Convenient crossbody banig bag.", dimensions: { length: 9, height: 7, width: 3, weight: 350 }
   },
   { 
-    id: 28, category: "Hand-Made Bags", name: "Banig Pinoy Classic", price: 2650.0, originalPrice: 2900.0, onSale: true, img: "../assets/images/Banig Filo Classic Premium.webp", image: "../../assets/images/Banig Filo Classic Premium.webp", description: "Classic Filipino banig bag with premium craftsmanship.", dimensions: { length: 14, height: 12, width: 6, weight: 600 }
+    id: 28, category: "Hand-Made Bags", name: "Banig Pinoy Classic", price: 2650.0, originalPrice: 2900.0, onSale: true, img: banigClassic, image: banigClassic, description: "Classic Filipino banig bag with premium craftsmanship.", dimensions: { length: 14, height: 12, width: 6, weight: 600 }
   },
   { 
-    id: 29, category: "Hand-Made Bags", name: "Banig Tote Bag", price: 2150.0, originalPrice: 2400.0, onSale: true, img: "../assets/images/Banig John Tote.webp", image: "../../assets/images/Banig John Tote.webp", description: "Spacious tote bag made from traditional banig.", dimensions: { length: 15, height: 13, width: 5, weight: 550 }
+    id: 29, category: "Hand-Made Bags", name: "Banig Tote Bag", price: 2150.0, originalPrice: 2400.0, onSale: true, img: banigTote, image: banigTote, description: "Spacious tote bag made from traditional banig.", dimensions: { length: 15, height: 13, width: 5, weight: 550 }
   },
   { 
-    id: 30, category: "Hand-Made Bags", name: "Banig Small Bag", price: 1750.0, originalPrice: 2000.0, onSale: true, img: "../assets/images/Banig Small Bag.jpg", image: "../../assets/images/Banig Small Bag.jpg", description: "Chic small banig bag perfect for evenings.", dimensions: { length: 8, height: 6, width: 3, weight: 300 }
+    id: 30, category: "Hand-Made Bags", name: "Banig Small Bag", price: 1750.0, originalPrice: 2000.0, onSale: true, img: banigSmall, image: banigSmall, description: "Chic small banig bag perfect for evenings.", dimensions: { length: 8, height: 6, width: 3, weight: 300 }
   }
 ];
 
