@@ -1,8 +1,8 @@
 <?php
 $servername = "localhost";
-$username = "root"; // change this when seting up hostinger
+$username = "u557120535_sphinxy"; // change this when seting up hostinger
 $password = "";    // change this when seting up hostinger
-$dbname = "kapetpamana";   // change this when seting up hostinger
+$dbname = "u557120535_Kapetpamana";   // change this when seting up hostinger
 
 try {
   $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);

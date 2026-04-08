@@ -24,7 +24,7 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost/backend/controllers/authController.php", {
+    const res = await fetch("https://red-lark-276337.hostingersite.com//backend/controllers/authController.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -54,7 +54,7 @@ function Login() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost/backend/controllers/authController.php", {
+    const res = await fetch("https://red-lark-276337.hostingersite.com//backend/controllers/authController.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
