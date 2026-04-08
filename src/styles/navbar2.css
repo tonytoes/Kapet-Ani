@@ -1,18 +1,3 @@
-:root {
-  --brown-deep: #2c1a0e;
-  --brown-rich: #5a3825;
-  --brown-mid: #7d5035;
-  --brown-warm: #a0724a;
-  --gold: #b08d57;
-  --gold-light: #c9a96e;
-  --cream: #f5f0e8;
-  --cream-light: #faf7f2;
-  --white: #ffffff;
-  --text-dark: #1e120a;
-  --text-mid: #5a3825;
-  --text-light: #9e8070;
-}
-
 #main-navbar {
   height: auto;
   padding: 12px 40px;
@@ -113,7 +98,7 @@
   stroke-width: 2;
 }
 
-.nav-icon:hover {
+.nav-icon1:hover {
   stroke: var(--brown-deep);
 }
 

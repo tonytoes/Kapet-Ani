@@ -1,13 +1,12 @@
 <?php
 $servername = "localhost";
-$username = "root"; // change this when seting up hostinger
-$password = "";    // change this when seting up hostinger
-$dbname = "kapetani";   // change this when seting up hostinger
+$username = "u557120535_sphinxy"; // change this when seting up hostinger
+$password = "AlphaDatabase697989";    // change this when seting up hostinger
+$dbname = "u557120535_Kapetpamana";   // change this when seting up hostinger
 
 try {
   $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
   $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-  echo "Connected successfully";
 } catch (PDOException $e) {
   echo "Connection failed: " . $e->getMessage();
 }
