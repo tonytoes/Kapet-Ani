@@ -1,5 +1,7 @@
 import Badge from "../components/Badge";
 import { DASHBOARD_DATA } from "../data";
+import "../styles/index.js";
+import '../utils.js'
 
 const COMPLAINT_ICONS = ["🚚", "⏱️", "⭐", "📦", "🔄"];
 

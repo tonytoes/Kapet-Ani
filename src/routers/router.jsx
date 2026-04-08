@@ -11,11 +11,7 @@ import Blogs from "../pages/Blogs.jsx";
 import Login from "../pages/Login.jsx";
 
 // admin pages
-import DashboardPage from "../admin/pages/DashboardPage.jsx";
-import InventoryPage from "../admin/pages/InventoryPage.jsx";
-import UsersPage from "../admin/pages/UsersPage.jsx";
-import ComplaintsPage from "../admin/pages/ComplaintsPage.jsx";
-import TransactionsPage from "../admin/pages/TransactionsPage.jsx";
+import Admin from '../admin/App.jsx'  
 
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },
@@ -33,11 +29,7 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { index: true, element: <DashboardPage /> },
-      { path: "inventory", element: <InventoryPage /> },
-      { path: "users", element: <UsersPage /> },
-      { path: "complaints", element: <ComplaintsPage /> },
-      { path: "history", element: <TransactionsPage /> },
+      { index: true, element: <Admin /> },
     ],
   },
 ]);

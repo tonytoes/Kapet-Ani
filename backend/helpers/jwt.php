@@ -1,10 +1,10 @@
 <?php
-require  __DIR__ . '../../../vendor/autoload.php';
+require __DIR__ . '/../../vendor/autoload.php';
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-$secret_key = "your_secret_key";
+$secret_key = "kapet_ani_super_secret_key_2024_abc123xyz!@#";
 
 function generateJWT($user)
 {
