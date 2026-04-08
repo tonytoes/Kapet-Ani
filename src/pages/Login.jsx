@@ -111,7 +111,7 @@ function Login() {
 
             <button type="submit" className="button1">Login</button>
 
-            <p>
+            <p className="p">
               Don't have an account?{" "}
               <a href="#" onClick={() => setActiveForm("register")}>
                 Register
@@ -181,7 +181,7 @@ function Login() {
 
             <button type="submit" className="button1">Register</button>
 
-            <p>
+            <p className="p">
               Already have an account?{" "}
               <a href="#" onClick={() => setActiveForm("login")}>
                 Login
