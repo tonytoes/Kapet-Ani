@@ -1,0 +1,45 @@
+import { createBrowserRouter } from "react-router-dom";
+import ProtectedRoute from "./ProtectedRoute.jsx";
+import { Outlet } from "react-router-dom";
+
+// public pages
+import Home from "../pages/Home.jsx";
+import About from "../pages/About.jsx";
+import Contact from "../pages/Contact.jsx";
+import Product from "../pages/Product.jsx";
+import Blogs from "../pages/Blogs.jsx";
+import Login from "../pages/Login.jsx";
+
+// admin pages
+import DashboardPage from "../admin/pages/DashboardPage.jsx";
+import InventoryPage from "../admin/pages/InventoryPage.jsx";
+import UsersPage from "../admin/pages/UsersPage.jsx";
+import ComplaintsPage from "../admin/pages/ComplaintsPage.jsx";
+import TransactionsPage from "../admin/pages/TransactionsPage.jsx";
+
+const router = createBrowserRouter([
+  { path: "/", element: <Home /> },
+  { path: "/about", element: <About /> },
+  { path: "/contact", element: <Contact /> },
+  { path: "/product", element: <Product /> },
+  { path: "/blogs", element: <Blogs /> },
+  { path: "/login", element: <Login /> },
+
+  {
+    path: "/admin",
+    element: (
+      <ProtectedRoute roles={["admin", "superadmin"]}>
+        <Outlet/>
+      </ProtectedRoute>
+    ),
+    children: [
+      { index: true, element: <DashboardPage /> },
+      { path: "inventory", element: <InventoryPage /> },
+      { path: "users", element: <UsersPage /> },
+      { path: "complaints", element: <ComplaintsPage /> },
+      { path: "history", element: <TransactionsPage /> },
+    ],
+  },
+]);
+
+export default router;

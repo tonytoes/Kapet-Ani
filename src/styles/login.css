@@ -1,0 +1,94 @@
+.login-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.form-box {
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 3rem;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  display: none;
+}
+
+.form-box.active {
+  display: block;
+  border-color: var(--brown-warm);
+}
+
+h2 {
+  color: var(--golden-caramel);
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(61, 56, 56, 0.2);
+  border-radius: 10px;
+  outline: none;
+  font-size: 16px;
+  color: var(--golden-caramel);
+  margin-bottom: 20px;
+}
+
+input:focus-within {
+  border-color: var(--golden-caramel);
+  box-shadow: 0 0 0 3px rgba(240, 206, 170, 0.1);
+  background: rgba(255, 255, 255, 0.9);
+  transition: border-color 0.3s ease;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background: var(--golden-caramel);
+  color: var(--text-light);
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  transition: 0.5s;
+}
+
+button:hover {
+  position: relative;
+  background: var(--forest-sage);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+p {
+  font-size: 14.5px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+p a {
+  color: var(--golden-caramel);
+  text-decoration: none;
+}
+
+p a:hover {
+  text-decoration: underline;
+}
+
+.error-message {
+  padding: 12px;
+  background: #f8d7da;
+  border-radius: 6px;
+  font-size: 16px;
+  color: #a42834;
+  text-align: center;
+  margin-bottom: 20px;
+}

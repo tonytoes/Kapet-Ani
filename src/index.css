@@ -1,0 +1,40 @@
+:root {
+  --brown-deep: #2c1a0e;
+  --brown-rich: #5a3825;
+  --brown-mid: #7d5035;
+  --brown-warm: #a0724a;
+  --gold: #b08d57;
+  --gold-light: #c9a96e;
+  --cream: #f5f0e8;
+  --cream-light: #faf7f2;
+  --white: #ffffff;
+  --text-dark: #1e120a;
+  --text-mid: #5a3825;
+  --text-light: #9e8070;
+  --deep-roast: #3c2a21;
+  --velvet-cream: #94855d;
+  --golden-caramel: #d4a373;
+  --forest-sage: #6b8d73;
+  --text-light: #ffffff;
+  --light-coffee: #68552e;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #8b4513;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #5c2e0a;
+}
