@@ -5,20 +5,6 @@ import Footer from "../components/layout/Footer.jsx";
 import Navbar2 from "../components/layout/Navbar2.jsx";
 import ProductModal from "../components/layout/ProductModal.jsx";
 
-import bobatea from "../assets/images/bobatea.jpg";
-import chocodrink from "../assets/images/chocodrink.jpg";
-import matchavanilla from "../assets/images/matchavanilla2.jpg";
-import pandangfrappe from "../assets/images/pandangfrappe.jpg";
-import ubefrappe from "../assets/images/ubefrappe.png";
-import orangesoda from "../assets/images/orangesoda.jpg";
-
-import basket1 from "../assets/images/basket1.jpg";
-import basket2 from "../assets/images/basket2.jpg";
-import basket3 from "../assets/images/basket3.jpg";
-import basket4 from "../assets/images/basket4.jpg";
-import basket5 from "../assets/images/basket5.jpg";
-import basket6 from "../assets/images/basket6.jpg";
-
 function Product() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,16 +13,13 @@ function Product() {
   const [filteredItems, setFilteredItems] = useState([]);
   const itemsPerPage = 6;
 
-  // All product cards data - ENHANCED for ProductModal compatibility
-  // Replace your allProductCards array with this COMPLETE version:
-
 const allProductCards = [
   // Cold & Specialty Drinks (6)
   { 
-    id: 1, category: "Cold & Specialty Drinks", name: "Boba Tea", price: 1250.0, originalPrice: 1500.0, onSale: true, img: bobatea, image: bobatea, description: "Delicious boba tea with premium tea leaves and chewy tapioca pearls.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
+    id: 1, category: "Cold & Specialty Drinks", name: "Boba Tea", price: 1250.0, originalPrice: 1500.0, onSale: true, img: "images/bobatea.jpg", image: "images/bobatea.jpg", description: "Delicious boba tea with premium tea leaves and chewy tapioca pearls.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
   },
   { 
-    id: 2, category: "Cold & Specialty Drinks", name: "Iced Chocolate", price: 1250.0, originalPrice: 1500.0, onSale: true, img: chocodrink, image: "chocodrink", description: "Rich creamy iced chocolate made with premium cocoa.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
+    id: 2, category: "Cold & Specialty Drinks", name: "Iced Chocolate", price: 1250.0, originalPrice: 1500.0, onSale: true, img: "images/chocodrink.jpg", image: "images/chocodrink.jpg", description: "Rich creamy iced chocolate made with premium cocoa.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
   },
   { 
     id: 3, category: "Cold & Specialty Drinks", name: "Matcha Vanilla", price: 1250.0, originalPrice: 1500.0, onSale: true, img: "images/matchavanilla.jpg", image: "images/matchavanilla.jpg", description: "Smooth matcha blended with vanilla for unique flavor.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
