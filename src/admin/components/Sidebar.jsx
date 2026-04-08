@@ -3,7 +3,6 @@ const NAV_ITEMS = [
   { page: "inventory",       icon: "bi-box-seam",       label: "Inventory" },
   { page: "inventoryalert", icon: "bi-box-seam",       label: "Inventory Alert" },
   { page: "users",           icon: "bi-people",         label: "Users" },
-  { page: "complaints",      icon: "bi-chat-dots",      label: "Complaints" },
   { page: "transactions",   icon: "bi-receipt",        label: "Transactions" },
 ];
 
