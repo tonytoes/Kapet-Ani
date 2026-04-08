@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
 $username = "u557120535_sphinxy"; // change this when seting up hostinger
-$password = "";    // change this when seting up hostinger
+$password = "AlphaDatabase697989";    // change this when seting up hostinger
 $dbname = "u557120535_Kapetpamana";   // change this when seting up hostinger
 
 try {
