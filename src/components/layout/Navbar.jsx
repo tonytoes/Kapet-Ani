@@ -4,7 +4,6 @@ import logo1 from "../../assets/images/logo_brown_transparent.png";
 import "../../styles/navbar.css";
 import CartDrawer from "../layout/CartDrawer";
 
-
 function Navbar({ activePage }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
