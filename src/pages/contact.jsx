@@ -55,7 +55,7 @@ function Contact() {
                    <br />
                    <em> Together</em>
                  </h1>
-                 <a href="#featured" className="btn-primary">Explore Our Products</a>
+                
                </div>
                <div className="scroll-hint">
                  <div className="scroll-arrow" />

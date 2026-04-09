@@ -5,10 +5,11 @@ import { Outlet } from "react-router-dom";
 // public pages
 import Home from "../pages/Home.jsx";
 import About from "../pages/About.jsx";
-import Contact from "../pages/Contact.jsx";
+import Contact from "../pages/contact.jsx";
 import Product from "../pages/Product.jsx";
 import Blogs from "../pages/Blogs.jsx";
 import Login from "../pages/Login.jsx";
+import User from "../pages/User.jsx";
 
 // admin pages
 import Admin from '../admin/App.jsx'  
@@ -20,6 +21,7 @@ const router = createBrowserRouter([
   { path: "/product", element: <Product /> },
   { path: "/blogs", element: <Blogs /> },
   { path: "/login", element: <Login /> },
+  { path: "/user", element: <User /> },
 
   {
     path: "/admin",
