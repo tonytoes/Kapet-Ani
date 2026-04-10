@@ -1,16 +1,16 @@
 import '../styles/home.css';
 import { useEffect } from "react";
-import mangofrappe from '../assets/images/mangofrappe.png';
-import ubefrappe from '../assets/images/ubefrappe.png';
-import basket1 from '../assets/images/basket1.png';
-import basket2 from '../assets/images/basket2.png';
-import basket3 from '../assets/images/basket3.png';
-import basket4 from '../assets/images/basket4.png';
-import basket5 from '../assets/images/basket5.png';
-import basket6 from '../assets/images/basket6.webp';
-import basket7 from '../assets/images/basket7.webp';
-import mug1 from '../assets/images/mug1.png';
-import mug2 from '../assets/images/mug2.png';
+import mangofrappe from '../assets/images/matchavanilla2.jpg';
+import ubefrappe from '../assets/images/milkube.jpg';
+import basket1 from '../assets/images/basket1.jpg';
+import basket2 from '../assets/images/basket2.jpg';
+import basket3 from '../assets/images/basket3.jpg';
+import basket4 from '../assets/images/basket4.jpg';
+import basket5 from '../assets/images/basket5.jpg';
+import basket6 from '../assets/images/basket6.jpg';
+import basket7 from '../assets/images/coaster2.jpg';
+import mug1 from '../assets/images/Banig Crossbody.webp';
+import mug2 from '../assets/images/mug1.jpg';
 import parallax from '../assets/images/parallax.png';
 import Navbar from '../components/layout/Navbar.jsx';
 import Newsletter from "../components/layout/Newsletter.jsx";
@@ -50,7 +50,7 @@ function Home() {
   }, []);
 
   return (
-    <div className="App">
+    <div className="home-wrapper">
       <>
         <Navbar activePage="home" />
 
@@ -83,7 +83,7 @@ function Home() {
             </div>
           </div>
           <div className="featured-grid">
-            <div className="product-card fade-up">
+            <div className="product-card1 fade-up">
               <div className="product-img">
                 <img src={mangofrappe} alt="Coffee-5 Mango Frappe" />
                 <span className="on-sale-badge">On Sale.</span>
@@ -96,7 +96,7 @@ function Home() {
                 </p>
               </div>
             </div>
-            <div className="product-card fade-up" style={{ transitionDelay: "0.1s" }}>
+            <div className="product-card1 fade-up" style={{ transitionDelay: "0.1s" }}>
               <div className="product-img">
                 <img src={ubefrappe} alt="Coffee-4 Ube Frappe" />
                 <span className="on-sale-badge">On Sale.</span>
@@ -120,7 +120,7 @@ function Home() {
             </div>
           </div>
           <div className="products-grid">
-            <div className="product-card fade-up">
+            <div className="product-card1 fade-up">
               <div className="product-img">
                 <img src={basket1} alt="craft-12 basket" />
                 <span className="on-sale-badge">On Sale.</span>
@@ -130,7 +130,7 @@ function Home() {
                 <p className="product-price"><s>$99.00 USD</s><span>$99.00 USD</span></p>
               </div>
             </div>
-            <div className="product-card fade-up" style={{ transitionDelay: "0.08s" }}>
+            <div className="product-card1 fade-up" style={{ transitionDelay: "0.08s" }}>
               <div className="product-img">
                 <img src={basket2} alt="craft-11 basket" />
                 <span className="on-sale-badge">On Sale.</span>
@@ -140,7 +140,7 @@ function Home() {
                 <p className="product-price"><s>$99.00 USD</s><span>$99.00 USD</span></p>
               </div>
             </div>
-            <div className="product-card fade-up" style={{ transitionDelay: "0.16s" }}>
+            <div className="product-card1 fade-up" style={{ transitionDelay: "0.16s" }}>
               <div className="product-img">
                 <img src={basket3} alt="craft-10 basket" />
                 <span className="on-sale-badge">On Sale.</span>
@@ -150,7 +150,7 @@ function Home() {
                 <p className="product-price"><s>$99.00 USD</s><span>$99.00 USD</span></p>
               </div>
             </div>
-            <div className="product-card fade-up" style={{ transitionDelay: "0.04s" }}>
+            <div className="product-card1 fade-up" style={{ transitionDelay: "0.04s" }}>
               <div className="product-img">
                 <img src={basket4} alt="craft-9 basket" />
                 <span className="on-sale-badge">On Sale.</span>
@@ -160,7 +160,7 @@ function Home() {
                 <p className="product-price"><s>$99.00 USD</s><span>$99.00 USD</span></p>
               </div>
             </div>
-            <div className="product-card fade-up" style={{ transitionDelay: "0.12s" }}>
+            <div className="product-card1 fade-up" style={{ transitionDelay: "0.12s" }}>
               <div className="product-img">
                 <img src={basket5} alt="craft-8 bag" />
                 <span className="on-sale-badge">On Sale.</span>
@@ -170,7 +170,7 @@ function Home() {
                 <p className="product-price"><s>$99.00 USD</s><span>$99.00 USD</span></p>
               </div>
             </div>
-            <div className="product-card fade-up" style={{ transitionDelay: "0.2s" }}>
+            <div className="product-card1 fade-up" style={{ transitionDelay: "0.2s" }}>
               <div className="product-img">
                 <img src={basket6} alt="craft-9" />
                 <span className="on-sale-badge">On Sale.</span>
@@ -180,7 +180,7 @@ function Home() {
                 <p className="product-price"><s>$99.00 USD</s><span>$99.00 USD</span></p>
               </div>
             </div>
-            <div className="product-card fade-up" style={{ transitionDelay: "0.06s" }}>
+            <div className="product-card1 fade-up" style={{ transitionDelay: "0.06s" }}>
               <div className="product-img">
                 <img src={basket7} alt="craft-8" />
                 <span className="on-sale-badge">On Sale.</span>
@@ -190,7 +190,7 @@ function Home() {
                 <p className="product-price"><s>$99.00 USD</s><span>$99.00 USD</span></p>
               </div>
             </div>
-            <div className="product-card fade-up" style={{ transitionDelay: "0.14s" }}>
+            <div className="product-card1 fade-up" style={{ transitionDelay: "0.14s" }}>
               <div className="product-img">
                 <img src={mug1} alt="Clay Pot mug 2" />
                 <span className="on-sale-badge">On Sale.</span>
@@ -200,7 +200,7 @@ function Home() {
                 <p className="product-price"><s>$24.00 USD</s><span>$24.00 USD</span></p>
               </div>
             </div>
-            <div className="product-card fade-up" style={{ transitionDelay: "0.22s" }}>
+            <div className="product-card1 fade-up" style={{ transitionDelay: "0.22s" }}>
               <div className="product-img">
                 <img src={mug2} alt="Clay-Pot-mug" />
                 <span className="on-sale-badge">On Sale.</span>
@@ -277,8 +277,9 @@ function Home() {
             </div>
           </div>
         </section>
-        <Newsletter style={{ backgroundColor: 'white' }} />
+        <Newsletter />
         <Footer />
+
       </>
     </div>
   );

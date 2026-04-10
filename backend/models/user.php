@@ -4,7 +4,7 @@ require_once __DIR__ . '/../config/config.php';
 function getUserByEmail($email)
 {
   global $conn;
-  $stmt = $conn->prepare("SELECT id, first_name, last_name, email, role FROM users WHERE email = ?");
+  $stmt = $conn->prepare("SELECT id, first_name, last_name, email, password, role FROM users WHERE email = ?");
   $stmt->execute([$email]);
   return $stmt->fetch(PDO::FETCH_ASSOC);
 }

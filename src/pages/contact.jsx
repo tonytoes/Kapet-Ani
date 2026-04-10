@@ -50,13 +50,12 @@ function Contact() {
                </video>
                <div className="hero-overlay" />
                <div className="hero-content">
-                 <p className="hero-eyebrow">Est. 1996 &nbsp;·&nbsp; Filipino Heritage</p>
                  <h1 className="hero-headline">
-                   From Filipino Hands
+                   Let's showcase Filipino Merchants
                    <br />
-                   <em>to global streets</em>
+                   <em> Together</em>
                  </h1>
-                 <a href="#featured" className="btn-primary">Explore Our Products</a>
+                
                </div>
                <div className="scroll-hint">
                  <div className="scroll-arrow" />

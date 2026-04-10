@@ -14,7 +14,6 @@ const PAGE_TITLES = {
   inventory:    "Inventory",
   inventoryalert: "Inventory Alert",
   users:        "Users",
-  complaints:   "Complaints",
   transactions: "Transactions",
 };
 

@@ -20,20 +20,22 @@ function Login() {
 
   const navigate = useNavigate();
 
-
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("https://red-lark-276337.hostingersite.com//backend/controllers/authController.php", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const res = await fetch(
+      "http://localhost/backend/controllers/authController.php", // Update with domain name http://localhost/backend/controllers/authController.php
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "login",
+          ...loginData,
+        }),
       },
-      body: JSON.stringify({
-        action: "login",
-        ...loginData,
-      }),
-    });
+    );
 
     const data = await res.json();
 
@@ -54,16 +56,19 @@ function Login() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("https://red-lark-276337.hostingersite.com//backend/controllers/authController.php", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const res = await fetch(
+      "http://localhost/backend/controllers/authController.php", // Update with domain name http://localhost/backend/controllers/authController.php
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "register",
+          ...registerData,
+        }),
       },
-      body: JSON.stringify({
-        action: "register",
-        ...registerData,
-      }),
-    });
+    );
 
     const data = await res.json();
 
@@ -87,6 +92,7 @@ function Login() {
             <input
               type="email"
               placeholder="Email"
+                    className="input1"
               required
               onChange={(e) =>
                 setLoginData({ ...loginData, email: e.target.value })
@@ -96,15 +102,16 @@ function Login() {
             <input
               type="password"
               placeholder="Password"
+                    className="input1"
               required
               onChange={(e) =>
                 setLoginData({ ...loginData, password: e.target.value })
               }
             />
 
-            <button type="submit">Login</button>
+            <button type="submit" className="button1">Login</button>
 
-            <p>
+            <p className="p">
               Don't have an account?{" "}
               <a href="#" onClick={() => setActiveForm("register")}>
                 Register
@@ -114,13 +121,16 @@ function Login() {
         </div>
 
         {/* REGISTER */}
-        <div className={`form-box ${activeForm === "register" ? "active" : ""}`}>
+        <div
+          className={`form-box ${activeForm === "register" ? "active" : ""}`}
+        >
           <form onSubmit={handleRegister}>
             <h2>Register</h2>
 
             <input
               type="text"
               placeholder="First Name"
+                    className="input1"
               required
               onChange={(e) =>
                 setRegisterData({
@@ -133,6 +143,7 @@ function Login() {
             <input
               type="text"
               placeholder="Last Name"
+                    className="input1"
               required
               onChange={(e) =>
                 setRegisterData({
@@ -145,6 +156,7 @@ function Login() {
             <input
               type="email"
               placeholder="Email"
+              className="input1"
               required
               onChange={(e) =>
                 setRegisterData({
@@ -157,6 +169,7 @@ function Login() {
             <input
               type="password"
               placeholder="Password"
+              className="input1"
               required
               onChange={(e) =>
                 setRegisterData({
@@ -166,9 +179,9 @@ function Login() {
               }
             />
 
-            <button type="submit">Register</button>
+            <button type="submit" className="button1">Register</button>
 
-            <p>
+            <p className="p">
               Already have an account?{" "}
               <a href="#" onClick={() => setActiveForm("login")}>
                 Login

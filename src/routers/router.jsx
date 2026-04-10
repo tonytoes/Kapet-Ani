@@ -5,17 +5,16 @@ import { Outlet } from "react-router-dom";
 // public pages
 import Home from "../pages/Home.jsx";
 import About from "../pages/About.jsx";
-import Contact from "../pages/Contact.jsx";
+import Contact from "../pages/contact.jsx";
 import Product from "../pages/Product.jsx";
 import Blogs from "../pages/Blogs.jsx";
 import Login from "../pages/Login.jsx";
+import User from "../pages/User.jsx";
+import Checkout from "../pages/Checkout.jsx";
+import Order from "../pages/Order.jsx";
 
 // admin pages
-import DashboardPage from "../admin/pages/DashboardPage.jsx";
-import InventoryPage from "../admin/pages/InventoryPage.jsx";
-import UsersPage from "../admin/pages/UsersPage.jsx";
-import ComplaintsPage from "../admin/pages/ComplaintsPage.jsx";
-import TransactionsPage from "../admin/pages/TransactionsPage.jsx";
+import Admin from '../admin/App.jsx'  
 
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },
@@ -24,6 +23,10 @@ const router = createBrowserRouter([
   { path: "/product", element: <Product /> },
   { path: "/blogs", element: <Blogs /> },
   { path: "/login", element: <Login /> },
+  { path: "/user", element: <User /> },
+  { path: "/checkout", element: <Checkout /> },
+  { path: "/order", element: <Order/> },
+
 
   {
     path: "/admin",
@@ -33,11 +36,7 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { index: true, element: <DashboardPage /> },
-      { path: "inventory", element: <InventoryPage /> },
-      { path: "users", element: <UsersPage /> },
-      { path: "complaints", element: <ComplaintsPage /> },
-      { path: "history", element: <TransactionsPage /> },
+      { index: true, element: <Admin /> },
     ],
   },
 ]);

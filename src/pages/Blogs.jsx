@@ -50,16 +50,32 @@ function Blogs() {
           <div className="blog-hero-bg" />
           <div className="blog-hero-overlay" />
           <div className="blog-hero-content">
-            <h1>
-              Discover the stories behind every brew. Read our blogs and
-              celebrate Filipino heritage with us.
+            <h1
+              style={{
+                fontFamily: '"Playfair Display", serif',
+                fontSize: '80px',
+                fontWeight: 600,
+                color: 'var(--white)',
+                lineHeight: 1.25,
+                marginBottom: '36px',
+              }}
+            >
+              Discover the stories <br></br>
+              <em
+                style={{
+                  fontStyle: "italic",
+                  color: "var(--gold-light)",
+                }}
+              >
+                behind every brew.
+              </em>
             </h1>
           </div>
         </section>
         {/* INTRO */}
         <section className="blog-intro">
           <h2>Read coffee stories on our Blog</h2>
-          <p>
+          <p style={{ color: "black" }}>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit.
             <br />
             Suspendisse varius enim in eros elementum tristique.
@@ -222,7 +238,7 @@ function Blogs() {
               <div className="sidebar-block">
                 <h4 className="sidebar-heading">About Us</h4>
                 <div className="sidebar-divider" />
-                <p className="sidebar-brand-name">CoffeeStyle.</p>
+                <p className="sidebar-brand-name">Kape't Pamana</p>
                 <p className="sidebar-about-text">
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                   Suspendisse varius enim in eros elementum tristique.
@@ -349,10 +365,10 @@ function Blogs() {
             </div>
             <p className="quote-author">Jason Johnson · Owner of CoffeeStyle</p>
           </section>
+          <Newsletter />
+        <Footer />
         </div>
 
-        <Newsletter />
-        <Footer />
       </>
     </>
   );

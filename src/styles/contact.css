@@ -1,11 +1,3 @@
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
 :root {
   --brown-deep: #2c1a0e;
   --brown-rich: #5a3825;
@@ -20,15 +12,6 @@
   --text-mid: #5a3825;
   --text-light: #9e8070;
 }
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: "Karla", sans-serif;
-}
-
 /* ── HERO ── */
 .hero {
   position: relative;
@@ -85,7 +68,7 @@ body {
     transform: translateY(0);
   }
 }
-.hero-eyebrow {
+.hero-eyebrow1 {
   font-size: 0.7rem;
   font-weight: 500;
   letter-spacing: 0.22em;
@@ -93,14 +76,14 @@ body {
   color: var(--gold-light);
   margin-bottom: 20px;
 }
-.hero-headline {
+.hero-headline1 {
   font-family: "Playfair Display", serif;
   font-weight: 600;
   color: var(--white);
   line-height: 1.25;
   margin-bottom: 36px;
 }
-.hero-headline em {
+.hero-headline1 em {
   color: var(--gold-light);
 }
 .btn-primary {

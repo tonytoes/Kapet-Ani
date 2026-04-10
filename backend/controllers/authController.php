@@ -1,9 +1,11 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../helpers/jwt.php';
 
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: https://red-lark-276337.hostingersite.com/'); // change this when seting up hostinger
+header('Access-Control-Allow-Origin: http://localhost:5173'); // change this when seting up hostinger
 header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
