@@ -50,7 +50,7 @@ function Home() {
   }, []);
 
   return (
-    <div className="App">
+    <div className="home-wrapper">
       <>
         <Navbar activePage="home" />
 
@@ -277,8 +277,9 @@ function Home() {
             </div>
           </div>
         </section>
-        <Newsletter style={{ backgroundColor: 'white' }} />
+        <Newsletter />
         <Footer />
+
       </>
     </div>
   );

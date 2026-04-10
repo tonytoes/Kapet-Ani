@@ -10,6 +10,8 @@ import Product from "../pages/Product.jsx";
 import Blogs from "../pages/Blogs.jsx";
 import Login from "../pages/Login.jsx";
 import User from "../pages/User.jsx";
+import Checkout from "../pages/Checkout.jsx";
+import Order from "../pages/Order.jsx";
 
 // admin pages
 import Admin from '../admin/App.jsx'  
@@ -22,6 +24,9 @@ const router = createBrowserRouter([
   { path: "/blogs", element: <Blogs /> },
   { path: "/login", element: <Login /> },
   { path: "/user", element: <User /> },
+  { path: "/checkout", element: <Checkout /> },
+  { path: "/order", element: <Order/> },
+
 
   {
     path: "/admin",

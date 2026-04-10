@@ -2,7 +2,6 @@ import '../styles/order_confirmation.css';
 import rattan_basket from '../assets/images/Rattan_Basket.png';
 import bamboo_basket from '../assets/images/Bamboo_Basket.png';
 import palm_basket from '../assets/images/Palm_Basket.png';
-import Navbar from '../components/layout/Navbar.jsx';
 import Newsletter from "../components/layout/Newsletter.jsx"; 
 import Footer from '../components/layout/Footer.jsx';
 
@@ -210,17 +209,7 @@ function App() {
             </div>
             </div>
         </div>
-        {/* More Section and Footer */}
-        <section id="moreSection">
-            <div className="container text-center">
-            <h6>
-                Don't Miss Out On Our Latest News, Update, Tips, And Special Offers
-            </h6>
-            <h5>Subscribe to get the Latest News</h5>
-            <input type="text" id="subEmail" />
-            <button id="subscribe">Subscribe</button>
-            </div>
-        </section>
+       <Newsletter/>
         <Footer/>
         {/* End of More Section and Footer */}
         </>
