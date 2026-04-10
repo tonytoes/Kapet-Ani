@@ -365,10 +365,10 @@ function Blogs() {
             </div>
             <p className="quote-author">Jason Johnson · Owner of CoffeeStyle</p>
           </section>
+          <Newsletter />
+        <Footer />
         </div>
 
-        <Newsletter />
-        <Footer />
       </>
     </>
   );
