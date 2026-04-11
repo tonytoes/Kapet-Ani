@@ -2,8 +2,9 @@
 export function badgeClass(status) {
   const map = {
     Paid:        "badge-paid",
-    Resolved:    "badge-resolved",
-    Pending:     "badge-pending",
+    confirmed:   "badge-confirmed",
+    shipped:     "badge-shipped",
+    pending:     "badge-pending",
     Available:   "badge-available",
     Unavailable: "badge-unavailable",
     Admin:       "badge-admin",
