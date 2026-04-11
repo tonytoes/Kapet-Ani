@@ -3,8 +3,12 @@ import "../styles/login.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const API = "http://localhost/backend/controllers/authController.php"; 
+
 function Login() {
   const [activeForm, setActiveForm] = useState("login");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const [loginData, setLoginData] = useState({
     email: "",
@@ -22,61 +26,82 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    const res = await fetch(
-      "http://localhost/backend/controllers/authController.php", // Update with domain name http://localhost/backend/controllers/authController.php
-      {
+    try {
+      const res = await fetch(API, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          action: "login",
-          ...loginData,
-        }),
-      },
-    );
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "login", ...loginData }),
+      });
 
-    const data = await res.json();
+      const text = await res.text();
+      let data;
 
-    if (data.success) {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      if (data.user.role === "admin") {
-        navigate("/admin");
-      } else {
-        navigate("/");
+      try {
+        data = JSON.parse(text);
+      } catch {
+        console.error("Non-JSON response:", text);
+        setError("Server error. Please try again.");
+        return;
       }
-    } else {
-      alert(data.message);
+
+      if (data.success) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        navigate(data.user.role === "admin" ? "/admin" : "/");
+      } else {
+        setError(data.message);
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setError("Network error. Please check your connection.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setError("");
 
-    const res = await fetch(
-      "http://localhost/backend/controllers/authController.php", // Update with domain name http://localhost/backend/controllers/authController.php
-      {
+    if (registerData.password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const res = await fetch(API, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          action: "register",
-          ...registerData,
-        }),
-      },
-    );
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "register", ...registerData }),
+      });
 
-    const data = await res.json();
+      const text = await res.text();
+      let data;
 
-    if (data.success) {
-      alert("Registered successfully!");
-      setActiveForm("login");
-    } else {
-      alert(data.message);
+      try {
+        data = JSON.parse(text);
+      } catch {
+        console.error("Non-JSON response:", text);
+        setError("Server error. Please try again.");
+        return;
+      }
+
+      if (data.success) {
+        setActiveForm("login");
+        setError(""); // clear any leftover error
+      } else {
+        setError(data.message);
+      }
+    } catch (err) {
+      console.error("Register error:", err);
+      setError("Network error. Please check your connection.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,13 +112,15 @@ function Login() {
         <div className={`form-box ${activeForm === "login" ? "active" : ""}`}>
           <form onSubmit={handleLogin}>
             <h2>Welcome Back!</h2>
-            <p>Please login to your account</p>
+            <p className="text-center">Please login to your account</p>
+            {error && <p className="error-message">{error}</p>}
 
             <input
               type="email"
               placeholder="Email"
-                    className="input1"
+              className="input1"
               required
+              value={loginData.email}
               onChange={(e) =>
                 setLoginData({ ...loginData, email: e.target.value })
               }
@@ -102,18 +129,27 @@ function Login() {
             <input
               type="password"
               placeholder="Password"
-                    className="input1"
+              className="input1"
               required
+              value={loginData.password}
               onChange={(e) =>
                 setLoginData({ ...loginData, password: e.target.value })
               }
             />
 
-            <button type="submit" className="button1">Login</button>
+            <button type="submit" className="button1" disabled={loading}>
+              {loading ? "Logging in..." : "Login"}
+            </button>
 
             <p className="p">
               Don't have an account?{" "}
-              <a href="#" onClick={() => setActiveForm("register")}>
+              <a
+                href="#"
+                onClick={() => {
+                  setActiveForm("register");
+                  setError("");
+                }}
+              >
                 Register
               </a>
             </p>
@@ -126,30 +162,25 @@ function Login() {
         >
           <form onSubmit={handleRegister}>
             <h2>Register</h2>
-
             <input
               type="text"
               placeholder="First Name"
-                    className="input1"
+              className="input1"
               required
+              value={registerData.first_name}
               onChange={(e) =>
-                setRegisterData({
-                  ...registerData,
-                  first_name: e.target.value,
-                })
+                setRegisterData({ ...registerData, first_name: e.target.value })
               }
             />
 
             <input
               type="text"
               placeholder="Last Name"
-                    className="input1"
+              className="input1"
               required
+              value={registerData.last_name}
               onChange={(e) =>
-                setRegisterData({
-                  ...registerData,
-                  last_name: e.target.value,
-                })
+                setRegisterData({ ...registerData, last_name: e.target.value })
               }
             />
 
@@ -158,11 +189,9 @@ function Login() {
               placeholder="Email"
               className="input1"
               required
+              value={registerData.email}
               onChange={(e) =>
-                setRegisterData({
-                  ...registerData,
-                  email: e.target.value,
-                })
+                setRegisterData({ ...registerData, email: e.target.value })
               }
             />
 
@@ -171,19 +200,26 @@ function Login() {
               placeholder="Password"
               className="input1"
               required
+              value={registerData.password}
               onChange={(e) =>
-                setRegisterData({
-                  ...registerData,
-                  password: e.target.value,
-                })
+                setRegisterData({ ...registerData, password: e.target.value })
               }
             />
+             {error && <p className="error-message">{error}</p>}
 
-            <button type="submit" className="button1">Register</button>
+            <button type="submit" className="button1" disabled={loading}>
+              {loading ? "Registering..." : "Register"}
+            </button>
 
             <p className="p">
               Already have an account?{" "}
-              <a href="#" onClick={() => setActiveForm("login")}>
+              <a
+                href="#"
+                onClick={() => {
+                  setActiveForm("login");
+                  setError("");
+                }}
+              >
                 Login
               </a>
             </p>
