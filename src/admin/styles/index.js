@@ -107,6 +107,8 @@ const STYLES = `
   .sell-pct { font-size: 0.76rem; font-weight: 600; color: var(--text-secondary); }
   .sell-track { height: 6px; background: #E5E7EB; border-radius: 99px; overflow: hidden; }
   .sell-fill { height: 100%; border-radius: 99px; background: var(--brand-progress); transition: width 0.6s ease; }
+  .selling-list > div { display: flex; flex-direction: column; gap: 4px;
+}
   .stock-low { color: var(--color-red); font-weight: 700; }
   .stock-ok  { color: var(--brand-mid); font-weight: 700; }
 

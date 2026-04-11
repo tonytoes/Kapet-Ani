@@ -9,11 +9,6 @@ export default function Topbar({ title, onToggle }) {
       </div>
 
       <div className="topbar-right">
-        <button className="topbar-icon-btn"><i className="bi bi-search"></i></button>
-        <button className="topbar-icon-btn">
-          <i className="bi bi-bell"></i>
-          <span className="notif-dot"></span>
-        </button>
         <div className="topbar-avatar">C</div>
       </div>
     </div>
