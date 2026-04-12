@@ -13,7 +13,7 @@ import InventoryAlertPage    from "./pages/InventoryAlertPage";
 import UsersPage             from "./pages/UsersPage";
 import ComplaintsPage        from "./pages/ComplaintsPage";
 import TransactionsPage      from "./pages/TransactionsPage";
-import { CacheProvider }     from "./data/CacheContext";   // ← NEW
+import { CacheProvider }     from "./data/CacheContext";  
 
 const PAGE_TITLES = {
   dashboard:      "Dashboard",

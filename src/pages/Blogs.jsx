@@ -9,6 +9,7 @@ import miura from "../assets/images/miura.png";
 import Newsletter from "../components/layout/Newsletter";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
+import coffeeVideo from "../assets/video/coffee_video3.mp4";
 
 function Blogs() {
   useEffect(() => {
@@ -47,17 +48,19 @@ function Blogs() {
         <Navbar activePage="blogs" />
         {/* HERO */}
         <section className="blog-hero">
-          <div className="blog-hero-bg" />
+          <video className="hero-bg" autoPlay muted loop playsInline>
+            <source src={coffeeVideo} type="video/mp4" />
+          </video>
           <div className="blog-hero-overlay" />
           <div className="blog-hero-content">
             <h1
               style={{
                 fontFamily: '"Playfair Display", serif',
-                fontSize: '80px',
+                fontSize: "80px",
                 fontWeight: 600,
-                color: 'var(--white)',
+                color: "var(--white)",
                 lineHeight: 1.25,
-                marginBottom: '36px',
+                marginBottom: "36px",
               }}
             >
               Discover the stories <br></br>
@@ -366,9 +369,8 @@ function Blogs() {
             <p className="quote-author">Jason Johnson · Owner of CoffeeStyle</p>
           </section>
           <Newsletter />
-        <Footer />
+          <Footer />
         </div>
-
       </>
     </>
   );
