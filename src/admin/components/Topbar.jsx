@@ -1,24 +1,26 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { LINK_PATH } from "../data/LinkPath.jsx";
 
 export default function Topbar({ title, onToggle }) {
-  const raw  = localStorage.getItem("user");
-  const user = raw ? JSON.parse(raw) : null;
-
-  const fullName = user ? `${user.first_name} ${user.last_name}` : "Administrator";
-  const initial  = fullName.charAt(0).toUpperCase();
-
+  const [userData,     setUserData]     = useState(() => {
+    const raw = localStorage.getItem("user");
+    return raw ? JSON.parse(raw) : null;
+  });
   const [imageUrl,     setImageUrl]     = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate    = useNavigate();
 
-  // Exact same fetch pattern as Sidebar.jsx
-  useEffect(() => {
-    if (!user?.id) return;
-    const token = localStorage.getItem("token");
+  const fullName = userData ? `${userData.first_name} ${userData.last_name}` : "Administrator";
+  const initial  = fullName.charAt(0).toUpperCase();
 
+  const fetchMe = useCallback(() => {
+    const raw  = localStorage.getItem("user");
+    const user = raw ? JSON.parse(raw) : null;
+    if (!user?.id) return;
+
+    const token = localStorage.getItem("token");
     fetch(`${LINK_PATH}usersController.php`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -26,13 +28,30 @@ export default function Topbar({ title, onToggle }) {
       .then(data => {
         if (data.success) {
           const me = data.users.find(u => u.id === user.id);
-          if (me?.image_url) setImageUrl(me.image_url);
+          if (me) {
+            const updated = { ...user, first_name: me.first_name, last_name: me.last_name };
+            localStorage.setItem("user", JSON.stringify(updated));
+            setUserData(updated);
+            setImageUrl(me.image_url
+              ? `${me.image_url}&t=${Date.now()}`
+              : null
+            );
+          }
         }
       })
       .catch(() => {});
   }, []);
 
-  // Close dropdown when clicking outside
+  // Fetch on mount
+  useEffect(() => { fetchMe(); }, [fetchMe]);
+
+  // Re-fetch whenever UsersPage fires "userUpdated"
+  useEffect(() => {
+    window.addEventListener("userUpdated", fetchMe);
+    return () => window.removeEventListener("userUpdated", fetchMe);
+  }, [fetchMe]);
+
+  // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -61,7 +80,6 @@ export default function Topbar({ title, onToggle }) {
       <div className="topbar-right">
         <div ref={dropdownRef} style={{ position: "relative", display: "flex", alignItems: "center", gap: 6 }}>
 
-          {/* Arrow */}
           <button
             onClick={() => setDropdownOpen(prev => !prev)}
             style={{
@@ -77,7 +95,6 @@ export default function Topbar({ title, onToggle }) {
             <i className="bi bi-chevron-down"></i>
           </button>
 
-          {/* Avatar */}
           {imageUrl ? (
             <img
               src={imageUrl}
@@ -91,7 +108,6 @@ export default function Topbar({ title, onToggle }) {
             </div>
           )}
 
-          {/* Dropdown */}
           {dropdownOpen && (
             <div style={{
               position: "absolute", top: "calc(100% + 10px)", right: 0,
@@ -104,7 +120,7 @@ export default function Topbar({ title, onToggle }) {
                   {fullName}
                 </div>
                 <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: 2 }}>
-                  {user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : ""}
+                  {userData?.role ? userData.role.charAt(0).toUpperCase() + userData.role.slice(1) : ""}
                 </div>
               </div>
 

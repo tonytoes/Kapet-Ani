@@ -6,9 +6,15 @@ import { maskEmail } from "../utils";
 import { LINK_PATH } from "../data/LinkPath.jsx";
 
 const API = `${LINK_PATH}usersController.php`;
+
 function authHeader() {
   const token = localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+// Fires a custom event so Sidebar and Topbar know to re-fetch
+function notifyUserUpdated() {
+  window.dispatchEvent(new Event("userUpdated"));
 }
 
 const EMPTY_FORM = {
@@ -16,10 +22,8 @@ const EMPTY_FORM = {
   last_name:  "",
   email:      "",
   password:   "",
-  status:     "User",
+  status:     "user",
 };
-
-// ─── Image Block ───────────────────────────────────────────────────────────
 
 function ImageBlock({ preview, onFileChange, onRemove }) {
   const inputRef = useRef(null);
@@ -47,20 +51,11 @@ function ImageBlock({ preview, onFileChange, onRemove }) {
       />
 
       <div className="panel-img-actions">
-        <button
-          type="button"
-          className="btn btn-outline btn-sm"
-          onClick={() => inputRef.current?.click()}
-        >
+        <button type="button" className="btn btn-outline btn-sm" onClick={() => inputRef.current?.click()}>
           {preview ? "Change Image" : "Add Image"}
         </button>
-
         {preview && (
-          <button
-            type="button"
-            className="btn btn-outline btn-sm"
-            onClick={onRemove}
-          >
+          <button type="button" className="btn btn-outline btn-sm" onClick={onRemove}>
             Remove Image
           </button>
         )}
@@ -68,8 +63,6 @@ function ImageBlock({ preview, onFileChange, onRemove }) {
     </div>
   );
 }
-
-// ─── User Form ─────────────────────────────────────────────────────────────
 
 function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveImage }) {
   const fields = [
@@ -79,18 +72,14 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
     {
       label: "Password",
       id: "password",
-      type: "text", 
+      type: "text",
       placeholder: mode === "edit" ? "Leave blank to keep current" : "Password",
     },
   ];
 
   return (
     <>
-      <ImageBlock
-        preview={imagePreview}
-        onFileChange={onFileChange}
-        onRemove={onRemoveImage}
-      />
+      <ImageBlock preview={imagePreview} onFileChange={onFileChange} onRemove={onRemoveImage} />
 
       {fields.map(f => (
         <div className="form-group" key={f.id}>
@@ -104,13 +93,10 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
           />
         </div>
       ))}
+
       <div className="form-group">
         <label className="form-label">Role</label>
-        <select
-          className="form-control"
-          value={form.status}
-          onChange={e => onChange("status", e.target.value)}
-        >
+        <select className="form-control" value={form.status} onChange={e => onChange("status", e.target.value)}>
           <option value="user">User</option>
           <option value="admin">Admin</option>
         </select>
@@ -119,29 +105,21 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
   );
 }
 
-// ─── Main Page ─────────────────────────────────────────────────────────────
-
 export default function UsersPage() {
-  const [users,   setUsers]   = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState(null);
-  const [saving,  setSaving]  = useState(false);
-
-  const [search,    setSearch]    = useState("");
-  const [panelOpen, setPanelOpen] = useState(false);
-  const [panelMode, setPanelMode] = useState("edit");
+  const [users,      setUsers]      = useState([]);
+  const [loading,    setLoading]    = useState(true);
+  const [error,      setError]      = useState(null);
+  const [saving,     setSaving]     = useState(false);
+  const [search,     setSearch]     = useState("");
+  const [panelOpen,  setPanelOpen]  = useState(false);
+  const [panelMode,  setPanelMode]  = useState("edit");
   const [selectedId, setSelectedId] = useState(null);
-  const [form,      setForm]      = useState(EMPTY_FORM);
-
+  const [form,       setForm]       = useState(EMPTY_FORM);
   const [roleFilter, setRoleFilter] = useState("all");
   const [sortOrder,  setSortOrder]  = useState("desc");
-
-  // Image state
-  const [imageFile,    setImageFile]    = useState(null);   // File to upload
-  const [imagePreview, setImagePreview] = useState(null);   // URL shown in UI
-  const [removeImage,  setRemoveImage]  = useState(false);  // Flag to clear image
-
-  // ─── Fetch ───────────────────────────────────────────────────────────────
+  const [imageFile,    setImageFile]    = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [removeImage,  setRemoveImage]  = useState(false);
 
   const loadUsers = useCallback(async () => {
     setLoading(true);
@@ -160,26 +138,14 @@ export default function UsersPage() {
 
   useEffect(() => { loadUsers(); }, [loadUsers]);
 
-  // ─── Filter + Sort ───────────────────────────────────────────────────────
-
   const filtered = useMemo(() => {
     let res = [...users];
     const q = search.toLowerCase();
-
-    res = res.filter(u =>
-      u.username.toLowerCase().includes(q) ||
-      u.email.toLowerCase().includes(q)
-    );
-
-    if (roleFilter !== "all") {
-      res = res.filter(u => (u.status || "").toLowerCase() === roleFilter);
-    }
-
+    res = res.filter(u => u.username.toLowerCase().includes(q) || u.email.toLowerCase().includes(q));
+    if (roleFilter !== "all") res = res.filter(u => (u.status || "").toLowerCase() === roleFilter);
     res.sort((a, b) => sortOrder === "asc" ? a.id - b.id : b.id - a.id);
     return res;
   }, [users, search, roleFilter, sortOrder]);
-
-  // ─── Image handlers ──────────────────────────────────────────────────────
 
   function handleFileChange(e) {
     const file = e.target.files?.[0];
@@ -194,8 +160,6 @@ export default function UsersPage() {
     setImagePreview(null);
     setRemoveImage(true);
   }
-
-  // ─── Panel helpers ───────────────────────────────────────────────────────
 
   function updateForm(key, value) {
     setForm(prev => ({ ...prev, [key]: value }));
@@ -214,7 +178,7 @@ export default function UsersPage() {
       last_name:  user.last_name  ?? "",
       email:      user.email,
       password:   "",
-      status: user.status?.toLowerCase(),
+      status:     user.status?.toLowerCase(),
     });
     resetImageState(user.image_url ?? null);
     setPanelMode("edit");
@@ -235,39 +199,24 @@ export default function UsersPage() {
     resetImageState(null);
   }
 
-  // ─── Build FormData ──────────────────────────────────────────────────────
-  // NOTE: Never set Content-Type manually with FormData —
-  // the browser must set it so it includes the multipart boundary.
-
   function buildFormData(extraFields = {}) {
     const fd = new FormData();
-
-    // Text fields from form state
     Object.entries(form).forEach(([k, v]) => fd.append(k, v ?? ""));
-
-    // Any extra fields (e.g. id for updates, _method for PUT override)
     Object.entries(extraFields).forEach(([k, v]) => fd.append(k, v ?? ""));
-
     if (imageFile)   fd.append("image",        imageFile);
     if (removeImage) fd.append("remove_image", "1");
-
     return fd;
   }
-
-  // ─── CRUD ─────────────────────────────────────────────────────────────────
 
   async function handleAdd() {
     setSaving(true);
     setError(null);
     try {
-      const res  = await fetch(API, {
-        method:  "POST",
-        headers: authHeader(),          // NO Content-Type — browser sets multipart boundary
-        body:    buildFormData(),
-      });
+      const res  = await fetch(API, { method: "POST", headers: authHeader(), body: buildFormData() });
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
       await loadUsers();
+      notifyUserUpdated();
       handleClose();
     } catch (err) {
       setError(err.message);
@@ -280,16 +229,11 @@ export default function UsersPage() {
     setSaving(true);
     setError(null);
     try {
-      // PHP does not populate $_POST for PUT multipart requests on most servers.
-      // Send as POST with _method=PUT so the controller can detect it.
-      const res  = await fetch(API, {
-        method:  "POST",
-        headers: authHeader(),
-        body:    buildFormData({ id: selectedId, _method: "PUT" }),
-      });
+      const res  = await fetch(API, { method: "POST", headers: authHeader(), body: buildFormData({ id: selectedId, _method: "PUT" }) });
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
       await loadUsers();
+      notifyUserUpdated(); // ← tells Sidebar + Topbar to re-fetch
       handleClose();
     } catch (err) {
       setError(err.message);
@@ -303,15 +247,11 @@ export default function UsersPage() {
     setSaving(true);
     setError(null);
     try {
-      // DELETE never has a file, plain JSON is fine
-      const res  = await fetch(API, {
-        method:  "DELETE",
-        headers: { "Content-Type": "application/json", ...authHeader() },
-        body:    JSON.stringify({ id: selectedId }),
-      });
+      const res  = await fetch(API, { method: "DELETE", headers: { "Content-Type": "application/json", ...authHeader() }, body: JSON.stringify({ id: selectedId }) });
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
       await loadUsers();
+      notifyUserUpdated();
       handleClose();
     } catch (err) {
       setError(err.message);
@@ -319,8 +259,6 @@ export default function UsersPage() {
       setSaving(false);
     }
   }
-
-  // ─── UI ───────────────────────────────────────────────────────────────────
 
   const userCategories = [
     { value: "all",   label: "All" },
@@ -365,20 +303,11 @@ export default function UsersPage() {
                     <th>Status</th>
                   </tr>
                 </thead>
-
                 <tbody>
                   {loading ? (
-                    <tr>
-                      <td colSpan={7} style={{ textAlign: "center", padding: 32 }}>
-                        Loading users…
-                      </td>
-                    </tr>
+                    <tr><td colSpan={7} style={{ textAlign: "center", padding: 32 }}>Loading users…</td></tr>
                   ) : filtered.length === 0 ? (
-                    <tr>
-                      <td colSpan={7} style={{ textAlign: "center", padding: 32 }}>
-                        No users found.
-                      </td>
-                    </tr>
+                    <tr><td colSpan={7} style={{ textAlign: "center", padding: 32 }}>No users found.</td></tr>
                   ) : (
                     filtered.map(u => (
                       <tr
@@ -387,32 +316,19 @@ export default function UsersPage() {
                         onClick={() => openEdit(u)}
                       >
                         <td className="cell-id">{u.id}</td>
-
                         <td>
                           {u.image_url ? (
                             <img
-                              src={u.image_url}
+                              src={`${u.image_url}&t=${Date.now()}`}
                               alt={u.username}
-                              style={{
-                                width: 36, height: 36,
-                                borderRadius: "50%",
-                                objectFit: "cover",
-                                display: "block",
-                              }}
+                              style={{ width: 36, height: 36, borderRadius: "50%", objectFit: "cover", display: "block" }}
                             />
                           ) : (
-                            <div style={{
-                              width: 36, height: 36,
-                              borderRadius: "50%",
-                              background: "var(--bg-muted, #e5e7eb)",
-                              display: "flex", alignItems: "center", justifyContent: "center",
-                              fontSize: 16, color: "var(--text-muted, #9ca3af)",
-                            }}>
+                            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--bg-muted, #e5e7eb)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, color: "var(--text-muted, #9ca3af)" }}>
                               <i className="bi bi-person" />
                             </div>
                           )}
                         </td>
-
                         <td className="cell-bold">{u.username}</td>
                         <td className="cell-muted">{maskEmail(u.email)}</td>
                         <td className="cell-muted">{u.password}</td>

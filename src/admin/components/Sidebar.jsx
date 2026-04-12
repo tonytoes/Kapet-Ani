@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { LINK_PATH } from "../data/LinkPath.jsx";
+
 const NAV_ITEMS = [
   { page: "dashboard",      icon: "bi-grid-1x2-fill", label: "Dashboard" },
   { page: "inventory",      icon: "bi-box-seam",       label: "Inventory" },
@@ -9,21 +10,24 @@ const NAV_ITEMS = [
 ];
 
 export default function Sidebar({ activePage, onNavigate, collapsed }) {
-  const raw  = localStorage.getItem("user");
-  const user = raw ? JSON.parse(raw) : null;
-
-  const fullName = user ? `${user.first_name} ${user.last_name}` : "Administrator";
-  const initial  = fullName.charAt(0).toUpperCase();
-  const role     = user?.role
-    ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
-    : "Administrator";
-
+  const [userData,  setUserData]  = useState(() => {
+    const raw = localStorage.getItem("user");
+    return raw ? JSON.parse(raw) : null;
+  });
   const [imageUrl, setImageUrl] = useState(null);
 
-  useEffect(() => {
-    if (!user?.id) return;
-    const token = localStorage.getItem("token");
+  const fullName = userData ? `${userData.first_name} ${userData.last_name}` : "Administrator";
+  const initial  = fullName.charAt(0).toUpperCase();
+  const role     = userData?.role
+    ? userData.role.charAt(0).toUpperCase() + userData.role.slice(1)
+    : "Administrator";
 
+  const fetchMe = useCallback(() => {
+    const raw = localStorage.getItem("user");
+    const user = raw ? JSON.parse(raw) : null;
+    if (!user?.id) return;
+
+    const token = localStorage.getItem("token");
     fetch(`${LINK_PATH}usersController.php`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -31,11 +35,29 @@ export default function Sidebar({ activePage, onNavigate, collapsed }) {
       .then(data => {
         if (data.success) {
           const me = data.users.find(u => u.id === user.id);
-          if (me?.image_url) setImageUrl(me.image_url);
+          if (me) {
+            // Update localStorage name in case it changed
+            const updated = { ...user, first_name: me.first_name, last_name: me.last_name };
+            localStorage.setItem("user", JSON.stringify(updated));
+            setUserData(updated);
+            setImageUrl(me.image_url
+              ? `${me.image_url}&t=${Date.now()}`
+              : null
+            );
+          }
         }
       })
       .catch(() => {});
   }, []);
+
+  // Fetch on mount
+  useEffect(() => { fetchMe(); }, [fetchMe]);
+
+  // Re-fetch whenever UsersPage fires "userUpdated"
+  useEffect(() => {
+    window.addEventListener("userUpdated", fetchMe);
+    return () => window.removeEventListener("userUpdated", fetchMe);
+  }, [fetchMe]);
 
   return (
     <nav className={`kp-sidebar${collapsed ? " collapsed" : ""}`}>
