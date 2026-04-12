@@ -135,7 +135,6 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
         <label className="form-label">Role</label>
         <select className="form-control" value={form.status} onChange={e => onChange("status", e.target.value)}>
           <option value="user">User</option>
-          <option value="admin">Guest</option>
           <option value="admin">Staff</option>
           <option value="admin">Admin</option>
           <option value="admin">SuperAdmin</option>
@@ -358,7 +357,6 @@ export default function UsersPage() {
   const userCategories = [
     { value: "all",   label: "All" },
     { value: "user",  label: "User" },
-    { value: "guest",  label: "Guest" },
     { value: "staff", label: "Staff" },
     { value: "admin", label: "Admin" },
     { value: "superadmin", label: "SuperAdmin" },
