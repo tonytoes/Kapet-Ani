@@ -79,7 +79,7 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
     {
       label: "Password",
       id: "password",
-      type: "password", 
+      type: "text", 
       placeholder: mode === "edit" ? "Leave blank to keep current" : "Password",
     },
   ];
