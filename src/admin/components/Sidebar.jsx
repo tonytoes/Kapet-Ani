@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+
 const NAV_ITEMS = [
   { page: "dashboard",      icon: "bi-grid-1x2-fill", label: "Dashboard" },
   { page: "inventory",      icon: "bi-box-seam",       label: "Inventory" },
@@ -10,15 +12,30 @@ export default function Sidebar({ activePage, onNavigate, collapsed }) {
   const raw  = localStorage.getItem("user");
   const user = raw ? JSON.parse(raw) : null;
 
-  const fullName = user
-    ? `${user.first_name} ${user.last_name}`
-    : "Administrator";
-
-  const initial = fullName.charAt(0).toUpperCase();
-
-  const role = user?.role
+  const fullName = user ? `${user.first_name} ${user.last_name}` : "Administrator";
+  const initial  = fullName.charAt(0).toUpperCase();
+  const role     = user?.role
     ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
     : "Administrator";
+
+  const [imageUrl, setImageUrl] = useState(null);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    const token = localStorage.getItem("token");
+
+    fetch(`http://localhost/backend/controllers/usersController.php`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          const me = data.users.find(u => u.id === user.id);
+          if (me?.image_url) setImageUrl(me.image_url);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <nav className={`kp-sidebar${collapsed ? " collapsed" : ""}`}>
@@ -43,7 +60,15 @@ export default function Sidebar({ activePage, onNavigate, collapsed }) {
       </ul>
 
       <div className="sidebar-profile">
-        <div className="profile-avatar">{initial}</div>
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt="Profile"
+            style={{ width: 36, height: 36, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
+          />
+        ) : (
+          <div className="profile-avatar">{initial}</div>
+        )}
         <div>
           <div className="profile-name">{fullName}</div>
           <div className="profile-role">{role}</div>

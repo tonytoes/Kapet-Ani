@@ -10,7 +10,6 @@ require_once __DIR__ . '/../helpers/jwt.php';
 $userModel = new UserModel();
 header('Content-Type: application/json');
 
-
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 if (in_array($origin, $allowedOrigins)) {
   header("Access-Control-Allow-Origin: $origin");
@@ -70,6 +69,12 @@ function login(array $data, UserModel $userModel): void
 
   $token = generateJWT($user);
 
+  // Build image data URL if the user has an avatar stored
+  $imageUrl = null;
+  if (!empty($user['image_blob']) && !empty($user['image_type'])) {
+    $imageUrl = 'data:' . $user['image_type'] . ';base64,' . base64_encode($user['image_blob']);
+  }
+
   sendResponse(200, true, 'Login successful', [
     'token' => $token,
     'user'  => [
@@ -77,7 +82,8 @@ function login(array $data, UserModel $userModel): void
       'first_name' => $user['first_name'],
       'last_name'  => $user['last_name'],
       'email'      => $user['email'],
-      'role'       => $user['role']
+      'role'       => $user['role'],
+      'image_url'  => $imageUrl,
     ]
   ]);
 }
