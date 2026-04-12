@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const API =
-  "https://cornflowerblue-skunk-618358.hostingersite.com/backend/controllers/authController.php";
+  "https://localhost/backend/controllers/authController.php";
 
 function Login() {
   const [activeForm, setActiveForm] = useState("login");
