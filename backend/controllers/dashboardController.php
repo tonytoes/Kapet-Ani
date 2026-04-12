@@ -5,6 +5,9 @@ error_reporting(E_ALL);
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../helpers/jwt.php';
 
+$db = new Database();
+$conn = $db->connect();
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: http://localhost:5173');
 header('Access-Control-Allow-Methods: GET, POST');
@@ -25,7 +28,6 @@ function getDashboardStats()
 {
     global $conn;
 
-    // ✅ single optimized query (no sales table needed)
     $stmt = $conn->query("
         SELECT 
             COALESCE(SUM(total_price), 0) AS totalSales,
