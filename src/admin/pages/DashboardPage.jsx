@@ -3,7 +3,6 @@ import Badge from "../components/Badge";
 import "../styles/index.js";
 
 const API = "http://localhost/backend/controllers/dashboardController.php";
-const COMPLAINT_ICONS = ["🚚", "⏱️", "⭐", "📦", "🔄"];
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -70,12 +69,12 @@ function ComplaintsCard({ complaints }) {
       <div className="stat-icon-wrap complaints"><i className="bi bi-chat-square-dots-fill"></i></div>
       <div className="stat-label">Pending Orders</div>
       <div className="stat-value" style={{ fontSize: "1.35rem", marginBottom: 12 }}>
-        {complaints.length} Issue{complaints.length !== 1 ? "s" : ""}
+        {complaints.length} Order{complaints.length !== 1 ? "s" : ""}
       </div>
       <ul className="complaint-list">
         {complaints.map((c, i) => (
           <li className="complaint-item" key={c.id ?? i}>
-            <div className="complaint-thumb">{COMPLAINT_ICONS[i] || "📋"}</div>
+            <div className="complaint-thumb">{"📦"}</div>
             <div className="complaint-info">{c.name}</div>
             <Badge status={c.status} />
           </li>
