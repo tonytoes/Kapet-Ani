@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-
+import { LINK_PATH } from "../data/LinkPath.jsx";
 const NAV_ITEMS = [
   { page: "dashboard",      icon: "bi-grid-1x2-fill", label: "Dashboard" },
   { page: "inventory",      icon: "bi-box-seam",       label: "Inventory" },
@@ -24,7 +24,7 @@ export default function Sidebar({ activePage, onNavigate, collapsed }) {
     if (!user?.id) return;
     const token = localStorage.getItem("token");
 
-    fetch(`http://localhost/backend/controllers/usersController.php`, {
+    fetch(`${LINK_PATH}usersController.php`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(r => r.json())

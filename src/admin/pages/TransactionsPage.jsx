@@ -1,7 +1,9 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Badge from "../components/Badge";
 import PageHeader from "../components/PageHeader";
-const API = "http://localhost/backend/controllers/transactionsController.php";
+import { LINK_PATH } from "../data/LinkPath.jsx";
+
+const API = `${LINK_PATH}transactionsController.php`;
 
 function authHeader() {
   const token = localStorage.getItem("token");

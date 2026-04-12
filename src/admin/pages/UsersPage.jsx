@@ -3,9 +3,9 @@ import Badge from "../components/Badge";
 import PageHeader from "../components/PageHeader";
 import SlidePanel from "../components/SlidePanel";
 import { maskEmail } from "../utils";
+import { LINK_PATH } from "../data/LinkPath.jsx";
 
-const API = "http://localhost/backend/controllers/usersController.php";
-
+const API = `${LINK_PATH}usersController.php`;
 function authHeader() {
   const token = localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};

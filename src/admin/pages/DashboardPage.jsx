@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import Badge from "../components/Badge";
 import "../styles/index.js";
+import { LINK_PATH } from "../data/LinkPath.jsx";
 
-const API = "http://localhost/backend/controllers/dashboardController.php";
+const API = `${LINK_PATH}dashboardController.php`;
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 

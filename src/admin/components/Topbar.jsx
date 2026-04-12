@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { LINK_PATH } from "../data/LinkPath.jsx";
 
 export default function Topbar({ title, onToggle }) {
   const raw  = localStorage.getItem("user");
@@ -18,7 +19,7 @@ export default function Topbar({ title, onToggle }) {
     if (!user?.id) return;
     const token = localStorage.getItem("token");
 
-    fetch(`http://localhost/backend/controllers/usersController.php`, {
+    fetch(`${LINK_PATH}usersController.php`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(r => r.json())
