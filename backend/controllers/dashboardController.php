@@ -61,8 +61,7 @@ function getDashboardStats()
     $stmt = $conn->query("
         SELECT COUNT(*) AS total 
         FROM users
-        WHERE MONTH(created_at) = MONTH(CURDATE())
-          AND YEAR(created_at)  = YEAR(CURDATE())
+        WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
     ");
     $newSignups = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 

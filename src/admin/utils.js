@@ -9,6 +9,8 @@ export function badgeClass(status) {
     Unavailable: "badge-unavailable",
     Admin:       "badge-admin",
     Customer:    "badge-customer",
+    "Low Stock":    "badge-lowstock",
+    "Out of Stock": "badge-outofstock",
   };
   return map[status] || "badge-pending";
 }

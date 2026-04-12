@@ -130,14 +130,14 @@ const STYLES = `
   /* Badges */
   .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: var(--radius-badge); font-size: 0.7rem; font-weight: 700; white-space: nowrap; }
   .badge-paid        { background: #EFF6FF; color: #3B82F6; }
-  .badge-resolved    { background: var(--color-green-bg); color: var(--color-green); }
   .badge-confirmed    { background: var(--color-green-bg); color: var(--color-green); }
   .badge-pending     { background: #FFF7ED; color: var(--color-orange); }
-  .badge-shipped     { background: #fffb0034; color: #b8b16c; }
   .badge-available   { background: var(--color-green-bg); color: var(--color-green); }
   .badge-unavailable { background: var(--color-red-bg); color: var(--color-red); }
   .badge-admin       { background: #F3E8FF; color: #9333EA; }
   .badge-customer    { background: var(--color-blue-bg); color: var(--color-blue); }
+  .badge-outofstock { background: var(--color-red-bg); color: var(--color-red); }
+  .badge-lowstock { background: var(--color-red-bg); color: #ff4c4c; }
 
   /* Page header */
   .page-header { display: flex; align-items: center; gap: 12px; padding: 20px 26px 0; flex-shrink: 0; }

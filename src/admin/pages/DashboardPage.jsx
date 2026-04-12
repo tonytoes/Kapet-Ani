@@ -153,7 +153,7 @@ function LowStockCard({ items }) {
               <tr key={s.no}>
                 <td className="cell-id">{s.no}</td>
                 <td className="cell-bold">{s.name}</td>
-                <td className={s.remaining === 0 ? "stock-low" : "stock-ok"}>{s.remaining}</td>
+                <td className="cell-amount">{s.remaining}</td>
                 <td><Badge status={s.status} /></td>
               </tr>
             ))}
