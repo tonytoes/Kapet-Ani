@@ -4,7 +4,15 @@ ini_set('display_errors', 0);
 error_reporting(0);
 
 $allowedOrigins = ['http://localhost:5173'];
+
+
+
+//website
+//https://cornflowerblue-skunk-618358.hostingersite.com/backend/controllers/
+//local
+//http://localhost/backend/controllers/
 define("LINK_PATH", "http://localhost/backend/controllers/");
+
 
 
 require_once __DIR__ . '/../config/config.php';
