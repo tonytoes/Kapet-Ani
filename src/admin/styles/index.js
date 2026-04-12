@@ -107,6 +107,8 @@ const STYLES = `
   .sell-pct { font-size: 0.76rem; font-weight: 600; color: var(--text-secondary); }
   .sell-track { height: 6px; background: #E5E7EB; border-radius: 99px; overflow: hidden; }
   .sell-fill { height: 100%; border-radius: 99px; background: var(--brand-progress); transition: width 0.6s ease; }
+  .selling-list > div { display: flex; flex-direction: column; gap: 4px;
+}
   .stock-low { color: var(--color-red); font-weight: 700; }
   .stock-ok  { color: var(--brand-mid); font-weight: 700; }
 
@@ -128,12 +130,14 @@ const STYLES = `
   /* Badges */
   .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: var(--radius-badge); font-size: 0.7rem; font-weight: 700; white-space: nowrap; }
   .badge-paid        { background: #EFF6FF; color: #3B82F6; }
-  .badge-resolved    { background: var(--color-green-bg); color: var(--color-green); }
+  .badge-confirmed    { background: var(--color-green-bg); color: var(--color-green); }
   .badge-pending     { background: #FFF7ED; color: var(--color-orange); }
   .badge-available   { background: var(--color-green-bg); color: var(--color-green); }
   .badge-unavailable { background: var(--color-red-bg); color: var(--color-red); }
   .badge-admin       { background: #F3E8FF; color: #9333EA; }
   .badge-customer    { background: var(--color-blue-bg); color: var(--color-blue); }
+  .badge-outofstock { background: var(--color-red-bg); color: var(--color-red); }
+  .badge-lowstock { background: var(--color-red-bg); color: #ff4c4c; }
 
   /* Page header */
   .page-header { display: flex; align-items: center; gap: 12px; padding: 20px 26px 0; flex-shrink: 0; }
@@ -143,8 +147,10 @@ const STYLES = `
   .add-btn:hover { background: var(--brand-dark); transform: scale(1.07); }
   .header-icon-btn { width: 34px; height: 34px; border: 1.5px solid var(--border-light); border-radius: 9px; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); font-size: 0.95rem; }
   .header-icon-btn:hover { background: #F3F4F6; }
-  .categories-btn { display: flex; align-items: center; gap: 7px; padding: 7px 14px; border: 1.5px solid var(--border-light); border-radius: 9px; background: #fff; font-family: var(--font-body); font-size: 0.82rem; font-weight: 500; color: var(--text-secondary); cursor: pointer; transition: background 0.14s; white-space: nowrap; }
-  .categories-btn:hover { background: #F9FAFB; }
+
+  .categories-btn { appearance:none; -webkit-appearance:none; -moz-appearance:none; position:relative; display:flex; align-items:center; padding:7px 36px 7px 14px; border:1.5px solid var(--border-light); border-radius:10px; background-color:#fff; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='gray'%3E%3Cpath d='M3 5l4 4 4-4'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; background-size:12px; font-family:var(--font-body); font-size:0.82rem; font-weight:500; color:var(--text-secondary); cursor:pointer; transition:background-color 0.18s ease, border-color 0.18s ease; white-space:nowrap; line-height:1; }
+  .categories-btn:focus { outline:none; border-color:var(--brand-mid); box-shadow:0 0 0 3px rgba(201,135,58,0.15); }
+
   .search-box { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border: 1.5px solid var(--border-light); border-radius: 9px; background: #fff; transition: border-color 0.14s; }
   .search-box:focus-within { border-color: var(--brand-mid); }
   .search-box i { color: var(--text-muted); font-size: 0.85rem; }

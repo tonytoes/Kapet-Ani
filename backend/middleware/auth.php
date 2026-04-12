@@ -1,5 +1,5 @@
 <?php
-require 'jwt.php';
+require_once __DIR__ . '/../helpers/jwt.php';
 
 function getUserFromToken()
 {

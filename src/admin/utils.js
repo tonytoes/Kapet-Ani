@@ -2,12 +2,15 @@
 export function badgeClass(status) {
   const map = {
     Paid:        "badge-paid",
-    Resolved:    "badge-resolved",
-    Pending:     "badge-pending",
+    confirmed:   "badge-confirmed",
+    shipped:     "badge-shipped",
+    pending:     "badge-pending",
     Available:   "badge-available",
     Unavailable: "badge-unavailable",
     Admin:       "badge-admin",
     Customer:    "badge-customer",
+    "Low Stock":    "badge-lowstock",
+    "Out of Stock": "badge-outofstock",
   };
   return map[status] || "badge-pending";
 }
