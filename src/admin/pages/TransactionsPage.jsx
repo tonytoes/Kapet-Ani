@@ -1,9 +1,18 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
-import Badge from "../components/Badge";
-import PageHeader from "../components/PageHeader";
-import { LINK_PATH } from "../data/LinkPath.jsx";
+/**
+ * src/admin/pages/TransactionsPage.jsx
+ * Cache key: "transactions"
+ * Read-only page — no mutations, so cache is never busted here.
+ * If you ever add a "cancel order" button, call cache.invalidate("transactions") after it.
+ */
 
-const API = `${LINK_PATH}Transactionscontroller.php`;
+import { useState, useMemo, useEffect, useCallback } from "react";
+import Badge       from "../components/Badge";
+import PageHeader  from "../components/PageHeader";
+import { LINK_PATH } from "../data/LinkPath.jsx";
+import { useCache }  from "../data/CacheContext";   // ← NEW
+
+const API       = `${LINK_PATH}Transactionscontroller.php`;
+const CACHE_KEY = "transactions";
 
 function authHeader() {
   const token = localStorage.getItem("token");
@@ -11,27 +20,40 @@ function authHeader() {
 }
 
 export default function TransactionsPage() {
-  const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading]           = useState(true);
+  const cache = useCache();   // ← NEW
+
+  const [transactions, setTransactions] = useState(() => cache.get(CACHE_KEY) ?? []);
+  const [loading, setLoading]           = useState(() => cache.get(CACHE_KEY) === null);
   const [error, setError]               = useState(null);
   const [search, setSearch]             = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortOrder, setSortOrder]       = useState("desc");
 
   const loadTransactions = useCallback(async () => {
+    // Serve from cache if available
+    if (cache.get(CACHE_KEY) !== null) {
+      setTransactions(cache.get(CACHE_KEY));
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
       const res  = await fetch(API, { headers: authHeader() });
       const data = await res.json();
-      if (data.success) setTransactions(data.transactions);
-      else throw new Error(data.message);
+      if (data.success) {
+        setTransactions(data.transactions);
+        cache.set(CACHE_KEY, data.transactions);   // ← store in cache
+      } else {
+        throw new Error(data.message);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [cache]);
 
   useEffect(() => { loadTransactions(); }, [loadTransactions]);
 
@@ -48,7 +70,6 @@ export default function TransactionsPage() {
       res = res.filter(t => t.status === statusFilter);
     }
 
-    // Sort by raw Unix timestamp — newest first (desc) or oldest first (asc)
     res = [...res].sort((a, b) =>
       sortOrder === "asc" ? a.timestamp - b.timestamp : b.timestamp - a.timestamp
     );

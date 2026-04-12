@@ -1,20 +1,26 @@
+/**
+ * src/admin/App.jsx  — wrap everything in <CacheProvider>
+ * Only this file changes from your original App.jsx.
+ */
+
 import { useState } from "react";
 import STYLES from "./styles";
-import Sidebar from "./components/Sidebar";
-import Topbar from "./components/Topbar";
+import Sidebar               from "./components/Sidebar";
+import Topbar                from "./components/Topbar";
 import DashboardPage         from "./pages/DashboardPage";
 import InventoryPage         from "./pages/InventoryPage";
 import InventoryAlertPage    from "./pages/InventoryAlertPage";
 import UsersPage             from "./pages/UsersPage";
 import ComplaintsPage        from "./pages/ComplaintsPage";
 import TransactionsPage      from "./pages/TransactionsPage";
+import { CacheProvider }     from "./data/CacheContext";   // ← NEW
 
 const PAGE_TITLES = {
-  dashboard:    "Dashboard",
-  inventory:    "Inventory",
+  dashboard:      "Dashboard",
+  inventory:      "Inventory",
   inventoryalert: "Inventory Alert",
-  users:        "Users",
-  transactions: "Transactions",
+  users:          "Users",
+  transactions:   "Transactions",
 };
 
 const PAGES = {
@@ -31,7 +37,8 @@ export default function App() {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <>
+    // ↓ CacheProvider wraps everything so all pages share one cache
+    <CacheProvider>
       <style>{STYLES}</style>
       <link
         rel="stylesheet"
@@ -53,6 +60,6 @@ export default function App() {
           {PAGES[page]}
         </div>
       </div>
-    </>
+    </CacheProvider>
   );
 }
