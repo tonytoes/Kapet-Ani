@@ -86,11 +86,15 @@ function extractImage(): ?array
     $maxBytes = 10 * 1024 * 1024;
 
     if ($file['size'] > $maxBytes) {
-        sendResponse(400, false, 'Image must be under 2 MB');
+        sendResponse(400, false, 'Image must be under 10 MB');
     }
 
+    // ✅ FIX: reliable MIME detection (works on Hostinger)
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mime  = finfo_file($finfo, $file['tmp_name']);
+    finfo_close($finfo);
+
     $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    $mime    = mime_content_type($file['tmp_name']);
 
     if (!in_array($mime, $allowed)) {
         sendResponse(400, false, 'Only JPG, PNG, GIF, and WEBP images are allowed');
@@ -129,7 +133,7 @@ function listUsers(): void
     $formatted = array_map(function ($u) {
         $imageUrl = null;
         if (!empty($u['image_blob']) && !empty($u['image_type'])) {
-            $imageUrl = 'data:' . $u['image_type'] . ';base64,' . base64_encode($u['image_blob']);
+            $imageUrl = "https://cornflowerblue-skunk-618358.hostingersite.com/?id=" . $u['id'];
         }
 
         return [
