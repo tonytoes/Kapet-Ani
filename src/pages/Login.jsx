@@ -3,9 +3,9 @@ import logo from "../assets/images/logo.png";
 import lady from "../assets/images/lady.jpg";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { LINK_PATH } from "../admin/data/LinkPath.jsx";
 
-const API =
-  "https://localhost/backend/controllers/authController.php";
+const API = `${LINK_PATH}authController.php`;
 
 function Login() {
   const [activeForm, setActiveForm] = useState("login");
