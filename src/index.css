@@ -38,3 +38,7 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: #5c2e0a;
 }
+
+.text-caramel {
+  color: var(--golden-caramel);
+}

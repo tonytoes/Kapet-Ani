@@ -7,10 +7,8 @@ import CartDrawer from "../layout/CartDrawer";
 function Navbar({ activePage }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [user, setUser] = useState(null); // 👈 add this
-
+  const [user, setUser] = useState(null); 
   useEffect(() => {
-    // 👈 grab user from localStorage
     const storedUser = localStorage.getItem("user");
     if (storedUser) setUser(JSON.parse(storedUser));
   }, []);

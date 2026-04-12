@@ -3,7 +3,7 @@ import Badge from "../components/Badge";
 import PageHeader from "../components/PageHeader";
 import { LINK_PATH } from "../data/LinkPath.jsx";
 
-const API = `${LINK_PATH}transactionsController.php`;
+const API = `${LINK_PATH}Transactionscontroller.php`;
 
 function authHeader() {
   const token = localStorage.getItem("token");

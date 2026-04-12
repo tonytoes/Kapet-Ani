@@ -1,8 +1,50 @@
-.login-section {
+.login-page {
   display: flex;
-  justify-content: center;
-  align-items: center;
   min-height: 100vh;
+}
+
+.login-left {
+  flex: 0 0 50%;
+  background: #0d1f2d;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3rem;
+  color: white;
+  position: relative;
+  z-index: 2;
+  clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
+}
+
+.login-bg {
+  position: absolute;
+  inset: 0;
+  background: url("../assets/images/lady.jpg") center/cover no-repeat;
+  animation: bgZoom 12s ease-out forwards;
+}
+
+.accent-line {
+  width: 6px;
+  min-height: 15rem;
+  background: var(--golden-caramel);
+  border-radius: 2px;
+  flex-shrink: 0;
+  transform: rotate(9deg);
+}
+
+.login-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 18, 10, 0.75);
+}
+
+.login-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fb;
+  padding: 3rem 2rem;
 }
 
 .form-box {
@@ -19,13 +61,6 @@
 .form-box.active {
   display: block;
   border-color: var(--brown-warm);
-}
-
-h2 {
-  color: var(--golden-caramel);
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  text-align: center;
 }
 
 .input1 {
@@ -61,7 +96,7 @@ h2 {
   transition: 0.5s;
 }
 
-button:hover {
+.button1:hover {
   position: relative;
   background: var(--forest-sage);
   transform: translateY(-2px);
@@ -91,4 +126,35 @@ button:hover {
   color: #a42834;
   text-align: center;
   margin-bottom: 20px;
+}
+
+.login-wrapper {
+  width: 100%;
+  max-width: 420px;
+}
+
+.login-tabs {
+  display: flex;
+  border-bottom: 1.5px solid #dee2e6;
+  margin-bottom: 1.5rem;
+}
+
+.login-tab {
+  background: none;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  padding: 0.6rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #94a3b8;
+  cursor: pointer;
+  margin-bottom: -1.5px;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+
+.login-tab.active {
+  color: var(--golden-caramel);
+  border-bottom-color: var(--golden-caramel);
 }
