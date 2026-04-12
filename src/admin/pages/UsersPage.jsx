@@ -12,7 +12,6 @@ function authHeader() {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-// Fires a custom event so Sidebar and Topbar know to re-fetch
 function notifyUserUpdated() {
   window.dispatchEvent(new Event("userUpdated"));
 }
@@ -25,31 +24,68 @@ const EMPTY_FORM = {
   status:     "user",
 };
 
+// ─── Toast ─────────────────────────────────────────────────────────────────
+
+function Toast({ toasts }) {
+  return (
+    <div style={{
+      position: "fixed", bottom: 24, right: 24,
+      display: "flex", flexDirection: "column", gap: 10,
+      zIndex: 9999, pointerEvents: "none",
+    }}>
+      {toasts.map(t => (
+        <div key={t.id} style={{
+          display: "flex", alignItems: "center", gap: 10,
+          padding: "12px 18px",
+          borderRadius: 12,
+          background: t.type === "success" ? "#F0FDF4"
+                    : t.type === "error"   ? "#FEF2F2"
+                    : t.type === "loading" ? "#FFFBEB"
+                    : "#EFF6FF",
+          border: `1.5px solid ${
+            t.type === "success" ? "#86EFAC"
+          : t.type === "error"   ? "#FCA5A5"
+          : t.type === "loading" ? "#FCD34D"
+          : "#BFDBFE"}`,
+          boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+          fontSize: "0.83rem", fontWeight: 600,
+          color: t.type === "success" ? "#15803D"
+               : t.type === "error"   ? "#DC2626"
+               : t.type === "loading" ? "#B45309"
+               : "#1D4ED8",
+          minWidth: 220, maxWidth: 340,
+          animation: "slideUp 0.2s ease",
+          pointerEvents: "auto",
+        }}>
+          <i className={`bi ${
+            t.type === "success" ? "bi-check-circle-fill"
+          : t.type === "error"   ? "bi-x-circle-fill"
+          : t.type === "loading" ? "bi-arrow-repeat spin"
+          : "bi-info-circle-fill"
+          }`} style={{ fontSize: "1rem", flexShrink: 0 }} />
+          {t.message}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Image Block ───────────────────────────────────────────────────────────
+
 function ImageBlock({ preview, onFileChange, onRemove }) {
   const inputRef = useRef(null);
-
   return (
     <div className="panel-image-block">
       <div className="panel-img-placeholder">
         {preview ? (
-          <img
-            src={preview}
-            alt="User avatar"
-            style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit" }}
-          />
+          <img src={preview} alt="User avatar"
+            style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit" }} />
         ) : (
           <i className="bi bi-person" />
         )}
       </div>
-
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/gif,image/webp"
-        style={{ display: "none" }}
-        onChange={onFileChange}
-      />
-
+      <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/gif,image/webp"
+        style={{ display: "none" }} onChange={onFileChange} />
       <div className="panel-img-actions">
         <button type="button" className="btn btn-outline btn-sm" onClick={() => inputRef.current?.click()}>
           {preview ? "Change Image" : "Add Image"}
@@ -64,15 +100,15 @@ function ImageBlock({ preview, onFileChange, onRemove }) {
   );
 }
 
+// ─── User Form ─────────────────────────────────────────────────────────────
+
 function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveImage }) {
   const fields = [
     { label: "First Name", id: "first_name", type: "text",  placeholder: "First name" },
     { label: "Last Name",  id: "last_name",  type: "text",  placeholder: "Last name" },
     { label: "Email",      id: "email",      type: "email", placeholder: "email@example.com" },
     {
-      label: "Password",
-      id: "password",
-      type: "text",
+      label: "Password", id: "password", type: "text",
       placeholder: mode === "edit" ? "Leave blank to keep current" : "Password",
     },
   ];
@@ -80,20 +116,13 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
   return (
     <>
       <ImageBlock preview={imagePreview} onFileChange={onFileChange} onRemove={onRemoveImage} />
-
       {fields.map(f => (
         <div className="form-group" key={f.id}>
           <label className="form-label">{f.label}</label>
-          <input
-            className="form-control"
-            type={f.type}
-            placeholder={f.placeholder}
-            value={form[f.id]}
-            onChange={e => onChange(f.id, e.target.value)}
-          />
+          <input className="form-control" type={f.type} placeholder={f.placeholder}
+            value={form[f.id]} onChange={e => onChange(f.id, e.target.value)} />
         </div>
       ))}
-
       <div className="form-group">
         <label className="form-label">Role</label>
         <select className="form-control" value={form.status} onChange={e => onChange("status", e.target.value)}>
@@ -105,10 +134,11 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
   );
 }
 
+// ─── Main Page ─────────────────────────────────────────────────────────────
+
 export default function UsersPage() {
   const [users,      setUsers]      = useState([]);
   const [loading,    setLoading]    = useState(true);
-  const [error,      setError]      = useState(null);
   const [saving,     setSaving]     = useState(false);
   const [search,     setSearch]     = useState("");
   const [panelOpen,  setPanelOpen]  = useState(false);
@@ -121,22 +151,42 @@ export default function UsersPage() {
   const [imagePreview, setImagePreview] = useState(null);
   const [removeImage,  setRemoveImage]  = useState(false);
 
-  const loadUsers = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  // ─── Toast state ─────────────────────────────────────────────────────────
+  const [toasts, setToasts] = useState([]);
+  const toastCounter = useRef(0);
+
+  function showToast(message, type = "success", duration = 3000) {
+    const id = ++toastCounter.current;
+    setToasts(prev => [...prev, { id, message, type }]);
+    if (type !== "loading") {
+      setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), duration);
+    }
+    return id;
+  }
+
+  function dismissToast(id) {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  }
+
+  // ─── Fetch ───────────────────────────────────────────────────────────────
+
+  const loadUsers = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const res  = await fetch(API, { headers: authHeader() });
       const data = await res.json();
       if (data.success) setUsers(data.users);
       else throw new Error(data.message);
     } catch (err) {
-      setError(err.message);
+      showToast(err.message || "Failed to load users", "error");
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => { loadUsers(); }, [loadUsers]);
+
+  // ─── Filter + Sort ───────────────────────────────────────────────────────
 
   const filtered = useMemo(() => {
     let res = [...users];
@@ -146,6 +196,8 @@ export default function UsersPage() {
     res.sort((a, b) => sortOrder === "asc" ? a.id - b.id : b.id - a.id);
     return res;
   }, [users, search, roleFilter, sortOrder]);
+
+  // ─── Image handlers ──────────────────────────────────────────────────────
 
   function handleFileChange(e) {
     const file = e.target.files?.[0];
@@ -160,6 +212,8 @@ export default function UsersPage() {
     setImagePreview(null);
     setRemoveImage(true);
   }
+
+  // ─── Panel helpers ───────────────────────────────────────────────────────
 
   function updateForm(key, value) {
     setForm(prev => ({ ...prev, [key]: value }));
@@ -208,18 +262,23 @@ export default function UsersPage() {
     return fd;
   }
 
+  // ─── CRUD ─────────────────────────────────────────────────────────────────
+
   async function handleAdd() {
     setSaving(true);
-    setError(null);
+    const loadId = showToast("Adding user…", "loading");
     try {
       const res  = await fetch(API, { method: "POST", headers: authHeader(), body: buildFormData() });
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
-      await loadUsers();
+      dismissToast(loadId);
+      showToast("User added successfully", "success");
+      await loadUsers(true);
       notifyUserUpdated();
       handleClose();
     } catch (err) {
-      setError(err.message);
+      dismissToast(loadId);
+      showToast(err.message || "Failed to add user", "error");
     } finally {
       setSaving(false);
     }
@@ -227,16 +286,19 @@ export default function UsersPage() {
 
   async function handleUpdate() {
     setSaving(true);
-    setError(null);
+    const loadId = showToast("Saving changes…", "loading");
     try {
       const res  = await fetch(API, { method: "POST", headers: authHeader(), body: buildFormData({ id: selectedId, _method: "PUT" }) });
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
-      await loadUsers();
-      notifyUserUpdated(); // ← tells Sidebar + Topbar to re-fetch
+      dismissToast(loadId);
+      showToast("User updated successfully", "success");
+      await loadUsers(true);
+      notifyUserUpdated();
       handleClose();
     } catch (err) {
-      setError(err.message);
+      dismissToast(loadId);
+      showToast(err.message || "Failed to update user", "error");
     } finally {
       setSaving(false);
     }
@@ -245,20 +307,25 @@ export default function UsersPage() {
   async function handleDelete() {
     if (!window.confirm("Delete this user?")) return;
     setSaving(true);
-    setError(null);
+    const loadId = showToast("Deleting user…", "loading");
     try {
       const res  = await fetch(API, { method: "DELETE", headers: { "Content-Type": "application/json", ...authHeader() }, body: JSON.stringify({ id: selectedId }) });
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
-      await loadUsers();
+      dismissToast(loadId);
+      showToast("User deleted", "success");
+      await loadUsers(true);
       notifyUserUpdated();
       handleClose();
     } catch (err) {
-      setError(err.message);
+      dismissToast(loadId);
+      showToast(err.message || "Failed to delete user", "error");
     } finally {
       setSaving(false);
     }
   }
+
+  // ─── UI ───────────────────────────────────────────────────────────────────
 
   const userCategories = [
     { value: "all",   label: "All" },
@@ -268,6 +335,18 @@ export default function UsersPage() {
 
   return (
     <>
+      {/* Spin animation for loading toast */}
+      <style>{`
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(12px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .spin { animation: spin 0.8s linear infinite; display: inline-block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+      `}</style>
+
+      <Toast toasts={toasts} />
+
       <div className="page-area">
         <PageHeader
           title="Users"
@@ -281,12 +360,6 @@ export default function UsersPage() {
           sortOrder={sortOrder}
           onToggleSort={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")}
         />
-
-        {error && (
-          <div className="card card-padded" style={{ color: "#ef4444", marginBottom: 16 }}>
-            {error}
-          </div>
-        )}
 
         <div className="split-layout">
           <div className="split-table-wrap">
@@ -305,9 +378,23 @@ export default function UsersPage() {
                 </thead>
                 <tbody>
                   {loading ? (
-                    <tr><td colSpan={7} style={{ textAlign: "center", padding: 32 }}>Loading users…</td></tr>
+                    <tr>
+                      <td colSpan={7} style={{ textAlign: "center", padding: 40 }}>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, color: "var(--text-muted)" }}>
+                          <i className="bi bi-arrow-repeat spin" style={{ fontSize: "1.4rem", color: "var(--brand-mid)" }} />
+                          <span style={{ fontSize: "0.83rem" }}>Loading users…</span>
+                        </div>
+                      </td>
+                    </tr>
                   ) : filtered.length === 0 ? (
-                    <tr><td colSpan={7} style={{ textAlign: "center", padding: 32 }}>No users found.</td></tr>
+                    <tr>
+                      <td colSpan={7} style={{ textAlign: "center", padding: 40 }}>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, color: "var(--text-muted)" }}>
+                          <i className="bi bi-people" style={{ fontSize: "1.6rem" }} />
+                          <span style={{ fontSize: "0.83rem" }}>No users found</span>
+                        </div>
+                      </td>
+                    </tr>
                   ) : (
                     filtered.map(u => (
                       <tr
@@ -318,13 +405,10 @@ export default function UsersPage() {
                         <td className="cell-id">{u.id}</td>
                         <td>
                           {u.image_url ? (
-                            <img
-                              src={`${u.image_url}&t=${Date.now()}`}
-                              alt={u.username}
-                              style={{ width: 36, height: 36, borderRadius: "50%", objectFit: "cover", display: "block" }}
-                            />
+                            <img src={`${u.image_url}&t=${Date.now()}`} alt={u.username}
+                              style={{ width: 36, height: 36, borderRadius: "50%", objectFit: "cover", display: "block" }} />
                           ) : (
-                            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--bg-muted, #e5e7eb)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, color: "var(--text-muted, #9ca3af)" }}>
+                            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--bg-muted,#e5e7eb)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, color: "var(--text-muted,#9ca3af)" }}>
                               <i className="bi bi-person" />
                             </div>
                           )}
@@ -352,12 +436,16 @@ export default function UsersPage() {
         footer={panelMode === "edit" ? (
           <>
             <button className="btn btn-delete"  onClick={handleDelete} disabled={saving}>Delete</button>
-            <button className="btn btn-update"  onClick={handleUpdate} disabled={saving}>Update</button>
+            <button className="btn btn-update"  onClick={handleUpdate} disabled={saving}>
+              {saving ? <><i className="bi bi-arrow-repeat spin" /> Saving…</> : "Update"}
+            </button>
           </>
         ) : (
           <>
-            <button className="btn btn-cancel"  onClick={handleClose} disabled={saving}>Cancel</button>
-            <button className="btn btn-primary" onClick={handleAdd}   disabled={saving}>Add</button>
+            <button className="btn btn-cancel"  onClick={handleClose}  disabled={saving}>Cancel</button>
+            <button className="btn btn-primary" onClick={handleAdd}    disabled={saving}>
+              {saving ? <><i className="bi bi-arrow-repeat spin" /> Adding…</> : "Add"}
+            </button>
           </>
         )}
       >
