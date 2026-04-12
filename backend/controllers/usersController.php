@@ -4,6 +4,8 @@ ini_set('display_errors', 0);
 error_reporting(0);
 
 $allowedOrigins = ['http://localhost:5173'];
+define("LINK_PATH", "http://localhost/backend/controllers/");
+
 
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../helpers/jwt.php';
@@ -133,7 +135,7 @@ function listUsers(): void
     $formatted = array_map(function ($u) {
         $imageUrl = null;
         if (!empty($u['image_blob']) && !empty($u['image_type'])) {
-            $imageUrl = "http://localhost/backend/controllers/getImage.php?id=" . $u['id'];
+            $imageUrl = LINK_PATH . "getImage.php?id=" . $u['id'];
         }
 
         return [
