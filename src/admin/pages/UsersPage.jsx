@@ -79,10 +79,9 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
     {
       label: "Password",
       id: "password",
-      type: "text",
+      type: "password", 
       placeholder: mode === "edit" ? "Leave blank to keep current" : "Password",
     },
-    { label: "Role", id: "status", type: "text", placeholder: "user / admin / staff" },
   ];
 
   return (
@@ -105,6 +104,17 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
           />
         </div>
       ))}
+      <div className="form-group">
+        <label className="form-label">Role</label>
+        <select
+          className="form-control"
+          value={form.status}
+          onChange={e => onChange("status", e.target.value)}
+        >
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
     </>
   );
 }
@@ -204,7 +214,7 @@ export default function UsersPage() {
       last_name:  user.last_name  ?? "",
       email:      user.email,
       password:   "",
-      status:     user.status,
+      status: user.status?.toLowerCase(),
     });
     resetImageState(user.image_url ?? null);
     setPanelMode("edit");
