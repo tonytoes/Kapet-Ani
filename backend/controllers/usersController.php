@@ -133,7 +133,7 @@ function listUsers(): void
     $formatted = array_map(function ($u) {
         $imageUrl = null;
         if (!empty($u['image_blob']) && !empty($u['image_type'])) {
-            $imageUrl = "https://cornflowerblue-skunk-618358.hostingersite.com/?id=" . $u['id'];
+            $imageUrl = "http://localhost/backend/controllers/getImage.php?id=" . $u['id'];
         }
 
         return [
