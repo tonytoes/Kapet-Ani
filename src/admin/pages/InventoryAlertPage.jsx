@@ -54,7 +54,7 @@ function InventoryForm({ form, onChange }) {
   // Fetch categories once
   useEffect(() => {
     // axios.get("https://lightsteelblue-turkey-336447.hostingersite.com/backend/inventory_alert_backend/categories.php") // replace with your PHP endpoint
-    axios.get("http://localhost/kapetAniDB/inventory_alert_backend/categories.php")
+    axios.get("http://localhost/backend/inventory_alert_backend/categories.php")
     
       .then(res =>{ 
         if (Array.isArray(res.data)) {
@@ -71,7 +71,8 @@ function InventoryForm({ form, onChange }) {
     if (!form.category) return;
 
     // axios.get(`https://lightsteelblue-turkey-336447.hostingersite.com/backend/inventory_alert_backend/products.php?category_id=${form.category}`)
-    axios.get(`http://localhost/kapetAniDB/inventory_alert_backend/products.php?category_id=${form.category}`)
+    axios.get(`http://localhost/backend/inventory_alert_backend/products.php?category_id=${form.category}`)
+    
       .then(res => {
         if (Array.isArray(res.data)) {
           setProducts(res.data);
@@ -122,9 +123,9 @@ function InventoryForm({ form, onChange }) {
         </select>
       </div>
 
-      <div className="form-row cols-2">    
+      {/* <div className="form-row cols-2">     */}
 
-        {/* Attribute */}
+        {/* Attribute
         <div className="form-group">
           <label className="form-label">Attribute</label>
           <select
@@ -136,7 +137,7 @@ function InventoryForm({ form, onChange }) {
             <option value="0" disabled>Select attribute</option>
             <option value="Quantity">Quantity</option>
           </select>
-        </div>
+        </div> */}
 
         {/* Conditions */}
         <div className="form-group">
@@ -155,7 +156,7 @@ function InventoryForm({ form, onChange }) {
             <option value="<=">Less Than or Equal To</option>
           </select>
         </div>
-      </div>  
+      {/* </div>   */}
 
 
       <div className="form-row cols-2">
@@ -174,8 +175,8 @@ function InventoryForm({ form, onChange }) {
             onChange={e => onChange("status", e.target.value)}
           >
             <option value="0" disabled>Select condition</option>
-            <option value="1">Available</option>
-            <option value="2">Unavailable</option>
+            <option value="1">Online</option>
+            <option value="2">Offline</option>
           </select>
         </div>
       </div>
@@ -200,7 +201,7 @@ export default function InventoryAlertPage() {
     formData.append("status", form.status);
 
     // axios.post("https://lightsteelblue-turkey-336447.hostingersite.com/backend/inventory_alert_backend/submit.php", formData)
-       axios.post("http://localhost/kapetAniDB/inventory_alert_backend/submit.php", formData)
+       axios.post("http://localhost/backend/inventory_alert_backend/submit.php", formData)
       .then(res => {
         fetchProducts();
       })
@@ -222,9 +223,10 @@ export default function InventoryAlertPage() {
     formData.append("created_at", form.created_at);
 
     // axios.post("https://lightsteelblue-turkey-336447.hostingersite.com/backend/inventory_alert_backend/submit.php", formData)
-       axios.post("http://localhost/kapetAniDB/inventory_alert_backend/update.php", formData)
+       axios.post("http://localhost/backend/inventory_alert_backend/update.php", formData)
       .then(res => {
         fetchProducts();
+        handleClose();
       })
       .catch(err => console.error(err));
       
@@ -234,7 +236,7 @@ export default function InventoryAlertPage() {
     const formData = new FormData();
     formData.append("rule_id", form.rule_id);
     
-     axios.post("http://localhost/kapetAniDB/inventory_alert_backend/delete.php", formData)
+     axios.post("http://localhost/backend/inventory_alert_backend/delete.php", formData)
       .then(res => {
         fetchProducts();
       })
@@ -253,7 +255,7 @@ export default function InventoryAlertPage() {
 
   const fetchProducts = (event) =>{
     // axios.get("https://lightsteelblue-turkey-336447.hostingersite.com/backend/inventory_alert_backend/fetch.php")
-    axios.get("http://localhost/kapetAniDB/inventory_alert_backend/fetch.php")
+    axios.get("http://localhost/backend/inventory_alert_backend/fetch.php")
       .then(res => {
           console.log(res.data);
           setProducts(res.data);

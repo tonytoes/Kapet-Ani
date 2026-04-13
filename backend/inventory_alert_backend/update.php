@@ -11,8 +11,7 @@
     $created_at = $_POST['created_at'] ?? null;
     
     try {
-        $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
     
         // Fetch data
         $stmt = $conn->query("UPDATE  inventory_alert 
