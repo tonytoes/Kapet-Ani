@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import anthonyy from '../assets/images/anthonyy.png';
 import elaizaa from '../assets/images/elaizaa.jpg';
 import reuel from '../assets/images/reuel.jpg';
-import samuel from '../assets/images/samuel.jpg';
+import samuel from '../assets/images/samuel.jpeg';
 import jmm from '../assets/images/jmm.png';
 import miura from '../assets/images/miura.png';
 import aboutcoffee from '../assets/images/aboutcoffee.jpg';
