@@ -2,19 +2,15 @@
 export function badgeClass(status) {
   const map = {
     Paid:        "badge-paid",
-    confirmed:   "badge-confirmed",
-    shipped:     "badge-shipped",
-    pending:     "badge-pending",
+    Resolved:    "badge-resolved",
+    Pending:     "badge-pending",
     Available:   "badge-available",
     Unavailable: "badge-unavailable",
     Warning:     "badge-unavailable",
     Normal:      "badge-available",
     Offline:     "badge-pending",
-    cancelled: "badge-cancelled",
     Admin:       "badge-admin",
     Customer:    "badge-customer",
-    "Low Stock":    "badge-lowstock",
-    "Out of Stock": "badge-outofstock",
   };
   return map[status] || "badge-pending";
 }
