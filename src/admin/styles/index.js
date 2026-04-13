@@ -52,14 +52,24 @@ const STYLES = `
   .sidebar-logo-img img { width: 100%; height: 700%; object-fit: contain; }
   .kp-sidebar-nav { flex: 1; padding: 16px 12px; list-style: none; }
   .kp-sidebar-nav li { margin-bottom: 3px; }
-  .kp-sidebar-nav a { display: flex; align-items: center; gap: 11px; padding: 9px 13px; border-radius: 9px; color: var(--text-sidebar); text-decoration: none; font-size: 0.855rem; font-weight: 500; transition: background 0.15s, color 0.15s; cursor: pointer; }
-  .kp-sidebar-nav a i { font-size: 0.95rem; width: 17px; text-align: center; opacity: 0.75; }
-  .kp-sidebar-nav a:hover { background: rgba(255,255,255,0.14); color: #fff; }
-  .kp-sidebar-nav a.active { background: rgba(255,255,255,0.22); color: #fff; font-weight: 600; }
+  /* BUTTON ENHANCED */
+  .kp-sidebar-nav a { display: flex; align-items: center; gap: 11px; padding: 9px 13px; border-radius: 9px; color: var(--text-sidebar); text-decoration: none; font-size: 0.855rem; font-weight: 500; cursor: pointer; transition: all 0.18s ease; position: relative; overflow: hidden; }
+  .kp-sidebar-nav a i { font-size: 0.95rem; width: 17px; text-align: center; opacity: 0.75; transition: transform 0.2s ease, opacity 0.2s ease; }
+  /* hover = lift + glow */
+  .kp-sidebar-nav a:hover { background: rgba(255,255,255,0.16); color: #fff; transform: translateX(4px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  .kp-sidebar-nav a:hover i { transform: scale(1.15); opacity: 1; }
+  /* active = stronger + inset glow */
+  .kp-sidebar-nav a.active { background: rgba(255,255,255,0.22); color: #fff; font-weight: 600; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15), 0 4px 14px rgba(0,0,0,0.18); }
+  /* subtle shine effect */
+  .kp-sidebar-nav a::after { content: ""; position: absolute; top: 0; left: -75%; width: 50%; height: 100%; background: linear-gradient(120deg, transparent, rgba(255,255,255,0.25), transparent); transform: skewX(-20deg); transition: 0.4s; }
+  .kp-sidebar-nav a:hover::after { left: 130%; }
+  /* click feedback */
+  .kp-sidebar-nav a:active { transform: scale(0.96); box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
   .sidebar-profile { padding: 14px 18px; border-top: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; gap: 11px; }
   .profile-avatar { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.22); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: #fff; font-weight: 700; flex-shrink: 0; cursor: pointer; }
   .profile-name { font-size: 0.78rem; font-weight: 600; color: #fff; line-height: 1.2; }
   .profile-role { font-size: 0.68rem; color: rgba(255,255,255,0.6); }
+
 
   /* Topbar */
   .kp-topbar { background: var(--bg-card); height: var(--topbar-height); padding: 0 26px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-light); position: sticky; top: 0; z-index: 100; flex-shrink: 0; }
