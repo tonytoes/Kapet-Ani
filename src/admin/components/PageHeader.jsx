@@ -4,13 +4,12 @@ export default function PageHeader({
   search,
   onSearch,
   showCategories = false,
-
-  categories = [],        // 👈 NEW
+  categories = [],
   categoryValue,
   onCategoryChange,
-
   sortOrder,
-  onToggleSort
+  onToggleSort,
+  extraActions,        // ← NEW
 }) {
   return (
     <div className="page-header">
@@ -25,6 +24,8 @@ export default function PageHeader({
 
       <div className="page-header-controls">
 
+        {extraActions}   {/* ← renders the Categories button (or anything else) */}
+
         <button className="header-icon-btn" title="Sort" onClick={onToggleSort}>
           <i className={`bi bi-sort-${sortOrder === "asc" ? "up" : "down"}`}></i>
         </button>
@@ -36,7 +37,7 @@ export default function PageHeader({
             onChange={(e) => onCategoryChange(e.target.value)}
           >
             {categories.map(c => (
-              <option key={c.value} value={c.value}>
+              <option key={c.value} value={c.value} disabled={c.disabled}>
                 {c.label}
               </option>
             ))}
