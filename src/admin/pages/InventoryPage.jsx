@@ -1,8 +1,8 @@
 /**
  * src/admin/pages/InventoryPage.jsx
- * - Product SlidePanel: form with category <select> (names from DB)
- * - Separate "Manage Categories" SlidePanel opened via its own button
- * - Merged stock+category filter in the header bar
+ * - Product ID is shown (read-only) in edit mode as a reference field
+ *   but can be manually overridden if needed
+ * - Product ID is hidden in add mode (auto-assigned by DB)
  */
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
@@ -83,10 +83,25 @@ function ImageBlock({ preview, onFileChange, onRemove }) {
 
 // ─── Product Form ─────────────────────────────────────────────────────────────
 
-function InventoryForm({ form, onChange, imagePreview, onFileChange, onRemoveImage, categories }) {
+function InventoryForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveImage, categories }) {
   return (
     <>
       <ImageBlock preview={imagePreview} onFileChange={onFileChange} onRemove={onRemoveImage} />
+
+      {/* Product ID — only visible in edit mode */}
+      {mode === "edit" && (
+        <div className="form-group">
+          <label className="form-label">Product ID</label>
+          <input
+            className="form-control"
+            type="number"
+            min="1"
+            placeholder="ID"
+            value={form.edit_id ?? ""}
+            onChange={e => onChange("edit_id", e.target.value)}
+          />
+        </div>
+      )}
 
       <div className="form-group">
         <label className="form-label">Name</label>
@@ -127,7 +142,7 @@ function InventoryForm({ form, onChange, imagePreview, onFileChange, onRemoveIma
   );
 }
 
-// ─── Manage Categories Panel content ─────────────────────────────────────────
+// ─── Manage Categories Panel ──────────────────────────────────────────────────
 
 function ManageCategoriesPanel({ categories, onAdd, onDelete, saving }) {
   const [newName, setNewName] = useState("");
@@ -141,7 +156,6 @@ function ManageCategoriesPanel({ categories, onAdd, onDelete, saving }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      {/* Add new */}
       <div>
         <label className="form-label">New Category</label>
         <div style={{ display: "flex", gap: 8 }}>
@@ -164,10 +178,8 @@ function ManageCategoriesPanel({ categories, onAdd, onDelete, saving }) {
         </div>
       </div>
 
-      {/* Divider */}
       <div style={{ borderTop: "1px solid var(--border, #e5e7eb)" }} />
 
-      {/* List */}
       <div>
         <div className="form-label" style={{ marginBottom: 10 }}>
           Existing Categories
@@ -201,8 +213,7 @@ function ManageCategoriesPanel({ categories, onAdd, onDelete, saving }) {
                   style={{
                     background: "none", border: "none", cursor: "pointer",
                     color: "#ef4444", padding: "4px 6px", borderRadius: 6,
-                    fontSize: "0.9rem", lineHeight: 1,
-                    transition: "background 0.15s",
+                    fontSize: "0.9rem", lineHeight: 1, transition: "background 0.15s",
                   }}
                   onMouseEnter={e => e.currentTarget.style.background = "#fef2f2"}
                   onMouseLeave={e => e.currentTarget.style.background = "none"}
@@ -230,11 +241,10 @@ export default function InventoryPage() {
   const [saving,     setSaving]     = useState(false);
   const [catSaving,  setCatSaving]  = useState(false);
 
-  const [search,     setSearch]     = useState("");
-  const [filter,     setFilter]     = useState("all");
-  const [sortOrder,  setSortOrder]  = useState("desc");
+  const [search,    setSearch]    = useState("");
+  const [filter,    setFilter]    = useState("all");
+  const [sortOrder, setSortOrder] = useState("desc");
 
-  // Product panel
   const [panelOpen,  setPanelOpen]  = useState(false);
   const [panelMode,  setPanelMode]  = useState("edit");
   const [selectedId, setSelectedId] = useState(null);
@@ -243,7 +253,6 @@ export default function InventoryPage() {
   const [imagePreview, setImagePreview] = useState(null);
   const [removeImage,  setRemoveImage]  = useState(false);
 
-  // Categories panel
   const [catPanelOpen, setCatPanelOpen] = useState(false);
 
   // ─── Toast ──────────────────────────────────────────────────────────────
@@ -258,52 +267,35 @@ export default function InventoryPage() {
   }
   function dismissToast(id) { setToasts(prev => prev.filter(t => t.id !== id)); }
 
-  // ─── Fetch categories ────────────────────────────────────────────────────
+  // ─── Fetch ────────────────────────────────────────────────────────────────
 
   const loadCategories = useCallback(async (force = false) => {
-    if (!force && cache.get(CACHE_CATS) !== null) {
-      setCategories(cache.get(CACHE_CATS));
-      return;
-    }
+    if (!force && cache.get(CACHE_CATS) !== null) { setCategories(cache.get(CACHE_CATS)); return; }
     try {
       const res  = await fetch(API_CATEGORIES, { headers: authHeader() });
       const data = await res.json();
-      if (data.success) {
-        setCategories(data.categories);
-        cache.set(CACHE_CATS, data.categories);
-      }
+      if (data.success) { setCategories(data.categories); cache.set(CACHE_CATS, data.categories); }
     } catch { /* silent */ }
   }, [cache]);
 
-  // ─── Fetch products ──────────────────────────────────────────────────────
-
   const loadProducts = useCallback(async (silent = false, force = false) => {
     if (!force && cache.get(CACHE_PRODUCTS) !== null) {
-      setProducts(cache.get(CACHE_PRODUCTS));
-      setLoading(false);
-      return;
+      setProducts(cache.get(CACHE_PRODUCTS)); setLoading(false); return;
     }
     if (!silent) setLoading(true);
     try {
       const res  = await fetch(API, { headers: authHeader() });
       const data = await res.json();
-      if (data.success) {
-        setProducts(data.products);
-        cache.set(CACHE_PRODUCTS, data.products);
-      } else throw new Error(data.message);
+      if (data.success) { setProducts(data.products); cache.set(CACHE_PRODUCTS, data.products); }
+      else throw new Error(data.message);
     } catch (err) {
       showToast(err.message || "Failed to load products", "error");
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   }, [cache]);
 
-  useEffect(() => {
-    loadProducts();
-    loadCategories();
-  }, [loadProducts, loadCategories]);
+  useEffect(() => { loadProducts(); loadCategories(); }, [loadProducts, loadCategories]);
 
-  // ─── Merged filter options ────────────────────────────────────────────────
+  // ─── Filter options ───────────────────────────────────────────────────────
 
   const filterOptions = useMemo(() => {
     const opts = [
@@ -318,7 +310,7 @@ export default function InventoryPage() {
     return opts;
   }, [categories]);
 
-  // ─── Filter + Sort ────────────────────────────────────────────────────────
+  // ─── Filtered + sorted rows ───────────────────────────────────────────────
 
   const filtered = useMemo(() => {
     let res = [...products];
@@ -344,8 +336,7 @@ export default function InventoryPage() {
   function handleFileChange(e) {
     const file = e.target.files?.[0];
     if (!file) return;
-    setImageFile(file);
-    setRemoveImage(false);
+    setImageFile(file); setRemoveImage(false);
     setImagePreview(URL.createObjectURL(file));
   }
   function handleRemoveImage() { setImageFile(null); setImagePreview(null); setRemoveImage(true); }
@@ -358,6 +349,7 @@ export default function InventoryPage() {
   function openEdit(product) {
     setSelectedId(product.id);
     setForm({
+      edit_id:     product.id,          // ← editable ID field
       name:        product.name,
       description: product.description ?? "",
       price:       product.price,
@@ -381,7 +373,9 @@ export default function InventoryPage() {
 
   function buildFormData(extraFields = {}) {
     const fd = new FormData();
-    Object.entries(form).forEach(([k, v]) => fd.append(k, v ?? ""));
+    // Spread form fields except edit_id (handled separately)
+    const { edit_id, ...rest } = form;
+    Object.entries(rest).forEach(([k, v]) => fd.append(k, v ?? ""));
     Object.entries(extraFields).forEach(([k, v]) => fd.append(k, v ?? ""));
     if (imageFile)   fd.append("image", imageFile);
     if (removeImage) fd.append("remove_image", "1");
@@ -454,8 +448,14 @@ export default function InventoryPage() {
   async function handleUpdate() {
     setSaving(true);
     const loadId = showToast("Saving changes…", "loading");
+    // Use form.edit_id if admin changed it, otherwise fall back to selectedId
+    const targetId = form.edit_id ? Number(form.edit_id) : selectedId;
     try {
-      const res  = await fetch(API, { method: "POST", headers: authHeader(), body: buildFormData({ id: selectedId, _method: "PUT" }) });
+      const res  = await fetch(API, {
+        method: "POST",
+        headers: authHeader(),
+        body: buildFormData({ id: targetId, _method: "PUT" }),
+      });
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
       dismissToast(loadId);
@@ -474,7 +474,11 @@ export default function InventoryPage() {
     setSaving(true);
     const loadId = showToast("Deleting product…", "loading");
     try {
-      const res  = await fetch(API, { method: "DELETE", headers: { "Content-Type": "application/json", ...authHeader() }, body: JSON.stringify({ id: selectedId }) });
+      const res  = await fetch(API, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", ...authHeader() },
+        body: JSON.stringify({ id: selectedId }),
+      });
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
       dismissToast(loadId);
@@ -515,7 +519,6 @@ export default function InventoryPage() {
           onCategoryChange={setFilter}
           sortOrder={sortOrder}
           onToggleSort={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")}
-          // Extra action button for managing categories
           extraActions={
             <button
               className="btn btn-outline btn-sm"
@@ -596,7 +599,7 @@ export default function InventoryPage() {
         </div>
       </div>
 
-      {/* ── Product SlidePanel ───────────────────────────────────────────── */}
+      {/* ── Product SlidePanel ─────────────────────────────────────────────── */}
       <SlidePanel
         isOpen={panelOpen}
         onClose={handleClose}
@@ -621,6 +624,7 @@ export default function InventoryPage() {
         <InventoryForm
           form={form}
           onChange={updateForm}
+          mode={panelMode}
           imagePreview={imagePreview}
           onFileChange={handleFileChange}
           onRemoveImage={handleRemoveImage}
@@ -628,12 +632,15 @@ export default function InventoryPage() {
         />
       </SlidePanel>
 
-      {/* ── Manage Categories SlidePanel ─────────────────────────────────── */}
+      {/* ── Manage Categories SlidePanel ───────────────────────────────────── */}
       <SlidePanel
         isOpen={catPanelOpen}
         onClose={() => setCatPanelOpen(false)}
         title="Manage Categories"
         mode="add"
+        footer={
+          <button className="btn btn-cancel" onClick={() => setCatPanelOpen(false)}>Close</button>
+        }
       >
         <ManageCategoriesPanel
           categories={categories}
