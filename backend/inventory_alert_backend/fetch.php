@@ -2,8 +2,6 @@
 require_once "connection.php";
 
 try {
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $stmt = $conn->prepare("
         SELECT i.id AS rule_id, 
@@ -33,11 +31,11 @@ try {
 
         // Customize enabled column
         if ($row['status'] == 1) {
-            $row['status'] = "Available";
+            $row['status'] = "Online";
         } else if ($row['status'] == 2){
-            $row['status'] = "Unavailable";
+            $row['status'] = "Offline";
         } else{
-            $row['status'] = "Unavailable";
+            $row['status'] = "Offline";
         }
 
         $condition = $row['stock_condition'];
