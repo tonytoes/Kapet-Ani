@@ -1,8 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import { Outlet } from "react-router-dom";
-
-// public pages
 import Home from "../pages/Home.jsx";
 import About from "../pages/About.jsx";
 import Contact from "../pages/contact.jsx";
@@ -13,7 +11,6 @@ import User from "../pages/User.jsx";
 import Checkout from "../pages/Checkout.jsx";
 import Order from "../pages/Order.jsx";
 
-// admin pages
 import Admin from '../admin/App.jsx'  
 
 const router = createBrowserRouter([

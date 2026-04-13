@@ -1,11 +1,19 @@
+/**
+ * src/admin/pages/UsersPage.jsx
+ * Cache key: "users"
+ * Invalidated after: add, update, delete
+ */
+
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
-import Badge from "../components/Badge";
-import PageHeader from "../components/PageHeader";
-import SlidePanel from "../components/SlidePanel";
+import Badge       from "../components/Badge";
+import PageHeader  from "../components/PageHeader";
+import SlidePanel  from "../components/SlidePanel";
 import { maskEmail } from "../utils";
 import { LINK_PATH } from "../data/LinkPath.jsx";
+import { useCache }  from "../data/CacheContext";   // ← NEW
 
-const API = `${LINK_PATH}usersController.php`;
+const API        = `${LINK_PATH}usersController.php`;
+const CACHE_KEY  = "users";
 
 function authHeader() {
   const token = localStorage.getItem("token");
@@ -24,7 +32,7 @@ const EMPTY_FORM = {
   status:     "user",
 };
 
-// ─── Toast ─────────────────────────────────────────────────────────────────
+// ─── Toast ──────────────────────────────────────────────────────────────────
 
 function Toast({ toasts }) {
   return (
@@ -70,7 +78,7 @@ function Toast({ toasts }) {
   );
 }
 
-// ─── Image Block ───────────────────────────────────────────────────────────
+// ─── Image Block ─────────────────────────────────────────────────────────────
 
 function ImageBlock({ preview, onFileChange, onRemove }) {
   const inputRef = useRef(null);
@@ -100,7 +108,7 @@ function ImageBlock({ preview, onFileChange, onRemove }) {
   );
 }
 
-// ─── User Form ─────────────────────────────────────────────────────────────
+// ─── User Form ────────────────────────────────────────────────────────────────
 
 function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveImage }) {
   const fields = [
@@ -127,18 +135,23 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
         <label className="form-label">Role</label>
         <select className="form-control" value={form.status} onChange={e => onChange("status", e.target.value)}>
           <option value="user">User</option>
+          <option value="admin">Staff</option>
           <option value="admin">Admin</option>
+          <option value="admin">SuperAdmin</option>
         </select>
       </div>
     </>
   );
 }
 
-// ─── Main Page ─────────────────────────────────────────────────────────────
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function UsersPage() {
-  const [users,      setUsers]      = useState([]);
-  const [loading,    setLoading]    = useState(true);
+  const cache = useCache();   // ← NEW
+
+  const [users,      setUsers]      = useState(() => cache.get(CACHE_KEY) ?? []);
+  const [loading,    setLoading]    = useState(() => cache.get(CACHE_KEY) === null);
   const [saving,     setSaving]     = useState(false);
   const [search,     setSearch]     = useState("");
   const [panelOpen,  setPanelOpen]  = useState(false);
@@ -151,7 +164,7 @@ export default function UsersPage() {
   const [imagePreview, setImagePreview] = useState(null);
   const [removeImage,  setRemoveImage]  = useState(false);
 
-  // ─── Toast state ─────────────────────────────────────────────────────────
+  // ─── Toast ──────────────────────────────────────────────────────────────
   const [toasts, setToasts] = useState([]);
   const toastCounter = useRef(0);
 
@@ -168,21 +181,32 @@ export default function UsersPage() {
     setToasts(prev => prev.filter(t => t.id !== id));
   }
 
-  // ─── Fetch ───────────────────────────────────────────────────────────────
+  // ─── Fetch (respects cache) ──────────────────────────────────────────────
 
-  const loadUsers = useCallback(async (silent = false) => {
+  const loadUsers = useCallback(async (silent = false, force = false) => {
+    // Return cached data if available and no forced refresh
+    if (!force && cache.get(CACHE_KEY) !== null) {
+      setUsers(cache.get(CACHE_KEY));
+      setLoading(false);
+      return;
+    }
+
     if (!silent) setLoading(true);
     try {
       const res  = await fetch(API, { headers: authHeader() });
       const data = await res.json();
-      if (data.success) setUsers(data.users);
-      else throw new Error(data.message);
+      if (data.success) {
+        setUsers(data.users);
+        cache.set(CACHE_KEY, data.users);   // ← store in cache
+      } else {
+        throw new Error(data.message);
+      }
     } catch (err) {
       showToast(err.message || "Failed to load users", "error");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [cache]);
 
   useEffect(() => { loadUsers(); }, [loadUsers]);
 
@@ -262,7 +286,7 @@ export default function UsersPage() {
     return fd;
   }
 
-  // ─── CRUD ─────────────────────────────────────────────────────────────────
+  // ─── CRUD (invalidate cache on mutation) ─────────────────────────────────
 
   async function handleAdd() {
     setSaving(true);
@@ -273,7 +297,8 @@ export default function UsersPage() {
       if (!data.success) throw new Error(data.message);
       dismissToast(loadId);
       showToast("User added successfully", "success");
-      await loadUsers(true);
+      cache.invalidate(CACHE_KEY);             // ← bust cache
+      await loadUsers(true, true);             // ← force fresh fetch
       notifyUserUpdated();
       handleClose();
     } catch (err) {
@@ -293,7 +318,8 @@ export default function UsersPage() {
       if (!data.success) throw new Error(data.message);
       dismissToast(loadId);
       showToast("User updated successfully", "success");
-      await loadUsers(true);
+      cache.invalidate(CACHE_KEY);             // ← bust cache
+      await loadUsers(true, true);             // ← force fresh fetch
       notifyUserUpdated();
       handleClose();
     } catch (err) {
@@ -314,7 +340,8 @@ export default function UsersPage() {
       if (!data.success) throw new Error(data.message);
       dismissToast(loadId);
       showToast("User deleted", "success");
-      await loadUsers(true);
+      cache.invalidate(CACHE_KEY);             // ← bust cache
+      await loadUsers(true, true);             // ← force fresh fetch
       notifyUserUpdated();
       handleClose();
     } catch (err) {
@@ -330,12 +357,13 @@ export default function UsersPage() {
   const userCategories = [
     { value: "all",   label: "All" },
     { value: "user",  label: "User" },
+    { value: "staff", label: "Staff" },
     { value: "admin", label: "Admin" },
+    { value: "superadmin", label: "SuperAdmin" },
   ];
 
   return (
     <>
-      {/* Spin animation for loading toast */}
       <style>{`
         @keyframes slideUp {
           from { opacity: 0; transform: translateY(12px); }
@@ -405,7 +433,7 @@ export default function UsersPage() {
                         <td className="cell-id">{u.id}</td>
                         <td>
                           {u.image_url ? (
-                            <img src={`${u.image_url}&t=${Date.now()}`} alt={u.username}
+                            <img src={u.image_url} alt={u.username}
                               style={{ width: 36, height: 36, borderRadius: "50%", objectFit: "cover", display: "block" }} />
                           ) : (
                             <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--bg-muted,#e5e7eb)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, color: "var(--text-muted,#9ca3af)" }}>

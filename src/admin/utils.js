@@ -10,6 +10,7 @@ export function badgeClass(status) {
     Warning:     "badge-unavailable",
     Normal:      "badge-available",
     Offline:     "badge-pending",
+    cancelled: "badge-cancelled",
     Admin:       "badge-admin",
     Customer:    "badge-customer",
     "Low Stock":    "badge-lowstock",

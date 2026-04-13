@@ -1,11 +1,19 @@
+/**
+ * src/admin/pages/DashboardPage.jsx
+ * Cache keys: "dashboard/stats", "dashboard/orders", "dashboard/stock", "dashboard/selling"
+ * All busted together via prefix: cache.invalidate("dashboard/")
+ *
+ * The dashboard auto-refreshes when UsersPage fires the "userUpdated" event
+ * (same as before), but only the stats portion is re-fetched.
+ */
+
 import { useState, useEffect } from "react";
-import Badge from "../components/Badge";
+import Badge      from "../components/Badge";
 import "../styles/index.js";
 import { LINK_PATH } from "../data/LinkPath.jsx";
+import { useCache }  from "../data/CacheContext";   // ← NEW
 
 const API = `${LINK_PATH}dashboardController.php`;
-
-// ─── helpers ────────────────────────────────────────────────────────────────
 
 function authHeader() {
   const token = localStorage.getItem("token");
@@ -18,7 +26,7 @@ async function apiFetch(action) {
   return res.json();
 }
 
-// ─── sub-cards ───────────────────────────────────────────────────────────────
+// ─── sub-cards (unchanged) ────────────────────────────────────────────────────
 
 function SalesCard({ d }) {
   return (
@@ -26,9 +34,7 @@ function SalesCard({ d }) {
       <div className="stat-icon-wrap sales"><i className="bi bi-star-fill"></i></div>
       <div className="stat-label">Total Sales</div>
       <div className="stat-value">{d.totalSales ?? "—"}</div>
-      <div className="stat-meta">
-        <span>all time</span>
-      </div>
+      <div className="stat-meta"><span>all time</span></div>
       <div className="stat-divider"></div>
       <div className="stat-sub-row">
         <div>
@@ -165,8 +171,6 @@ function LowStockCard({ items }) {
   );
 }
 
-// ─── skeleton loader ─────────────────────────────────────────────────────────
-
 function Skeleton() {
   return (
     <div className="page-body" style={{ opacity: 0.5 }}>
@@ -184,42 +188,72 @@ function Skeleton() {
 
 // ─── main component ───────────────────────────────────────────────────────────
 
+const KEYS = {
+  stats:   "dashboard/stats",
+  orders:  "dashboard/orders",
+  stock:   "dashboard/stock",
+  selling: "dashboard/selling",
+};
+
 export default function DashboardPage() {
-  const [stats,    setStats]    = useState(null);
-  const [orders,   setOrders]   = useState([]);
-  const [stock,    setStock]    = useState([]);
-  const [selling,  setSelling]  = useState([]);
-  const [loading,  setLoading]  = useState(true);
-  const [error,    setError]    = useState(null);
+  const cache = useCache();   // ← NEW
 
-  useEffect(() => {
-    let cancelled = false;
+  // Initialise from cache if available
+  const [stats,   setStats]   = useState(() => cache.get(KEYS.stats)   ?? null);
+  const [orders,  setOrders]  = useState(() => cache.get(KEYS.orders)  ?? []);
+  const [stock,   setStock]   = useState(() => cache.get(KEYS.stock)   ?? []);
+  const [selling, setSelling] = useState(() => cache.get(KEYS.selling) ?? []);
+  const [loading, setLoading] = useState(() => cache.get(KEYS.stats)   === null);
+  const [error,   setError]   = useState(null);
 
-    async function load() {
-      try {
-        const [s, o, st, sel] = await Promise.all([
-          apiFetch("stats"),
-          apiFetch("orders"),
-          apiFetch("stock"),
-          apiFetch("selling"),
-        ]);
-
-        if (cancelled) return;
-
-        if (s.success)   setStats(s);
-        if (o.success)   setOrders(o.orders);
-        if (st.success)  setStock(st.items);
-        if (sel.success) setSelling(sel.items);
-      } catch (err) {
-        if (!cancelled) setError(err.message);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
+  async function load(force = false) {
+    // All four sub-caches exist → skip fetch
+    if (
+      !force &&
+      cache.get(KEYS.stats)   !== null &&
+      cache.get(KEYS.orders)  !== null &&
+      cache.get(KEYS.stock)   !== null &&
+      cache.get(KEYS.selling) !== null
+    ) {
+      setStats(cache.get(KEYS.stats));
+      setOrders(cache.get(KEYS.orders));
+      setStock(cache.get(KEYS.stock));
+      setSelling(cache.get(KEYS.selling));
+      setLoading(false);
+      return;
     }
 
+    setLoading(true);
+    try {
+      const [s, o, st, sel] = await Promise.all([
+        apiFetch("stats"),
+        apiFetch("orders"),
+        apiFetch("stock"),
+        apiFetch("selling"),
+      ]);
+
+      if (s.success)   { setStats(s);           cache.set(KEYS.stats,   s);           }
+      if (o.success)   { setOrders(o.orders);   cache.set(KEYS.orders,  o.orders);   }
+      if (st.success)  { setStock(st.items);    cache.set(KEYS.stock,   st.items);   }
+      if (sel.success) { setSelling(sel.items); cache.set(KEYS.selling, sel.items); }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
     load();
-    return () => { cancelled = true; };
-  }, []);
+
+    // Re-fetch stats when UsersPage signals a user change
+    function onUserUpdated() {
+      cache.invalidate("dashboard/");   // bust all dashboard keys
+      load(true);
+    }
+    window.addEventListener("userUpdated", onUserUpdated);
+    return () => window.removeEventListener("userUpdated", onUserUpdated);
+  }, []);   // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) return <Skeleton />;
 

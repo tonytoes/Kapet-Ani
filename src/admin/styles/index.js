@@ -138,6 +138,7 @@ const STYLES = `
   .badge-customer    { background: var(--color-blue-bg); color: var(--color-blue); }
   .badge-outofstock { background: var(--color-red-bg); color: var(--color-red); }
   .badge-lowstock { background: var(--color-red-bg); color: #ff4c4c; }
+  .badge-cancelled { background: var(--color-red-bg); color: var(--color-red); }
 
   /* Page header */
   .page-header { display: flex; align-items: center; gap: 12px; padding: 20px 26px 0; flex-shrink: 0; }
