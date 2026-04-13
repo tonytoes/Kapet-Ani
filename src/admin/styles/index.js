@@ -101,13 +101,15 @@ const STYLES = `
   .complaint-info { flex: 1; font-size: 0.82rem; font-weight: 500; }
   .section-hd { font-size: 0.93rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 7px; margin-bottom: 16px; }
   .section-hd i { color: var(--brand-mid); }
-  .selling-list { display: flex; flex-direction: column; gap: 13px; }
-  .sell-row-label { display: flex; justify-content: space-between; margin-bottom: 4px; }
-  .sell-name { font-size: 0.82rem; font-weight: 500; color: var(--text-primary); }
-  .sell-pct { font-size: 0.76rem; font-weight: 600; color: var(--text-secondary); }
-  .sell-track { height: 6px; background: #E5E7EB; border-radius: 99px; overflow: hidden; }
-  .sell-fill { height: 100%; border-radius: 99px; background: var(--brand-progress); transition: width 0.6s ease; }
-  .selling-list > div { display: flex; flex-direction: column; gap: 4px;
+  .selling-list { display: flex; flex-direction: column; gap: 16px; }
+  .sell-row-label { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .sell-name { font-size: 0.82rem; font-weight: 600; color: var(--text-primary); }
+  .sell-pct { font-size: 0.75rem; font-weight: 700; color: var(--brand-mid); }
+  .sell-track { height: 10px; background: linear-gradient(180deg, #F3F4F6, #E5E7EB); border-radius: 999px; overflow: hidden; position: relative; box-shadow: inset 0 1px 2px rgba(0,0,0,0.06); }
+  .sell-track::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255,255,255,0.25), transparent 40%, transparent 60%, rgba(255,255,255,0.15)); pointer-events: none; }
+  .sell-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--brand-dark), var(--brand-mid), var(--brand-light)); background-size: 200% 100%; animation: gradientMove 4s ease infinite; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); position: relative; box-shadow: 0 2px 10px rgba(201, 135, 58, 0.35); }
+  .sell-fill::after { content: ""; position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 12px; height: 12px; background: var(--brand-light); border-radius: 50%; filter: blur(1px); opacity: 0.9; }
+  @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 }
   .stock-low { color: var(--color-red); font-weight: 700; }
   .stock-ok  { color: var(--brand-mid); font-weight: 700; }
