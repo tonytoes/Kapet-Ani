@@ -7,6 +7,7 @@ export function badgeClass(status) {
     pending:     "badge-pending",
     Available:   "badge-available",
     Unavailable: "badge-unavailable",
+    cancelled: "badge-cancelled",
     Admin:       "badge-admin",
     Customer:    "badge-customer",
     "Low Stock":    "badge-lowstock",
