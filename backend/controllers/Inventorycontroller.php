@@ -49,7 +49,7 @@ function isMultipart(): bool
 
 try {
     $method   = $_SERVER['REQUEST_METHOD'];
-    $resource = $_GET['resource'] ?? 'products';  // ?resource=categories
+    $resource = $_GET['resource'] ?? 'products';
 
     $data = isMultipart()
         ? $_POST
@@ -61,7 +61,6 @@ try {
         unset($data['_method']);
     }
 
-    // ── Categories resource ───────────────────────────────────────────────
     if ($resource === 'categories') {
         if ($method === 'GET')    listCategories();
         if ($method === 'POST')   addCategory($data);
@@ -69,7 +68,6 @@ try {
         sendResponse(405, false, 'Method not allowed');
     }
 
-    // ── Products resource (default) ───────────────────────────────────────
     if ($method === 'GET')    listProducts();
     if ($method === 'POST')   addProduct($data);
     if ($method === 'PUT')    updateProduct($data);
@@ -114,7 +112,6 @@ function deleteCategory(array $data): void
     $id = (int) ($data['id'] ?? 0);
     if (!$id) sendResponse(400, false, 'Category ID required');
 
-    // Unlink products before deleting so no orphaned rows
     $conn->prepare("UPDATE products SET category_id = NULL WHERE category_id = ?")->execute([$id]);
     $conn->prepare("DELETE FROM categories WHERE id = ?")->execute([$id]);
     sendResponse(200, true, 'Category deleted');
@@ -127,9 +124,7 @@ function deleteCategory(array $data): void
 
 function extractImage(): ?array
 {
-    if (empty($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
-        return null;
-    }
+    if (empty($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) return null;
 
     $file     = $_FILES['image'];
     $maxBytes = 10 * 1024 * 1024;
@@ -236,14 +231,14 @@ function addProduct(array $data): void
 
 
 // ─────────────────────────────────────────────────────────
-// ✏️  UPDATE PRODUCT
+// ✏️  UPDATE PRODUCT  (supports ID change)
 // ─────────────────────────────────────────────────────────
 
 function updateProduct(array $data): void
 {
     global $conn;
 
-    $id          = (int)   ($data['id']          ?? 0);
+    $id          = (int)   ($data['id']          ?? 0);   // current ID (used to find row)
     $name        = trim($data['name']            ?? '');
     $description = trim($data['description']     ?? '');
     $price       = (float) ($data['price']       ?? 0);
@@ -253,6 +248,11 @@ function updateProduct(array $data): void
 
     if (!$id)   sendResponse(400, false, 'Product ID required');
     if (!$name) sendResponse(400, false, 'Product name is required');
+
+    // Check if row exists
+    $exists = $conn->prepare("SELECT id FROM products WHERE id = ?");
+    $exists->execute([$id]);
+    if (!$exists->fetch()) sendResponse(404, false, 'Product not found');
 
     $image = extractImage();
 
