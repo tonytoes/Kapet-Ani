@@ -81,7 +81,7 @@
 
 #main-navbar .nav-links li a:hover,
 #main-navbar .nav-links li a.active {
-  color: var(--brown-deep);
+  color: rgb(151, 80, 48);
 }
 
 .nav-actions {
@@ -99,10 +99,10 @@
 }
 
 .nav-icon1:hover {
-  stroke: var(--brown-deep);
+  stroke: var(--brown-rich);
 }
 
-#main-navbar .nav-cart {
+.nav-cart {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -113,7 +113,7 @@
 }
 
 #main-navbar .nav-cart:hover {
-  color: var(--brown-deep);
+  color: var(--brown-rich);
 }
 
 .cart-badge {

@@ -36,16 +36,20 @@
   color: rgb(151, 80, 48);
 }
 
-#navbar.scrolled .nav-cart {
+#navbar.scrolled .nav-cart1 {
   color: rgb(151, 80, 48);
 }
 
-#navbar.scrolled .nav-cart:hover {
-  color: var(--brown-deep);
+#navbar.scrolled .nav-cart1:hover {
+  color: var(--brown-rich);
 }
 
 #navbar.scrolled .nav-icon {
   stroke: rgb(151, 80, 48);
+}
+
+#navbar.scrolled .nav-icon:hover {
+  stroke: var(--brown-rich);
 }
 
 #navbar .nav-inner {
@@ -139,15 +143,16 @@
   stroke: #ffffff;
 }
 
-#navbar .nav-cart {
+.nav-cart1 {
   display: flex;
   align-items: center;
   font-size: 0.75rem;
   letter-spacing: 0.1em;
   color: #d4c5b0;
+  cursor: pointer;
 }
 
-#navbar .nav-cart:hover {
+.nav-cart1:hover {
   color: #ffffff;
 }
 

@@ -41,8 +41,8 @@ function Navbar({ activePage }) {
             <li><a href="/about" className={activePage === "about" ? "active" : ""}>About</a></li>
           </ul>
 
-          <div className="nav-cart gap-2" onClick={() => setIsCartOpen(true)}>
-            {/* 👇 Route to /user if logged in, otherwise /login */}
+          <div className="nav-actions gap-2">
+            
             <a href={user ? "/user" : "/login"} className="nav-icon">
               <svg width={26} height={26} viewBox="0 0 24 24" fill="none">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -50,7 +50,7 @@ function Navbar({ activePage }) {
               </svg>
             </a>
 
-            <div className="d-flex align-items-center gap-1">
+            <div className="nav-cart1 d-flex align-items-center gap-1" onClick={() => setIsCartOpen(true)}>
               <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                 <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
                 <line x1={3} y1={6} x2={21} y2={6} />

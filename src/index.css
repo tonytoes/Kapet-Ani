@@ -24,7 +24,7 @@ html {
 }
 
 ::-webkit-scrollbar {
-  width: 0px;
+  width: 7px;
 }
 
 ::-webkit-scrollbar-track {
@@ -32,11 +32,11 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #8b4513;
+  background: var(--brown-warm);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #5c2e0a;
+  background: var(--brown-rich);
 }
 
 .text-caramel {

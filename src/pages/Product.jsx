@@ -28,15 +28,6 @@ import coaster3 from "../assets/images/coaster3.jpg";
 import coaster4 from "../assets/images/coaster4.jpg";
 import coaster5 from "../assets/images/coaster5.jpg";
 import coaster6 from "../assets/images/coaster6.jpg";
-
-function Product() {
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentCategory, setCurrentCategory] = useState("Hand-Made Bags");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [filteredItems, setFilteredItems] = useState([]);
-  const itemsPerPage = 6;
-
 const allProductCards = [
   // Cold & Specialty Drinks (6)
   { 
@@ -138,6 +129,14 @@ const allProductCards = [
     id: 30, category: "Hand-Made Bags", name: "Banig Small Bag", price: 1750.0, originalPrice: 2000.0, onSale: true, img: banigSmall, image: banigSmall, description: "Chic small banig bag perfect for evenings.", dimensions: { length: 8, height: 6, width: 3, weight: 300 }
   }
 ];
+
+function Product() {
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentCategory, setCurrentCategory] = useState("Hand-Made Bags");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filteredItems, setFilteredItems] = useState([]);
+  const itemsPerPage = 6;
 
   const categories = [
     "All Products",
