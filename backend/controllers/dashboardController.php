@@ -71,7 +71,7 @@ function getDashboardStats()
         FROM orders
         WHERE status = 'pending' 
         ORDER BY created_at DESC 
-        LIMIT 5
+        LIMIT 3
     ");
     $complaints = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -98,7 +98,7 @@ function getRecentOrders()
         SELECT id, tracking_no, name, created_at, total_price, status
         FROM orders 
         ORDER BY created_at DESC 
-        LIMIT 10
+        LIMIT 5
     ");
 
     $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -127,7 +127,7 @@ function getLowStock()
         FROM products 
         WHERE qty <= 10 
         ORDER BY qty ASC 
-        LIMIT 10
+        LIMIT 20
     ");
 
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
