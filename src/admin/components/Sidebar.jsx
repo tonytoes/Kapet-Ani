@@ -4,7 +4,7 @@ import { LINK_PATH } from "../data/LinkPath.jsx";
 const NAV_ITEMS = [
   { page: "dashboard",      icon: "bi-grid-1x2-fill", label: "Dashboard" },
   { page: "inventory",      icon: "bi-box-seam",       label: "Inventory" },
-  { page: "inventoryalert", icon: "bi-box-seam",       label: "Inventory Alert" },
+  { page: "inventoryalert", icon: "bi-graph-down",       label: "Inventory Alert" },
   { page: "users",          icon: "bi-people",         label: "Users" },
   { page: "transactions",   icon: "bi-receipt",        label: "Transactions" },
 ];
