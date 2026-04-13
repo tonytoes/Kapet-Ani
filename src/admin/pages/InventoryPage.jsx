@@ -664,8 +664,12 @@ export default function InventoryPage() {
                             ? <span style={{ color: "#A16207", fontWeight: 600 }}>{p.discount}%</span>
                             : <span style={{ color: "var(--text-muted)" }}>—</span>}
                         </td>
-                        <td className="cell-amount">
-                          ₱{Number(p.totalprice).toLocaleString("en-PH", { minimumFractionDigits: 2 })}
+                       <td className="cell-amount">
+                          ₱{(
+                            Number(p.discount) === 0
+                              ? Number(p.price)
+                              : Number(p.totalprice)
+                          ).toLocaleString("en-PH", { minimumFractionDigits: 2 })}
                         </td>
                         <td className="cell-muted">{p.qty}</td>
                         <td className="cell-muted">{p.category}</td>
