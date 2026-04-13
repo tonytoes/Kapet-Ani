@@ -22,12 +22,12 @@ const fadeInUp = {
 
 const About = () => {
   const team = [
-    { name: "Uayan", role: "Technical Lad", img: jmm },
-    { name: "Reuel", role: "Operations Manager", img: reuel },
-    { name: "Elaiza", role: "Barista", img: elaizaa },
-    { name: "Anthony", role: "CEO", img: anthonyy },
-    { name: "Samuel", role: "Designer", img: samuel },
-    { name: "Yu", role: "Marketing", img: miura },
+    { name: "Uayan", role: "Technical Lad", img: jmm, link: "" },
+    { name: "Reuel", role: "Operations Manager", img: reuel, link: "" },
+    { name: "Elaiza", role: "Barista", img: elaizaa, link: "" },
+    { name: "Anthony", role: "CEO", img: anthonyy, link: "" },
+    { name: "Samuel", role: "Designer", img: samuel, link: "https://imsauce.github.io/sauce/home.html" },
+    { name: "Yu", role: "Marketing", img: miura, link: "" },
   ];
 
   return (
@@ -97,15 +97,36 @@ const About = () => {
         <div className="container">
           <h2 className="section-label">— Meet the Team —</h2>
           <div className="team-grid">
-            {team.map((m, i) => (
-              <motion.div key={i} {...fadeInUp} transition={{ delay: i * 0.1 }} className="team-card">
-                <div className="card-image">
-                  <img src={m.img} alt={m.name} />
-                </div>
-                <h5>{m.name}</h5>
-                <p className="role">{m.role}</p>
-              </motion.div>
-            ))}
+            {team.map((m, i) => {
+              const card = (
+                <motion.div
+                  key={i}
+                  {...fadeInUp}
+                  transition={{ delay: i * 0.1 }}
+                  className={`team-card ${m.link ? "clickable" : ""}`}
+                >
+                  <div className="card-image">
+                    <img src={m.img} alt={m.name} />
+                  </div>
+                  <h5>{m.name}</h5>
+                  <p className="role">{m.role}</p>
+                </motion.div>
+              );
+
+              return m.link ? (
+                <a
+                  key={i}
+                  href={m.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="team-link-wrapper"
+                >
+                  {card}
+                </a>
+              ) : (
+                card
+              );
+            })}
           </div>
         </div>
       </section>
