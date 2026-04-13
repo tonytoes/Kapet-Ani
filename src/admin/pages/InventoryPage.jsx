@@ -3,6 +3,7 @@
  * - Product ID is shown (read-only) in edit mode as a reference field
  *   but can be manually overridden if needed
  * - Product ID is hidden in add mode (auto-assigned by DB)
+ * - Discount (0–100%) can be set per product; Total Price is auto-computed
  */
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
@@ -23,7 +24,7 @@ function authHeader() {
 }
 
 const EMPTY_FORM = {
-  name: "", description: "", price: "", qty: "", category_id: "",
+  name: "", description: "", price: "", qty: "", category_id: "", discount: "0",
 };
 
 // ─── Toast ────────────────────────────────────────────────────────────────────
@@ -84,6 +85,10 @@ function ImageBlock({ preview, onFileChange, onRemove }) {
 // ─── Product Form ─────────────────────────────────────────────────────────────
 
 function InventoryForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveImage, categories }) {
+  const price    = parseFloat(form.price) || 0;
+  const discount = Math.min(100, Math.max(0, parseInt(form.discount, 10) || 0));
+  const total    = price * (1 - discount / 100);
+
   return (
     <>
       <ImageBlock preview={imagePreview} onFileChange={onFileChange} onRemove={onRemoveImage} />
@@ -128,6 +133,72 @@ function InventoryForm({ form, onChange, mode, imagePreview, onFileChange, onRem
             value={form.qty} onChange={e => onChange("qty", e.target.value)} />
         </div>
       </div>
+
+      {/* ── Discount + Total Price ───────────────────────────────────────── */}
+      <div className="form-row cols-2">
+        <div className="form-group">
+          <label className="form-label">
+            Discount (%)
+            {discount > 0 && (
+              <span style={{
+                marginLeft: 6, fontSize: "0.72rem", fontWeight: 600,
+                background: "#FEF9C3", color: "#A16207",
+                padding: "1px 6px", borderRadius: 20,
+              }}>
+                {discount}% off
+              </span>
+            )}
+          </label>
+          <input
+            className="form-control"
+            type="number"
+            placeholder="0"
+            min="0"
+            max="100"
+            value={form.discount ?? "0"}
+            onChange={e => {
+              const val = Math.min(100, Math.max(0, parseInt(e.target.value, 10) || 0));
+              onChange("discount", String(val));
+            }}
+          />
+        </div>
+        <div className="form-group">
+          <label className="form-label">
+            Total Price (₱)
+            <span style={{ marginLeft: 4, fontSize: "0.72rem", fontWeight: 400, color: "var(--text-muted)" }}>
+              (auto)
+            </span>
+          </label>
+          <input
+            className="form-control"
+            type="text"
+            readOnly
+            value={
+              price > 0
+                ? total.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                : "—"
+            }
+            style={{ background: "var(--bg-muted, #f3f4f6)", cursor: "default", color: "var(--text-muted)" }}
+          />
+        </div>
+      </div>
+
+      {/* Discount summary hint */}
+      {price > 0 && discount > 0 && (
+        <div style={{
+          fontSize: "0.78rem", color: "var(--text-muted)",
+          marginTop: -8, marginBottom: 12,
+          padding: "6px 10px",
+          background: "var(--bg-muted, #f3f4f6)",
+          borderRadius: 8,
+          border: "1px solid var(--border, #e5e7eb)",
+        }}>
+          ₱{price.toLocaleString("en-PH", { minimumFractionDigits: 2 })} &times; (1 &minus; {discount}%) ={" "}
+          <strong style={{ color: "var(--text, #111)" }}>
+            ₱{total.toLocaleString("en-PH", { minimumFractionDigits: 2 })}
+          </strong>
+        </div>
+      )}
 
       <div className="form-group">
         <label className="form-label">Category</label>
@@ -349,12 +420,13 @@ export default function InventoryPage() {
   function openEdit(product) {
     setSelectedId(product.id);
     setForm({
-      edit_id:     product.id,          // ← editable ID field
+      edit_id:     product.id,
       name:        product.name,
       description: product.description ?? "",
       price:       product.price,
       qty:         product.qty,
       category_id: product.category_id ?? "",
+      discount:    String(product.discount ?? 0),   // ← discount field
     });
     resetImageState(product.image_url ?? null);
     setPanelMode("edit");
@@ -373,13 +445,13 @@ export default function InventoryPage() {
 
   function buildFormData(extraFields = {}) {
     const fd = new FormData();
-    // Spread form fields except edit_id (handled separately)
     const { edit_id, ...rest } = form;
     Object.entries(rest).forEach(([k, v]) => fd.append(k, v ?? ""));
     Object.entries(extraFields).forEach(([k, v]) => fd.append(k, v ?? ""));
     if (imageFile)   fd.append("image", imageFile);
     if (removeImage) fd.append("remove_image", "1");
     return fd;
+    // NOTE: discount is included automatically via ...rest spread above
   }
 
   // ─── Category CRUD ────────────────────────────────────────────────────────
@@ -448,7 +520,6 @@ export default function InventoryPage() {
   async function handleUpdate() {
     setSaving(true);
     const loadId = showToast("Saving changes…", "loading");
-    // Use form.edit_id if admin changed it, otherwise fall back to selectedId
     const targetId = form.edit_id ? Number(form.edit_id) : selectedId;
     try {
       const res  = await fetch(API, {
@@ -542,6 +613,8 @@ export default function InventoryPage() {
                     <th>Image</th>
                     <th>Name</th>
                     <th>Price</th>
+                    <th>Discount</th>
+                    <th>Total Price</th>
                     <th>Stock</th>
                     <th>Category</th>
                     <th>Status</th>
@@ -550,7 +623,7 @@ export default function InventoryPage() {
                 <tbody>
                   {loading ? (
                     <tr>
-                      <td colSpan={7} style={{ textAlign: "center", padding: 40 }}>
+                      <td colSpan={9} style={{ textAlign: "center", padding: 40 }}>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, color: "var(--text-muted)" }}>
                           <i className="bi bi-arrow-repeat spin" style={{ fontSize: "1.4rem", color: "var(--brand-mid)" }} />
                           <span style={{ fontSize: "0.83rem" }}>Loading products…</span>
@@ -559,7 +632,7 @@ export default function InventoryPage() {
                     </tr>
                   ) : filtered.length === 0 ? (
                     <tr>
-                      <td colSpan={7} style={{ textAlign: "center", padding: 40 }}>
+                      <td colSpan={9} style={{ textAlign: "center", padding: 40 }}>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, color: "var(--text-muted)" }}>
                           <i className="bi bi-box-seam" style={{ fontSize: "1.6rem" }} />
                           <span style={{ fontSize: "0.83rem" }}>No products found</span>
@@ -586,6 +659,14 @@ export default function InventoryPage() {
                         </td>
                         <td className="cell-bold">{p.name}</td>
                         <td className="cell-amount">₱{Number(p.price).toLocaleString("en-PH", { minimumFractionDigits: 2 })}</td>
+                        <td className="cell-muted">
+                          {p.discount > 0
+                            ? <span style={{ color: "#A16207", fontWeight: 600 }}>{p.discount}%</span>
+                            : <span style={{ color: "var(--text-muted)" }}>—</span>}
+                        </td>
+                        <td className="cell-amount">
+                          ₱{Number(p.totalprice).toLocaleString("en-PH", { minimumFractionDigits: 2 })}
+                        </td>
                         <td className="cell-muted">{p.qty}</td>
                         <td className="cell-muted">{p.category}</td>
                         <td><Badge status={p.status} /></td>

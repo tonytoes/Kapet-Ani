@@ -158,6 +158,7 @@ function listProducts(): void
             p.id, p.name, p.description, p.price, p.qty,
             p.image_name, p.image_type, p.image_blob,
             p.category_id,
+            p.discount, p.totalprice,
             c.name AS category_name
         FROM products p
         LEFT JOIN categories c ON c.id = p.category_id
@@ -175,17 +176,23 @@ function listProducts(): void
         $qty    = (int) $p['qty'];
         $status = $qty === 0 ? 'Out of Stock' : ($qty <= 10 ? 'Low Stock' : 'Available');
 
+        $price      = (float) $p['price'];
+        $discount   = (int)   $p['discount'];
+        $totalprice = (float) $p['totalprice'];
+
         return [
             'id'          => (int) $p['id'],
             'name'        => $p['name'],
             'description' => $p['description'] ?? '',
-            'price'       => (float) $p['price'],
+            'price'       => $price,
             'qty'         => $qty,
             'category_id' => $p['category_id'] ? (int) $p['category_id'] : null,
             'category'    => $p['category_name'] ?? 'Uncategorized',
             'status'      => $status,
             'image_url'   => $imageUrl,
             'image_name'  => $p['image_name'],
+            'discount'    => $discount,
+            'totalprice'  => $totalprice,
         ];
     }, $products);
 
@@ -206,6 +213,8 @@ function addProduct(array $data): void
     $price       = (float) ($data['price']       ?? 0);
     $qty         = (int)   ($data['qty']         ?? 0);
     $category_id = (int)   ($data['category_id'] ?? 0);
+    $discount    = max(0, min(100, (int) ($data['discount'] ?? 0)));
+    $totalprice  = round($price * (1 - $discount / 100), 2);
 
     if (!$name)      sendResponse(400, false, 'Product name is required');
     if ($price <= 0) sendResponse(400, false, 'Price must be greater than 0');
@@ -213,17 +222,20 @@ function addProduct(array $data): void
     $image = extractImage();
 
     $stmt = $conn->prepare("
-        INSERT INTO products (name, description, price, qty, category_id, image_name, image_blob, image_type)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO products
+            (name, description, price, qty, category_id, image_name, image_blob, image_type, discount, totalprice)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
-    $stmt->bindValue(1, $name);
-    $stmt->bindValue(2, $description);
-    $stmt->bindValue(3, $price);
-    $stmt->bindValue(4, $qty);
-    $stmt->bindValue(5, $category_id ?: null, PDO::PARAM_INT);
-    $stmt->bindValue(6, $image ? $image['name'] : null);
-    $stmt->bindValue(7, $image ? $image['blob'] : null, PDO::PARAM_LOB);
-    $stmt->bindValue(8, $image ? $image['type'] : null);
+    $stmt->bindValue(1,  $name);
+    $stmt->bindValue(2,  $description);
+    $stmt->bindValue(3,  $price);
+    $stmt->bindValue(4,  $qty);
+    $stmt->bindValue(5,  $category_id ?: null, PDO::PARAM_INT);
+    $stmt->bindValue(6,  $image ? $image['name'] : null);
+    $stmt->bindValue(7,  $image ? $image['blob'] : null, PDO::PARAM_LOB);
+    $stmt->bindValue(8,  $image ? $image['type'] : null);
+    $stmt->bindValue(9,  $discount);
+    $stmt->bindValue(10, $totalprice);
     $stmt->execute();
 
     sendResponse(201, true, 'Product added', ['id' => (int) $conn->lastInsertId()]);
@@ -231,25 +243,26 @@ function addProduct(array $data): void
 
 
 // ─────────────────────────────────────────────────────────
-// ✏️  UPDATE PRODUCT  (supports ID change)
+// ✏️  UPDATE PRODUCT
 // ─────────────────────────────────────────────────────────
 
 function updateProduct(array $data): void
 {
     global $conn;
 
-    $id          = (int)   ($data['id']          ?? 0);   // current ID (used to find row)
+    $id          = (int)   ($data['id']          ?? 0);
     $name        = trim($data['name']            ?? '');
     $description = trim($data['description']     ?? '');
     $price       = (float) ($data['price']       ?? 0);
     $qty         = (int)   ($data['qty']         ?? 0);
     $category_id = (int)   ($data['category_id'] ?? 0);
+    $discount    = max(0, min(100, (int) ($data['discount'] ?? 0)));
+    $totalprice  = round($price * (1 - $discount / 100), 2);
     $removeImg   = ($data['remove_image']        ?? '') === '1';
 
     if (!$id)   sendResponse(400, false, 'Product ID required');
     if (!$name) sendResponse(400, false, 'Product name is required');
 
-    // Check if row exists
     $exists = $conn->prepare("SELECT id FROM products WHERE id = ?");
     $exists->execute([$id]);
     if (!$exists->fetch()) sendResponse(404, false, 'Product not found');
@@ -258,30 +271,41 @@ function updateProduct(array $data): void
 
     if ($image) {
         $stmt = $conn->prepare("
-            UPDATE products SET name=?, description=?, price=?, qty=?, category_id=?,
-                image_name=?, image_type=?, image_blob=? WHERE id=?
+            UPDATE products
+            SET name=?, description=?, price=?, qty=?, category_id=?,
+                image_name=?, image_type=?, image_blob=?,
+                discount=?, totalprice=?
+            WHERE id=?
         ");
-        $stmt->bindValue(1, $name);
-        $stmt->bindValue(2, $description);
-        $stmt->bindValue(3, $price);
-        $stmt->bindValue(4, $qty);
-        $stmt->bindValue(5, $category_id ?: null, PDO::PARAM_INT);
-        $stmt->bindValue(6, $image['name']);
-        $stmt->bindValue(7, $image['type']);
-        $stmt->bindValue(8, $image['blob'], PDO::PARAM_LOB);
-        $stmt->bindValue(9, $id, PDO::PARAM_INT);
+        $stmt->bindValue(1,  $name);
+        $stmt->bindValue(2,  $description);
+        $stmt->bindValue(3,  $price);
+        $stmt->bindValue(4,  $qty);
+        $stmt->bindValue(5,  $category_id ?: null, PDO::PARAM_INT);
+        $stmt->bindValue(6,  $image['name']);
+        $stmt->bindValue(7,  $image['type']);
+        $stmt->bindValue(8,  $image['blob'], PDO::PARAM_LOB);
+        $stmt->bindValue(9,  $discount);
+        $stmt->bindValue(10, $totalprice);
+        $stmt->bindValue(11, $id, PDO::PARAM_INT);
         $stmt->execute();
     } elseif ($removeImg) {
         $stmt = $conn->prepare("
-            UPDATE products SET name=?, description=?, price=?, qty=?, category_id=?,
-                image_name=NULL, image_type=NULL, image_blob=NULL WHERE id=?
+            UPDATE products
+            SET name=?, description=?, price=?, qty=?, category_id=?,
+                image_name=NULL, image_type=NULL, image_blob=NULL,
+                discount=?, totalprice=?
+            WHERE id=?
         ");
-        $stmt->execute([$name, $description, $price, $qty, $category_id ?: null, $id]);
+        $stmt->execute([$name, $description, $price, $qty, $category_id ?: null, $discount, $totalprice, $id]);
     } else {
         $stmt = $conn->prepare("
-            UPDATE products SET name=?, description=?, price=?, qty=?, category_id=? WHERE id=?
+            UPDATE products
+            SET name=?, description=?, price=?, qty=?, category_id=?,
+                discount=?, totalprice=?
+            WHERE id=?
         ");
-        $stmt->execute([$name, $description, $price, $qty, $category_id ?: null, $id]);
+        $stmt->execute([$name, $description, $price, $qty, $category_id ?: null, $discount, $totalprice, $id]);
     }
 
     sendResponse(200, true, 'Product updated');
