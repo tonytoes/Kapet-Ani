@@ -214,10 +214,16 @@ const STYLES = `
   .btn-delete:hover { opacity: 1; background: #FECACA; }
   .btn-update  { background: var(--color-green-bg); color: var(--color-green); flex: 1; }
   .btn-update:hover { opacity: 1; background: #BBF7D0; }
-  .btn-primary { background: var(--brand-gradient); color: #fff; flex: 1; }
-  .btn-primary:hover { opacity: 0.9; }
   .btn-sm { padding: 6px 14px; font-size: 0.76rem; border-radius: 8px; flex: unset; }
   .btn-outline { background: #F9FAFB; border: 1.5px solid var(--border-light); color: var(--text-primary); }
+
+  .btn-primary { background: linear-gradient(135deg, #D89A4C, #B8742C); color: #fff; flex: 1; border-radius: 8px; box-shadow: 0 3px 10px rgba(139,90,43,0.18); transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.3s ease; position: relative; overflow: hidden; }
+  .btn-primary:hover { background: linear-gradient(135deg, #E2A65A, #C17E35); transform: translateY(-2px) scale(1.01); box-shadow: 0 10px 22px rgba(139,90,43,0.28); }
+  .btn-primary:active { transform: translateY(0px) scale(0.98); box-shadow: 0 4px 10px rgba(0,0,0,0.18); }
+  .btn-primary:disabled { background: linear-gradient(135deg, #E6C6A3, #D6B08A); cursor: not-allowed; box-shadow: none; transform: none; }
+  .btn-primary::after { content: ""; position: absolute; top: 0; left: -75%; width: 50%; height: 100%; background: linear-gradient(120deg, transparent, rgba(255,255,255,0.25), transparent); transform: skewX(-20deg); transition: 0.5s; }
+  .btn-primary:hover::after { left: 130%; }
+
 
   /* Full-page table layout */
   .full-table-wrap { flex: 1; margin: 16px 26px 26px; background: var(--bg-card); border-radius: var(--radius-card); box-shadow: var(--shadow-card); overflow: hidden; display: flex; flex-direction: column; }
