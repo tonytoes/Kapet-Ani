@@ -1,351 +1,175 @@
 import '../styles/checkout_page.css';
-import rattan_basket from '../assets/images/Rattan_Basket.png';
-import bamboo_basket from '../assets/images/Bamboo_Basket.png';
-import palm_basket from '../assets/images/Palm_Basket.png';
-import kapetanilogowhite from '../assets/images/kape\'t_ani_logo_white.png'
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { LINK_PATH } from "../admin/data/LinkPath.jsx";
+import { getCartItems, getCartSubtotal, saveCartItems } from "../utils/cart";
 import Newsletter from '../components/layout/Newsletter';
 import Footer from '../components/layout/Footer';
 
+const API = `${LINK_PATH}Transactionscontroller.php`;
 
-function App() {
+function Checkout() {
+  const navigate = useNavigate();
+  const [cart, setCart] = useState(() => getCartItems());
+  const [placing, setPlacing] = useState(false);
+  const [error, setError] = useState("");
+  const [paymentNotice, setPaymentNotice] = useState("");
+  const [form, setForm] = useState(() => {
+    const u = JSON.parse(localStorage.getItem("user") || "null");
+    return {
+      name: `${u?.first_name || ""} ${u?.last_name || ""}`.trim(),
+      email: u?.email || "",
+      phone: "",
+      address: "",
+      postalcode: "",
+      payment_mode: "COD",
+      payment_id: "",
+    };
+  });
+
+  useEffect(() => {
+    const current = getCartItems();
+    setCart(current);
+  }, []);
+
+  const subtotal = useMemo(() => getCartSubtotal(cart), [cart]);
+  const shipping = useMemo(() => (cart.length ? 49 : 0), [cart.length]);
+  const total = subtotal + shipping;
+
+  const onChange = (k, v) => setForm((p) => ({ ...p, [k]: v }));
+  const formatPeso = (n) => Number(n || 0).toLocaleString("en-PH", { style: "currency", currency: "PHP" });
+
+  const simulatePayment = (mode) => {
+    const reference = `SIM-${mode.toUpperCase()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+    onChange("payment_mode", mode);
+    onChange("payment_id", reference);
+    setPaymentNotice(`${mode} payment authorized. No real money is charged.`);
+  };
+
+  const placeOrder = async (e) => {
+    e.preventDefault();
+    setError("");
+    if (cart.length === 0) return setError("Your cart is empty.");
+    if (!form.name || !form.email || !form.phone || !form.address || !form.postalcode) {
+      return setError("Please complete all required fields.");
+    }
+    setPlacing(true);
+    try {
+      const user = JSON.parse(localStorage.getItem("user") || "null");
+      const payload = {
+        user_id: user?.id || 0,
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        address: form.address,
+        postalcode: form.postalcode,
+        payment_mode: form.payment_mode,
+        payment_id: form.payment_id,
+        items: cart.map((it) => ({ id: it.id, qty: Number(it.qty || 0) })),
+      };
+      const token = localStorage.getItem("token");
+      const res = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || "Failed to place order");
+
+      const orderSnapshot = {
+        ...data.order,
+        customer: { ...form },
+        items: cart,
+        subtotal,
+        shipping,
+        total,
+      };
+      sessionStorage.setItem("last_order", JSON.stringify(orderSnapshot));
+      saveCartItems([]);
+      navigate("/order");
+    } catch (err) {
+      setError(err.message || "Failed to place order");
+    } finally {
+      setPlacing(false);
+    }
+  };
+
   return (
-    <div className="App checkout-page">
-      <header className="App-header">
-        <>
-          <title>Checkout Page</title>
-          <meta charSet="UTF-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <div className="container text-center base">
-            <div className="row align-items-start COframe">
-              <div className="col" id="#body">
-                <form action="submit">
-                  <div className="row">
-                    <a href="index.html" id="homeB">
-                      &lt;Home
-                    </a>
+    <div className="checkout-modern-page">
+      <div className="checkout-modern-wrap">
+        <div className="checkout-top">
+          <a href="/product" className="checkout-back">&lt; Continue Shopping</a>
+          <h1>Checkout</h1>
+          <p>Secure checkout. No real money will be charged.</p>
+        </div>
+
+        <form onSubmit={placeOrder} className="checkout-modern-grid">
+          <section className="checkout-main-col">
+            <div className="co-card">
+              <h3>Items in Order</h3>
+              {cart.length === 0 ? (
+                <p className="co-muted">Your cart is empty.</p>
+              ) : cart.map((item) => (
+                <div className="co-item" key={item.id}>
+                  <img src={item.image} alt={item.name} />
+                  <div>
+                    <div className="co-item-name">{item.name}</div>
+                    <div className="co-muted">Qty: {item.qty}</div>
                   </div>
-                  <div className="row parent">
-                    <div className="col-7 leftside">
-                      {/* Payment Options */}
-                      <div className="row paymentBtn">
-                        <button id="paypalB">Paypal</button>
-                      </div>
-                      <div className="row paymentBtn">
-                        <button id="payB">Pay</button>
-                      </div>
-                      {/* Items in Order Section */}
-                      <div className="row" id="itemsInOrder">
-                        <h5 className="upperSection">Items in Order</h5>
-                        <div className="col bottomSection">
-                          <div className="row items">
-                            <div className="col">
-                              <div className="row item" id="firstItem">
-                                <div className="col itemInfo">
-                                  <div className="row">
-                                    <div className="col">
-                                      <img src={rattan_basket} alt="" />
-                                    </div>
-                                    <div className="col">
-                                      <p className="productTitle">Rattan Basket</p>
-                                      <p>Quantity:1</p>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col price">
-                                  <p>$ 99.00 USD</p>
-                                </div>
-                              </div>
-                              <div className="row item" id="secondItem">
-                                <div className="col itemInfo">
-                                  <div className="row">
-                                    <div className="col">
-                                      <img src={bamboo_basket} alt="" />
-                                    </div>
-                                    <div className="col">
-                                      <p className="productTitle">Bamboo Basket</p>
-                                      <p>Quantity:1</p>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col price">
-                                  <p>$ 39.00 USD</p>
-                                </div>
-                              </div>
-                              <div className="row item" id="thirdItem">
-                                <div className="col itemInfo">
-                                  <div className="row">
-                                    <div className="col">
-                                      <img src={palm_basket} alt="" />
-                                    </div>
-                                    <div className="col">
-                                      <p className="productTitle">Bamboo Basket</p>
-                                      <p>Quantity:1</p>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col price">
-                                  <p>$ 15.00 USD</p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {/* Customer Info Section */}
-                      <div className="row" id="customerInfo">
-                        <h5 className="upperSection">Customer Info</h5>
-                        <div className="col bottomSection">
-                          <div className="row">
-                            <div className="col">
-                              <label htmlFor="email">Email</label>
-                              <br />
-                              <input type="text" id="email" name="email" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {/* Shipping Address */}
-                      <div className="row" id="shippingAddress">
-                        <h5 className="upperSection">Shipping Address</h5>
-                        <div className="col bottomSection">
-                          <div className="row">
-                            <div className="col">
-                              <label htmlFor="fullName">Full Name:</label>
-                              <br />
-                              <input type="text" id="fullName" name="fullName" />
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col">
-                              <label htmlFor="strAddress">Street Address:</label>
-                              <br />
-                              <input type="text" id="strAddress" name="strAddress" />
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col">
-                              <label htmlFor="city">City:</label>
-                              <br />
-                              <input type="text" id="city" name="city" />
-                            </div>
-                            <div className="col">
-                              <label htmlFor="state">State/Province:</label>
-                              <br />
-                              <input type="text" id="state" name="state" />
-                            </div>
-                            <div className="col">
-                              <label htmlFor="postalCode">Postal Code:</label>
-                              <br />
-                              <input type="text" id="postalCode" name="postalCode" />
-                            </div>
-                            <div className="col">
-                              <label htmlFor="country">Country:</label>
-                              <br />
-                              <input type="text" id="country" name="country" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {/* Shipping Method */}
-                      <div className="row" id="shippingMethod">
-                        <h5 className="upperSection">Shipping Method</h5>
-                        <div className="col">
-                          <div className="row shippingOptions">
-                            <div className="col">
-                              <div className="row item" id="flatrateOpt">
-                                <div className="col">
-                                  <div className="row">
-                                    <div className="col">
-                                      <input
-                                        type="radio"
-                                        name="shippingOption"
-                                        id="flatrateCB"
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-9">
-                                  <p>FLAT-RATE</p>
-                                  <p>STANDARD FLAT-RATE FOR ALL SHIPMENTS</p>
-                                </div>
-                                <div className="col price">
-                                  <p>Price</p>
-                                </div>
-                              </div>
-                              <div className="row item" id="expeditedOpt">
-                                <div className="col">
-                                  <div className="row">
-                                    <div className="col">
-                                      <input
-                                        type="radio"
-                                        name="shippingOption"
-                                        id="expeditedCB"
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-9">
-                                  <p>EXPEDITED SHIPPING</p>
-                                  <p>STANDARD TO GET THE SHIPMENTS IN A DAY OR TWO</p>
-                                </div>
-                                <div className="col price">
-                                  <p>Price</p>
-                                </div>
-                              </div>
-                              <div className="row item" id="overnightOpt">
-                                <div className="col">
-                                  <div className="row">
-                                    <div className="col">
-                                      <input
-                                        type="radio"
-                                        name="shippingOption"
-                                        id="overnightCB"
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-9 smText">
-                                  <p>OVERNIGHT SHIPPING</p>
-                                  <p>
-                                    AN EXPENSIVE OPTION TO GET THE SHIPMENT ON THE NEXT
-                                    BUSINESS DAY.
-                                  </p>
-                                </div>
-                                <div className="col price">
-                                  <p>Price</p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {/* Payment Info */}
-                      <div className="row" id="paymentInfo">
-                        <h5 className="upperSection">Payment Info</h5>
-                        <div className="col bottomSection">
-                          <div className="row">
-                            <div className="col">
-                              <label htmlFor="cardnumber">Card Number</label>
-                              <br />
-                              <input type="text" id="cardnumber" name="cardnumber" />
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col">
-                              <label htmlFor="expdate">Expiration Date:</label>
-                              <br />
-                              <input type="text" id="expdate" name="expdate" />
-                            </div>
-                            <div className="col">
-                              <label htmlFor="secCode">Security Code:</label>
-                              <br />
-                              <input type="text" id="secCode" name="secCode" />
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col">
-                              <input type="checkbox" />
-                            </div>
-                            <div className="col-11 smText">
-                              <p>Billing address same as shipping</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {/* Billing Address */}
-                      <div className="row" id="billingAddress">
-                        <h5 className="upperSection">Billing Address</h5>
-                        <div className="col bottomSection">
-                          <div className="row">
-                            <div className="col">
-                              <label htmlFor="fullName">Full Name:</label>
-                              <br />
-                              <input type="text" />
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col">
-                              <label htmlFor="strAddress">Street Address:</label>
-                              <br />
-                              <input type="text" />
-                            </div>
-                          </div>
-                          <div className="row">
-                            <div className="col">
-                              <label htmlFor="city">City:</label>
-                              <br />
-                              <input type="text" />
-                            </div>
-                            <div className="col">
-                              <label htmlFor="state">State/Province:</label>
-                              <br />
-                              <input type="text" />
-                            </div>
-                            <div className="col">
-                              <label htmlFor="postalCode">Postal Code:</label>
-                              <br />
-                              <input type="text" />
-                            </div>
-                            <div className="col">
-                              <label htmlFor="country">Country:</label>
-                              <br />
-                              <input type="text" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    {/* Order Summary */}
-                    <div className="col-5 rightside" id="orderSum">
-                      <div className="row osTitle">
-                        <h5>Order Summary</h5>
-                      </div>
-                      <div className="row osBody">
-                        <div className="col">
-                          <div className="row" id="SubTotal">
-                            <div className="col">
-                              <h6>Subtotal</h6>
-                            </div>
-                            <div className="col">
-                              <h6 id="subtotal">$ 153.00 USD</h6>
-                            </div>
-                          </div>
-                          <div className="row" id="FlatRate">
-                            <div className="col">
-                              <h6>Flat-Rate</h6>
-                            </div>
-                            <div className="col">
-                              <h6 id="flatrate">$ 18.90 USD</h6>
-                            </div>
-                          </div>
-                          <div className="row" id="Total">
-                            <div className="col">
-                              <h6 id="totalText">Total</h6>
-                            </div>
-                            <div className="col">
-                              <h6 id="total">$ 171.90 USD</h6>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <button id="submit">Place Order</button>
-                      </div>
-                    </div>
-                  </div>
-                </form>
+                  <div className="co-item-price">{formatPeso(Number(item.price) * Number(item.qty))}</div>
+                </div>
+              ))}
+            </div>
+
+            <div className="co-card">
+              <h3>Customer Info</h3>
+              <div className="co-grid-2">
+                <div><label>Email</label><input type="email" value={form.email} onChange={(e) => onChange("email", e.target.value)} /></div>
+                <div><label>Phone</label><input type="text" value={form.phone} onChange={(e) => onChange("phone", e.target.value)} /></div>
               </div>
             </div>
-          </div>
-          {/* More Section and Footer */}
-        {/* End of More Section and Footer */}
-        </>
 
-      </header>
-      <Newsletter/>
-      <Footer/>
+            <div className="co-card">
+              <h3>Shipping Address</h3>
+              <div><label>Full Name</label><input type="text" value={form.name} onChange={(e) => onChange("name", e.target.value)} /></div>
+              <div><label>Street Address</label><input type="text" value={form.address} onChange={(e) => onChange("address", e.target.value)} /></div>
+              <div><label>Postal Code</label><input type="text" value={form.postalcode} onChange={(e) => onChange("postalcode", e.target.value)} /></div>
+            </div>
+
+            <div className="co-card">
+              <h3>Payment Method</h3>
+              <div className="co-pay-options">
+                <button type="button" className={form.payment_mode === "PayPal" ? "active" : ""} onClick={() => simulatePayment("PayPal")}>PayPal</button>
+                <button type="button" className={form.payment_mode === "GCash" ? "active" : ""} onClick={() => simulatePayment("GCash")}>GCash</button>
+                <button type="button" className={form.payment_mode === "Card" ? "active" : ""} onClick={() => simulatePayment("Card")}>Card</button>
+                <button type="button" className={form.payment_mode === "COD" ? "active" : ""} onClick={() => { onChange("payment_mode", "COD"); onChange("payment_id", ""); setPaymentNotice("Cash on Delivery selected. Payment is collected on delivery."); }}>Cash on Delivery</button>
+              </div>
+              <div style={{ marginTop: 12 }}>
+                <label>Payment Reference</label>
+                <input type="text" value={form.payment_id} onChange={(e) => onChange("payment_id", e.target.value)} placeholder="Auto-generated by simulate buttons" />
+              </div>
+              {paymentNotice && <p className="co-info">{paymentNotice}</p>}
+            </div>
+          </section>
+
+          <aside className="checkout-summary-col">
+            <div className="co-card co-sticky">
+              <h3>Order Summary</h3>
+              <div className="co-row"><span>Subtotal</span><strong>{formatPeso(subtotal)}</strong></div>
+              <div className="co-row"><span>Shipping</span><strong>{formatPeso(shipping)}</strong></div>
+              <div className="co-row total"><span>Total</span><strong>{formatPeso(total)}</strong></div>
+              {error && <p className="co-error">{error}</p>}
+              <button className="co-place-btn" type="submit" disabled={placing || cart.length === 0}>
+                {placing ? "Placing Order..." : "Place Order"}
+              </button>
+            </div>
+          </aside>
+        </form>
+      </div>
+      <Newsletter />
+      <Footer />
     </div>
   );
 }
 
-export default App;
+export default Checkout;

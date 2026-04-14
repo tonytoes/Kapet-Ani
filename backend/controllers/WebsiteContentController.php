@@ -86,14 +86,14 @@ function ensureHomeSeed(): void
         ['home', 'blogs', 'blog2Image', null, null, null, null, null],
         ['home', 'blogs', 'blog3Image', null, null, null, null, null],
         ['home', 'blogs', 'blog1Title', 'Health Check: why do I get a headache when I haven\'t had my coffee?', null, null, null, null],
-        ['home', 'blogs', 'blog1Excerpt', null, null, 'It is a paradisematic country, in which roasted parts of sentences fly into your mouth.', null, null],
-        ['home', 'blogs', 'blog1Date', 'October 9, 2018', null, null, null, null],
+        ['home', 'blogs', 'blog1Excerpt', null, null, 'Understand why caffeine withdrawal can trigger headaches and how small routine changes can help you stay balanced without skipping coffee completely.', null, null],
+        ['home', 'blogs', 'blog1Date', 'December 3, 2019', null, null, null, null],
         ['home', 'blogs', 'blog2Title', 'How long does a cup of coffee keep you awake?', null, null, null, null],
-        ['home', 'blogs', 'blog2Excerpt', null, null, 'It is a paradisematic country, in which roasted parts. Vel qui et ad voluptatem.', null, null],
-        ['home', 'blogs', 'blog2Date', 'October 9, 2018', null, null, null, null],
+        ['home', 'blogs', 'blog2Excerpt', null, null, 'Caffeine timing matters. Learn how long coffee effects can last and when to drink your last cup for better evening rest.', null, null],
+        ['home', 'blogs', 'blog2Date', 'April 26, 2023', null, null, null, null],
         ['home', 'blogs', 'blog3Title', 'Recent research suggests that heavy coffee drinkers may reap health benefits.', null, null, null, null],
-        ['home', 'blogs', 'blog3Excerpt', null, null, 'It is a paradisematic country, in which roasted parts of sentences fly into your mouth.', null, null],
-        ['home', 'blogs', 'blog3Date', 'October 9, 2018', null, null, null, null],
+        ['home', 'blogs', 'blog3Excerpt', null, null, 'Emerging research continues to explore the benefits of moderate coffee intake, from focus and mood support to potential long-term health gains.', null, null],
+        ['home', 'blogs', 'blog3Date', 'September 15, 2025', null, null, null, null],
     ];
 
     $stmt = $conn->prepare("
@@ -152,41 +152,41 @@ function ensureBlogsSeed(): void
         ['blogs','hero','heroLine1','Discover the stories',null,null,null,null],
         ['blogs','hero','heroLine2','behind every brew.',null,null,null,null],
         ['blogs','intro','introTitle','Read coffee stories on our Blog',null,null,null,null],
-        ['blogs','intro','introDesc',null,null,'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.',null,null],
+        ['blogs','intro','introDesc',null,null,'From brewing tips to artisan stories, our blog shares practical coffee knowledge and the culture behind every cup. Discover guides, features, and updates from Kape\'t Pamana.',null,null],
         ['blogs','featured','featuredLabel','Featured Posts',null,null,null,null],
         ['blogs','featured','readFullStoryLabel','Read the Full Story',null,null,null,null],
         ['blogs','featured','featured1Image',null,null,null,null,null],
         ['blogs','featured','featured1Title','Will drinking coffee prolong your life?',null,null,null,null],
-        ['blogs','featured','featured1Excerpt',null,null,'Aliquid aperiam accusantium quam ipsam. Velit rerum veniam optio illo dolor delectus et recusandae. Impedit aut cupiditate. Illum eveniet officiis ullam ipsam sed iste eius. Nam at quae ducimus dicta delectus',null,null],
-        ['blogs','featured','featured1Date','October 9, 2018',null,null,null,null],
+        ['blogs','featured','featured1Excerpt',null,null,'New studies continue to link moderate coffee intake with long-term wellness. We break down what the research says, what it does not, and how to enjoy coffee responsibly every day.',null,null],
+        ['blogs','featured','featured1Date','March 14, 2019',null,null,null,null],
         ['blogs','featured','featured2Image',null,null,null,null,null],
         ['blogs','featured','featured2Title','Health Check: why do I get a headache when I haven\'t had my coffee?',null,null,null,null],
-        ['blogs','featured','featured2Excerpt',null,null,'It is a paradisematic country, in which roasted parts of sentences fly into your mouth.',null,null],
-        ['blogs','featured','featured2Date','October 9, 2018',null,null,null,null],
+        ['blogs','featured','featured2Excerpt',null,null,'If skipping your usual brew gives you a headache, caffeine withdrawal may be the reason. Learn simple ways to adjust your routine while keeping your energy and focus steady.',null,null],
+        ['blogs','featured','featured2Date','July 22, 2021',null,null,null,null],
         ['blogs','latest','latestHeading','Latest Posts',null,null,null,null],
         ['blogs','latest','latest1Image',null,null,null,null,null],
         ['blogs','latest','latest1Title','More coffee, lower death risk?',null,null,null,null],
-        ['blogs','latest','latest1Excerpt',null,null,'Eveniet itaque aperiam qui officia in ducimus. Voluptas culpa ut eligendi in. Minima est dolores dolore aut et alias p',null,null],
-        ['blogs','latest','latest1Date','October 9, 2018',null,null,null,null],
+        ['blogs','latest','latest1Excerpt',null,null,'Coffee and longevity are often discussed together, but context matters. Here is what researchers currently agree on and how to build healthier daily coffee habits.',null,null],
+        ['blogs','latest','latest1Date','November 5, 2018',null,null,null,null],
         ['blogs','latest','latest2Image',null,null,null,null,null],
         ['blogs','latest','latest2Title','Will drinking coffee prolong your life?',null,null,null,null],
-        ['blogs','latest','latest2Excerpt',null,null,'Aliquid aperiam accusantium quam ipsam. Velit rerum veniam optio illo dolor delectus et recusandae.',null,null],
-        ['blogs','latest','latest2Date','October 9, 2018',null,null,null,null],
+        ['blogs','latest','latest2Excerpt',null,null,'Can daily coffee support a longer life? Here is a quick look at current findings, recommended intake, and the habits that matter most beyond your cup.',null,null],
+        ['blogs','latest','latest2Date','February 17, 2020',null,null,null,null],
         ['blogs','latest','latest3Image',null,null,null,null,null],
         ['blogs','latest','latest3Title','Health Check: why do I get a headache when I haven\'t had my coffee?',null,null,null,null],
-        ['blogs','latest','latest3Excerpt',null,null,'It is a paradisematic country, in which roasted parts of sentences fly into your mouth.',null,null],
-        ['blogs','latest','latest3Date','October 9, 2018',null,null,null,null],
+        ['blogs','latest','latest3Excerpt',null,null,'Coffee headaches are common, especially during schedule changes. These practical tips can help you reduce discomfort without fully giving up your favorite brew.',null,null],
+        ['blogs','latest','latest3Date','August 9, 2022',null,null,null,null],
         ['blogs','latest','latest4Image',null,null,null,null,null],
         ['blogs','latest','latest4Title','How long does a cup of coffee keep you awake?',null,null,null,null],
-        ['blogs','latest','latest4Excerpt',null,null,'It is a paradisematic country, in which roasted parts. Vel qui et ad voluptatem.',null,null],
-        ['blogs','latest','latest4Date','October 9, 2018',null,null,null,null],
+        ['blogs','latest','latest4Excerpt',null,null,'How long caffeine keeps you awake depends on timing, dosage, and sensitivity. Use this guide to plan your coffee hours without sacrificing better sleep.',null,null],
+        ['blogs','latest','latest4Date','January 28, 2024',null,null,null,null],
         ['blogs','latest','latest5Image',null,null,null,null,null],
         ['blogs','latest','latest5Title','Recent research suggests that heavy coffee drinkers may reap health benefits.',null,null,null,null],
-        ['blogs','latest','latest5Excerpt',null,null,'It is a paradisematic country, in which roasted parts of sentences fly into your mouth.',null,null],
-        ['blogs','latest','latest5Date','October 9, 2018',null,null,null,null],
+        ['blogs','latest','latest5Excerpt',null,null,'Recent reports suggest regular coffee drinkers may gain meaningful health benefits. We summarize the highlights and explain what they mean for everyday routines.',null,null],
+        ['blogs','latest','latest5Date','May 11, 2026',null,null,null,null],
         ['blogs','sidebar','sidebarAboutHeading','About Us',null,null,null,null],
         ['blogs','sidebar','sidebarBrandName','Kape\'t Pamana',null,null,null,null],
-        ['blogs','sidebar','sidebarAboutText',null,null,'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique.',null,null],
+        ['blogs','sidebar','sidebarAboutText',null,null,'Kape\'t Pamana celebrates Filipino coffee and craftsmanship by supporting local farmers, artisans, and communities through thoughtfully curated products and stories.',null,null],
         ['blogs','sidebar','sidebarAboutLinkLabel','Read the full Story',null,null,null,null],
         ['blogs','sidebar','sidebarCategoriesHeading','Categories',null,null,null,null],
         ['blogs','sidebar','category1','Barista',null,null,null,null],
@@ -280,6 +280,70 @@ function ensureAboutSeed(): void
     ];
     $stmt = $conn->prepare("INSERT INTO website_content (page, section, content_key, title, subtitle, description, cta_label, cta_link) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE content_key = content_key");
     foreach ($defaults as $row) $stmt->execute($row);
+}
+
+function replacePlaceholderContent(): void
+{
+    global $conn;
+    $updates = [
+        'introDesc' => 'From brewing tips to artisan stories, our blog shares practical coffee knowledge and the culture behind every cup. Discover guides, features, and updates from Kape\'t Pamana.',
+        'featured1Excerpt' => 'New studies continue to link moderate coffee intake with long-term wellness. We break down what the research says, what it does not, and how to enjoy coffee responsibly every day.',
+        'featured2Excerpt' => 'If skipping your usual brew gives you a headache, caffeine withdrawal may be the reason. Learn simple ways to adjust your routine while keeping your energy and focus steady.',
+        'latest2Excerpt' => 'Can daily coffee support a longer life? Here is a quick look at current findings, recommended intake, and the habits that matter most beyond your cup.',
+        'latest3Excerpt' => 'Coffee headaches are common, especially during schedule changes. These practical tips can help you reduce discomfort without fully giving up your favorite brew.',
+        'latest4Excerpt' => 'How long caffeine keeps you awake depends on timing, dosage, and sensitivity. Use this guide to plan your coffee hours without sacrificing better sleep.',
+        'latest5Excerpt' => 'Recent reports suggest regular coffee drinkers may gain meaningful health benefits. We summarize the highlights and explain what they mean for everyday routines.',
+        'sidebarAboutText' => 'Kape\'t Pamana celebrates Filipino coffee and craftsmanship by supporting local farmers, artisans, and communities through thoughtfully curated products and stories.',
+        'blog1Excerpt' => 'Understand why caffeine withdrawal can trigger headaches and how small routine changes can help you stay balanced without skipping coffee completely.',
+        'blog2Excerpt' => 'Caffeine timing matters. Learn how long coffee effects can last and when to drink your last cup for better evening rest.',
+        'blog3Excerpt' => 'Emerging research continues to explore the benefits of moderate coffee intake, from focus and mood support to potential long-term health gains.',
+        'latest1Excerpt' => 'Coffee and longevity are often discussed together, but context matters. Here is what researchers currently agree on and how to build healthier daily coffee habits.',
+    ];
+
+    $titleUpdates = [
+        'featured1Date' => 'March 14, 2019',
+        'featured2Date' => 'July 22, 2021',
+        'latest1Date' => 'November 5, 2018',
+        'latest2Date' => 'February 17, 2020',
+        'latest3Date' => 'August 9, 2022',
+        'latest4Date' => 'January 28, 2024',
+        'latest5Date' => 'May 11, 2026',
+        'blog1Date' => 'December 3, 2019',
+        'blog2Date' => 'April 26, 2023',
+        'blog3Date' => 'September 15, 2025',
+    ];
+
+    $select = $conn->prepare("SELECT description FROM website_content WHERE content_key = ? LIMIT 1");
+    $update = $conn->prepare("UPDATE website_content SET description = ? WHERE content_key = ?");
+    $selectTitle = $conn->prepare("SELECT title FROM website_content WHERE content_key = ? LIMIT 1");
+    $updateTitle = $conn->prepare("UPDATE website_content SET title = ? WHERE content_key = ?");
+
+    foreach ($updates as $key => $newText) {
+        $select->execute([$key]);
+        $row = $select->fetch(PDO::FETCH_ASSOC);
+        if (!$row) continue;
+        $existing = strtolower(trim((string)($row['description'] ?? '')));
+        if (
+            $existing === '' ||
+            str_contains($existing, 'lorem ipsum') ||
+            str_contains($existing, 'suspendisse varius enim in eros elementum tristique') ||
+            str_contains($existing, 'aliquid aperiam accusantium') ||
+            str_contains($existing, 'paradisematic country') ||
+            str_contains($existing, 'eveniet itaque aperiam')
+        ) {
+            $update->execute([$newText, $key]);
+        }
+    }
+
+    foreach ($titleUpdates as $key => $newTitle) {
+        $selectTitle->execute([$key]);
+        $row = $selectTitle->fetch(PDO::FETCH_ASSOC);
+        if (!$row) continue;
+        $existing = trim((string)($row['title'] ?? ''));
+        if ($existing === '' || $existing === 'October 9, 2018') {
+            $updateTitle->execute([$newTitle, $key]);
+        }
+    }
 }
 
 function parseBody(): array
@@ -504,6 +568,7 @@ try {
     ensureBlogsSeed();
     ensureContactSeed();
     ensureAboutSeed();
+    replacePlaceholderContent();
     if (imageMode()) outputImage();
 
     $method = $_SERVER['REQUEST_METHOD'];

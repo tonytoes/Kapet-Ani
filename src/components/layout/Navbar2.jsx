@@ -2,15 +2,27 @@ import { useEffect, useState } from "react";
 import logo1 from "../../assets/images/logo_brown_transparent.png";
 import "../../styles/navbar2.css";
 import CartDrawer from "../layout/CartDrawer";
+import { getCartCount, getCartItems } from "../../utils/cart";
 
 function Navbar({ activePage }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [cartCount, setCartCount] = useState(() => getCartCount(getCartItems()));
   const showAdminShortcut = ["admin", "superadmin"].includes((user?.role || "").toLowerCase());
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) setUser(JSON.parse(storedUser));
+  }, []);
+
+  useEffect(() => {
+    const sync = () => setCartCount(getCartCount(getCartItems()));
+    window.addEventListener("cart:updated", sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener("cart:updated", sync);
+      window.removeEventListener("storage", sync);
+    };
   }, []);
 
   return (
@@ -50,7 +62,7 @@ function Navbar({ activePage }) {
                 <path d="M16 10a4 4 0 01-8 0" />
               </svg>
               CART
-              <div className="cart-badge">1</div>
+              <div className="cart-badge">{cartCount}</div>
             </div>
           </div>
         </div>

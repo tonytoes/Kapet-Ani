@@ -26,7 +26,10 @@ const PAGE_TITLES = {
 };
 
 export default function App() {
-  const [page, setPage]           = useState("dashboard");
+  const [page, setPage]           = useState(() => {
+    const saved = localStorage.getItem("admin.defaultPage");
+    return saved && PAGE_TITLES[saved] ? saved : "dashboard";
+  });
   const [collapsed, setCollapsed] = useState(false);
 
   function renderPage() {
@@ -60,6 +63,8 @@ export default function App() {
           <Topbar
             title={PAGE_TITLES[page]}
             onToggle={() => setCollapsed(c => !c)}
+            currentPage={page}
+            onNavigate={setPage}
           />
           {renderPage()}
         </div>

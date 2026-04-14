@@ -5,6 +5,7 @@ import Footer from "../components/layout/Footer.jsx";
 import Navbar2 from "../components/layout/Navbar2.jsx";
 import ProductModal from "../components/layout/ProductModal.jsx";
 import { LINK_PATH } from "../admin/data/LinkPath.jsx";
+import { getCartItems, saveCartItems } from "../utils/cart";
 
 const API_PRODUCTS = `${LINK_PATH}Inventorycontroller.php`;
 const API_CATEGORIES = `${LINK_PATH}Inventorycontroller.php?resource=categories`;
@@ -51,8 +52,7 @@ function Product() {
   const itemsPerPage = 6;
 
   const addToCart = useCallback((product) => {
-    const cartKey = "cart_items";
-    const current = JSON.parse(localStorage.getItem(cartKey) || "[]");
+    const current = getCartItems();
     const match = current.find((i) => i.id === product.id);
     if (match) {
       match.qty += 1;
@@ -64,11 +64,11 @@ function Product() {
         price: product.price,
         originalPrice: product.originalPrice,
         discount: product.discount,
+        stock: Number(product.qty || 0),
         qty: 1,
       });
     }
-    localStorage.setItem(cartKey, JSON.stringify(current));
-    window.dispatchEvent(new CustomEvent("cart:updated", { detail: { count: current.length } }));
+    saveCartItems(current);
   }, []);
 
   const formatCurrency = useCallback((n) =>
