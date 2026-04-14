@@ -1,31 +1,15 @@
 <?php
 ini_set('display_errors', 0);
 error_reporting(0);
-$allowedOrigins = [
-  'http://localhost:5173',
-];
 
 require_once __DIR__ . '/../models/user.php';
 require_once __DIR__ . '/../helpers/jwt.php';
+require_once __DIR__ . '/../helpers/cors.php';
+require_once __DIR__ . '/../config/config.php';
+applyCors(); 
+
 $userModel = new UserModel();
-header('Content-Type: application/json');
 
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-if (in_array($origin, $allowedOrigins)) {
-  header("Access-Control-Allow-Origin: $origin");
-}
-
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-  http_response_code(200);
-  exit();
-}
-
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-  sendResponse(405, false, 'Method not allowed');
-}
 
 $data = json_decode(file_get_contents("php://input"), true);
 

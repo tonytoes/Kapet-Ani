@@ -3,34 +3,14 @@ ob_start();
 ini_set('display_errors', 0);
 error_reporting(0);
 
-$allowedOrigins = ['http://localhost:5173'];
-
-//website
-//https://cornflowerblue-skunk-618358.hostingersite.com/backend/controllers/
-//local
-//http://localhost/backend/controllers/
-define("LINK_PATH", "http://localhost/backend/controllers/");
-
-require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../helpers/jwt.php';
+require_once __DIR__ . '/../helpers/cors.php';
+require_once __DIR__ . '/../config/config.php';
+applyCors(); 
 
 $db   = new Database();
 $conn = $db->connect();
 
-header('Content-Type: application/json');
-
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-if (in_array($origin, $allowedOrigins)) {
-    header("Access-Control-Allow-Origin: $origin");
-}
-
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
 
 function sendResponse(int $code, bool $success, string $message, array $extra = []): void
 {
@@ -170,7 +150,7 @@ function listProducts(): void
     $formatted = array_map(function ($p) {
         $imageUrl = null;
         if (!empty($p['image_blob']) && !empty($p['image_type'])) {
-            $imageUrl = LINK_PATH . "getProductImage.php?id=" . $p['id'];
+            $imageUrl = LINK_PATH . "Getproductimage.php?id=" . $p['id'];
         }
 
         $qty    = (int) $p['qty'];
