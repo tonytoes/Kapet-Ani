@@ -53,6 +53,7 @@ function getTransactions(): void
     $stmt = $conn->query("
         SELECT
             o.id,
+            o.user_id,
             o.tracking_no,
             o.name,
             o.email,
@@ -78,6 +79,7 @@ function getTransactions(): void
         // dbId  = real integer PK used for UPDATE queries
         // trackingId = the human-readable #TRK... shown in the UI
         'dbId'        => (int) $r['id'],
+        'userId'      => (int) ($r['user_id'] ?? 0),
         'trackingId'  => '#' . $r['tracking_no'],
         'username'    => $r['name'],
         'email'       => $r['email'],

@@ -147,9 +147,13 @@ function User() {
       const res = await fetch(ORDERS_API, { headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
       if (!data.success) return;
-      const mine = data.transactions.filter(t =>
-        String(t.email || "").toLowerCase() === String(currentUser.email || "").toLowerCase()
-      );
+      const myId = Number(currentUser?.id || 0);
+      const mine = (data.transactions || []).filter((t) => {
+        const txUserId = Number(t?.userId || 0);
+        if (myId > 0 && txUserId > 0) return txUserId === myId;
+        // Fallback for legacy rows without user_id linkage.
+        return String(t?.email || "").toLowerCase() === String(currentUser?.email || "").toLowerCase();
+      });
       setOrders(mine);
     } catch {
       setOrders([]);
