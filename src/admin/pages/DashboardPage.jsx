@@ -100,6 +100,77 @@ const DB_STYLES = `
   .db-sell-track { height: 8px; background: #F3F4F6; border-radius: 99px; overflow: hidden; }
   .db-sell-fill { height: 100%; border-radius: 99px; background: var(--brand-progress); transition: width 1s cubic-bezier(0.4,0,0.2,1); }
 
+
+
+  .db-sell-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: var(--brand-progress);
+  transition: width 1s cubic-bezier(0.4,0,0.2,1);
+
+  position: relative;
+  overflow: visible;
+
+  /* 🔥 base ember glow */
+  box-shadow:
+    0 0 8px rgba(255, 120, 0, 0.25),
+    0 0 18px rgba(255, 90, 0, 0.15);
+
+  animation: emberPulse 2.4s ease-in-out infinite;
+}
+
+
+
+.db-sell-fill::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+
+  animation: matchFlicker 1.6s infinite ease-in-out;
+}
+
+
+@keyframes emberPulse {
+  0% {
+    box-shadow:
+      0 0 6px rgba(255, 110, 0, 0.18),
+      0 0 14px rgba(255, 80, 0, 0.12);
+    filter: brightness(1);
+  }
+
+  50% {
+    box-shadow:
+      0 0 12px rgba(255, 140, 0, 0.4),
+      0 0 26px rgba(255, 90, 0, 0.2);
+    filter: brightness(1.1);
+  }
+
+  100% {
+    box-shadow:
+      0 0 6px rgba(255, 110, 0, 0.18),
+      0 0 14px rgba(255, 80, 0, 0.12);
+    filter: brightness(1);
+  }
+}
+
+@keyframes matchFlicker {
+  0%   { opacity: 1; transform: translateY(-50%) scale(1); }
+  50%  { opacity: 0.85; transform: translateY(-50%) scale(1.15); }
+  100% { opacity: 1; transform: translateY(-50%) scale(1); }
+}
+
+
+
+
+
+
+  
   /* Tables */
   .db-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
   .db-table th { padding: 9px 12px; text-align: left; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); border-bottom: 1px solid var(--border-light); white-space: nowrap; }
