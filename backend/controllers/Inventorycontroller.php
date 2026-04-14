@@ -150,7 +150,8 @@ function listProducts(): void
     $formatted = array_map(function ($p) {
         $imageUrl = null;
         if (!empty($p['image_blob']) && !empty($p['image_type'])) {
-            $imageUrl = LINK_PATH . "Getproductimage.php?id=" . $p['id'];
+            // ✅ FIX: append timestamp to bust browser cache after image update
+            $imageUrl = LINK_PATH . "Getproductimage.php?id=" . $p['id'] . "&t=" . time();
         }
 
         $qty    = (int) $p['qty'];
