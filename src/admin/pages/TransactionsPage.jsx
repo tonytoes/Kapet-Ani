@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Badge      from "../components/Badge";
 import PageHeader from "../components/PageHeader";
 import SlidePanel from "../components/SlidePanel";
+import { canManageAdminPanels } from "../utils";
 import { LINK_PATH } from "../data/LinkPath.jsx";
 import { useCache }  from "../data/CacheContext";
 
@@ -127,6 +128,7 @@ function OrderPanel({ order, onClose, onSave, saving }) {
 
 export default function TransactionsPage() {
   const cache = useCache();
+  const canManage = canManageAdminPanels();
 
   const [transactions, setTransactions] = useState(() => cache.get(CACHE_KEY) ?? []);
   const [loading,      setLoading]      = useState(() => cache.get(CACHE_KEY) === null);
@@ -188,10 +190,15 @@ export default function TransactionsPage() {
     return res;
   }, [transactions, search, statusFilter, sortOrder]);
 
-  function openOrder(t) { setSelected(t); setPanelOpen(true); }
+  function openOrder(t) {
+    if (!canManage) return;
+    setSelected(t);
+    setPanelOpen(true);
+  }
   function handleClose() { setPanelOpen(false); setSelected(null); }
 
   async function handleSave(dbId, newStatus) {
+    if (!canManage) return;
     setSaving(true);
     const loadId = showToast("Updating status…", "loading");
     try {
@@ -203,11 +210,16 @@ export default function TransactionsPage() {
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
+      setTransactions(prev => {
+        const next = prev.map(t => t.dbId === dbId ? { ...t, status: newStatus } : t);
+        cache.set(CACHE_KEY, next);
+        return next;
+      });
+      setSelected(prev => prev ? { ...prev, status: newStatus } : prev);
       dismissToast(loadId);
       showToast("Status updated", "success");
-      cache.set(CACHE_KEY, null);
-      await loadTransactions(true);
       handleClose();
+      loadTransactions(true);
     } catch (err) {
       dismissToast(loadId);
       showToast(err.message || "Failed to update", "error");
@@ -279,8 +291,8 @@ export default function TransactionsPage() {
                   filtered.map((t, i) => (
                     <tr
                       key={`${t.trackingId}-${i}`}
-                      className={`clickable${selected?.dbId === t.dbId ? " selected" : ""}`}
-                      onClick={() => openOrder(t)}
+                      className={`${canManage ? "clickable" : ""}${selected?.dbId === t.dbId ? " selected" : ""}`}
+                      onClick={() => canManage && openOrder(t)}
                     >
                       <td className="cell-id">{t.trackingId}</td>
                       <td className="cell-bold">{t.username}</td>
@@ -299,22 +311,24 @@ export default function TransactionsPage() {
       </div>
 
       {/* SlidePanel already renders title + X button — OrderPanel adds no extra header */}
-      <SlidePanel
-        isOpen={panelOpen}
-        onClose={handleClose}
-        title={selected ? `Order ${selected.trackingId}` : "Order"}
-        mode="edit"
-        footer={null}
-      >
-        {selected && (
-          <OrderPanel
-            order={selected}
-            onClose={handleClose}
-            onSave={handleSave}
-            saving={saving}
-          />
-        )}
-      </SlidePanel>
+      {canManage && (
+        <SlidePanel
+          isOpen={panelOpen}
+          onClose={handleClose}
+          title={selected ? `Order ${selected.trackingId}` : "Order"}
+          mode="edit"
+          footer={null}
+        >
+          {selected && (
+            <OrderPanel
+              order={selected}
+              onClose={handleClose}
+              onSave={handleSave}
+              saving={saving}
+            />
+          )}
+        </SlidePanel>
+      )}
     </>
   );
 }

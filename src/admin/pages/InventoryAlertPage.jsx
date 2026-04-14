@@ -8,6 +8,7 @@ import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Badge      from "../components/Badge";
 import PageHeader from "../components/PageHeader";
 import SlidePanel from "../components/SlidePanel";
+import { canManageAdminPanels } from "../utils";
 import { LINK_PATH } from "../data/LinkPath.jsx";
 import { useCache }  from "../data/CacheContext";
 
@@ -135,6 +136,7 @@ function AlertForm({ form, onChange, categories, products, loadingProducts }) {
 
 export default function InventoryAlertPage() {
   const cache = useCache();
+  const canManage = canManageAdminPanels();
 
   const [alerts,     setAlerts]     = useState(() => cache.get(CACHE_ALERTS) ?? []);
   const [loading,    setLoading]    = useState(() => cache.get(CACHE_ALERTS) === null);
@@ -235,6 +237,7 @@ export default function InventoryAlertPage() {
   function updateForm(key, value) { setForm(prev => ({ ...prev, [key]: value })); }
 
   function openEdit(alert) {
+    if (!canManage) return;
     setSelectedId(alert.rule_id);
     setForm({
       rule_name:       alert.rule_name,
@@ -249,6 +252,7 @@ export default function InventoryAlertPage() {
   }
 
   function openAdd() {
+    if (!canManage) return;
     setSelectedId(null);
     setForm(EMPTY_FORM);
     setProducts([]);
@@ -272,6 +276,7 @@ export default function InventoryAlertPage() {
   // ─── CRUD ─────────────────────────────────────────────────────────────────
 
   async function handleAdd() {
+    if (!canManage) return;
     setSaving(true);
     const loadId = showToast("Adding rule…", "loading");
     try {
@@ -294,6 +299,7 @@ export default function InventoryAlertPage() {
   }
 
   async function handleUpdate() {
+    if (!canManage) return;
     setSaving(true);
     const loadId = showToast("Saving changes…", "loading");
     try {
@@ -316,6 +322,7 @@ export default function InventoryAlertPage() {
   }
 
   async function handleDelete() {
+    if (!canManage) return;
     if (!window.confirm("Delete this alert rule?")) return;
     setSaving(true);
     const loadId = showToast("Deleting rule…", "loading");
@@ -356,7 +363,7 @@ export default function InventoryAlertPage() {
       <div className="page-area">
         <PageHeader
           title="Inventory Alert"
-          onAdd={openAdd}
+          onAdd={canManage ? openAdd : undefined}
           search={search}
           onSearch={setSearch}
           showCategories
@@ -407,8 +414,8 @@ export default function InventoryAlertPage() {
                     filtered.map(a => (
                       <tr
                         key={a.rule_id}
-                        className={`clickable${selectedId === a.rule_id ? " selected" : ""}`}
-                        onClick={() => openEdit(a)}
+                        className={`${canManage ? "clickable" : ""}${selectedId === a.rule_id ? " selected" : ""}`}
+                        onClick={() => canManage && openEdit(a)}
                       >
                         <td className="cell-id">#{a.rule_id}</td>
                         <td className="cell-bold">{a.rule_name}</td>
@@ -431,35 +438,37 @@ export default function InventoryAlertPage() {
         </div>
       </div>
 
-      <SlidePanel
-        isOpen={panelOpen}
-        onClose={handleClose}
-        title={panelMode === "add" ? "Add Alert Rule" : "Edit Alert Rule"}
-        mode={panelMode}
-        footer={panelMode === "edit" ? (
-          <>
-            <button className="btn btn-delete"  onClick={handleDelete} disabled={saving}>Delete</button>
-            <button className="btn btn-update"  onClick={handleUpdate} disabled={saving}>
-              {saving ? <><i className="bi bi-arrow-repeat spin" /> Saving…</> : "Update"}
-            </button>
-          </>
-        ) : (
-          <>
-            <button className="btn btn-cancel"  onClick={handleClose}  disabled={saving}>Cancel</button>
-            <button className="btn btn-primary" onClick={handleAdd}    disabled={saving}>
-              {saving ? <><i className="bi bi-arrow-repeat spin" /> Adding…</> : "Add Rule"}
-            </button>
-          </>
-        )}
-      >
-        <AlertForm
-          form={form}
-          onChange={updateForm}
-          categories={categories}
-          products={products}
-          loadingProducts={loadingProducts}
-        />
-      </SlidePanel>
+      {canManage && (
+        <SlidePanel
+          isOpen={panelOpen}
+          onClose={handleClose}
+          title={panelMode === "add" ? "Add Alert Rule" : "Edit Alert Rule"}
+          mode={panelMode}
+          footer={panelMode === "edit" ? (
+            <>
+              <button className="btn btn-delete"  onClick={handleDelete} disabled={saving}>Delete</button>
+              <button className="btn btn-update"  onClick={handleUpdate} disabled={saving}>
+                {saving ? <><i className="bi bi-arrow-repeat spin" /> Saving…</> : "Update"}
+              </button>
+            </>
+          ) : (
+            <>
+              <button className="btn btn-cancel"  onClick={handleClose}  disabled={saving}>Cancel</button>
+              <button className="btn btn-primary" onClick={handleAdd}    disabled={saving}>
+                {saving ? <><i className="bi bi-arrow-repeat spin" /> Adding…</> : "Add Rule"}
+              </button>
+            </>
+          )}
+        >
+          <AlertForm
+            form={form}
+            onChange={updateForm}
+            categories={categories}
+            products={products}
+            loadingProducts={loadingProducts}
+          />
+        </SlidePanel>
+      )}
     </>
   );
 }

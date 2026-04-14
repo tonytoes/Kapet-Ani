@@ -35,6 +35,41 @@ function isMultipart(): bool
     return str_contains($ct, 'multipart/form-data');
 }
 
+function getRequesterRole(): ?string
+{
+    global $conn;
+
+    $header = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['Authorization'] ?? '';
+    if (!$header && function_exists('getallheaders')) {
+        $all = getallheaders();
+        if (is_array($all)) {
+            $header = $all['Authorization'] ?? $all['authorization'] ?? '';
+        }
+    }
+    if (!$header || !preg_match('/Bearer\s+(.+)/i', $header, $m)) return null;
+    $token = trim($m[1]);
+    if ($token === '') return null;
+
+    try {
+        $decoded = verifyJWT($token);
+        $id = isset($decoded->data->id) ? (int) $decoded->data->id : 0;
+        if ($id > 0) {
+            $stmt = $conn->prepare("SELECT role FROM users WHERE id = ? LIMIT 1");
+            $stmt->execute([$id]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($row && isset($row['role'])) {
+                return strtolower((string) $row['role']);
+            }
+        }
+
+        // Fallback to role claim in token if DB lookup fails.
+        $role = $decoded->data->role ?? null;
+        return is_string($role) ? strtolower($role) : null;
+    } catch (Throwable $e) {
+        return null;
+    }
+}
+
 try {
     $method = $_SERVER['REQUEST_METHOD'];
     $data   = isMultipart()
@@ -154,6 +189,11 @@ function addUser(array $data): void
     $email      = trim($data['email']      ?? '');
     $password   = $data['password']        ?? '';
     $role       = strtolower($data['status'] ?? 'user');
+    $requesterRole = getRequesterRole();
+
+    if (in_array($role, ['admin', 'superadmin'], true) && $requesterRole !== 'superadmin') {
+        sendResponse(403, false, 'Only superadmin can assign Admin or SuperAdmin roles');
+    }
 
     if (!$first_name || !$last_name || !$email || !$password) {
         sendResponse(400, false, 'All fields are required');
@@ -204,6 +244,11 @@ function updateUser(array $data): void
     $email      = trim($data['email']        ?? '');
     $role       = strtolower($data['status'] ?? 'user');
     $removeImg  = ($data['remove_image']     ?? '') === '1';
+    $requesterRole = getRequesterRole();
+
+    if (in_array($role, ['admin', 'superadmin'], true) && $requesterRole !== 'superadmin') {
+        sendResponse(403, false, 'Only superadmin can assign Admin or SuperAdmin roles');
+    }
 
     if (!$id) {
         sendResponse(400, false, 'User ID required');

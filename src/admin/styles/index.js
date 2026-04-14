@@ -229,7 +229,10 @@ const STYLES = `
   .badge-pending     { background: #FFF7ED; color: var(--color-orange); }
   .badge-available   { background: var(--color-green-bg); color: var(--color-green); }
   .badge-unavailable { background: var(--color-red-bg); color: var(--color-red); }
-  .badge-admin       { background: #F3E8FF; color: #9333EA; }
+  .badge-user        { background: #FFF7ED; color: #F97316; }
+  .badge-staff       { background: #FEF9C3; color: #A16207; }
+  .badge-admin       { background: #DBEAFE; color: #2563EB; }
+  .badge-superadmin  { background: #F3E8FF; color: #9333EA; }
   .badge-customer    { background: var(--color-blue-bg); color: var(--color-blue); }
   .badge-outofstock { background: var(--color-red-bg); color: var(--color-red); }
   .badge-lowstock { background: var(--color-red-bg); color: #ff4c4c; }

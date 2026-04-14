@@ -130,14 +130,71 @@ function getLowStock()
 {
     global $conn;
 
-    $stmt = $conn->query("
-        SELECT id, name, qty
-        FROM products
-        WHERE qty <= 10
-        ORDER BY qty ASC
-        LIMIT 20
+    // Read enabled alert rules so dashboard can respect custom minimum thresholds.
+    // If no rule exists for a product, we keep the legacy behavior (qty <= 10).
+    $ruleStmt = $conn->query("
+        SELECT product_id, stock_condition, rule_value
+        FROM inventory_alert
+        WHERE enabled = 1
     ");
-    $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $rules = $ruleStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $rulesByProduct = [];
+    foreach ($rules as $r) {
+        $pid = (int) $r['product_id'];
+        if (!isset($rulesByProduct[$pid])) $rulesByProduct[$pid] = [];
+        $rulesByProduct[$pid][] = [
+            'condition' => $r['stock_condition'],
+            'value'     => (int) $r['rule_value'],
+        ];
+    }
+
+    $prodStmt = $conn->query("SELECT id, name, qty FROM products ORDER BY qty ASC");
+    $products = $prodStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $items = [];
+    foreach ($products as $p) {
+        $id  = (int) $p['id'];
+        $qty = (int) $p['qty'];
+        $hasAlertRule = !empty($rulesByProduct[$id]);
+
+        // Always include out-of-stock items.
+        $triggered = $qty === 0;
+
+        if (!$triggered && $hasAlertRule) {
+            foreach ($rulesByProduct[$id] as $rule) {
+                $val  = $rule['value'];
+                $cond = $rule['condition'];
+                $match = match ($cond) {
+                    '<=' => $qty <= $val,
+                    '<'  => $qty <  $val,
+                    '>=' => $qty >= $val,
+                    '>'  => $qty >  $val,
+                    '='  => $qty === $val,
+                    default => false,
+                };
+                if ($match) {
+                    $triggered = true;
+                    break;
+                }
+            }
+        }
+
+        // Legacy fallback when no custom rule exists.
+        if (!$triggered && !$hasAlertRule && $qty <= 10) {
+            $triggered = true;
+        }
+
+        if ($triggered) {
+            $items[] = [
+                'id'   => $id,
+                'name' => $p['name'],
+                'qty'  => $qty,
+            ];
+        }
+    }
+
+    $items = array_slice($items, 0, 20);
 
     $formatted = array_map(fn($p) => [
         'no'        => 'PRD-' . str_pad($p['id'], 3, '0', STR_PAD_LEFT),

@@ -10,6 +10,7 @@ import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Badge      from "../components/Badge";
 import PageHeader from "../components/PageHeader";
 import SlidePanel from "../components/SlidePanel";
+import { canManageAdminPanels } from "../utils";
 import { LINK_PATH } from "../data/LinkPath.jsx";
 import { useCache }  from "../data/CacheContext";
 
@@ -305,6 +306,7 @@ function ManageCategoriesPanel({ categories, onAdd, onDelete, saving }) {
 
 export default function InventoryPage() {
   const cache = useCache();
+  const canManage = canManageAdminPanels();
 
   const [products,   setProducts]   = useState(() => cache.get(CACHE_PRODUCTS) ?? []);
   const [categories, setCategories] = useState(() => cache.get(CACHE_CATS)     ?? []);
@@ -418,6 +420,7 @@ export default function InventoryPage() {
   function resetImageState(url = null) { setImageFile(null); setRemoveImage(false); setImagePreview(url); }
 
   function openEdit(product) {
+    if (!canManage) return;
     setSelectedId(product.id);
     setForm({
       edit_id:     product.id,
@@ -434,6 +437,7 @@ export default function InventoryPage() {
   }
 
   function openAdd() {
+    if (!canManage) return;
     setSelectedId(null);
     setForm(EMPTY_FORM);
     resetImageState(null);
@@ -454,9 +458,34 @@ export default function InventoryPage() {
     // NOTE: discount is included automatically via ...rest spread above
   }
 
+  function buildProductFromForm(id, prev = null) {
+    const priceNum = Number(form.price) || 0;
+    const discountNum = Math.min(100, Math.max(0, Number(form.discount) || 0));
+    const totalPrice = priceNum * (1 - discountNum / 100);
+    const selectedCategory = categories.find(c => Number(c.id) === Number(form.category_id));
+    const status =
+      Number(form.qty) === 0 ? "Out of Stock" : Number(form.qty) < 10 ? "Low Stock" : "Available";
+
+    return {
+      ...(prev ?? {}),
+      id,
+      name: form.name,
+      description: form.description,
+      price: String(form.price),
+      discount: discountNum,
+      totalprice: String(totalPrice),
+      qty: Number(form.qty) || 0,
+      category_id: Number(form.category_id) || null,
+      category: selectedCategory?.name ?? prev?.category ?? "Uncategorized",
+      status,
+      image_url: removeImage ? null : (imagePreview ?? prev?.image_url ?? null),
+    };
+  }
+
   // ─── Category CRUD ────────────────────────────────────────────────────────
 
   async function handleAddCategory(name) {
+    if (!canManage) return;
     setCatSaving(true);
     try {
       const res  = await fetch(API_CATEGORIES, {
@@ -476,6 +505,7 @@ export default function InventoryPage() {
   }
 
   async function handleDeleteCategory(id, name) {
+    if (!canManage) return;
     if (!window.confirm(`Delete "${name}"? Products in this category will become uncategorized.`)) return;
     setCatSaving(true);
     try {
@@ -489,9 +519,17 @@ export default function InventoryPage() {
       const updated = categories.filter(c => c.id !== id);
       setCategories(updated);
       cache.set(CACHE_CATS, updated);
-      cache.invalidate(CACHE_PRODUCTS);
-      await loadProducts(true, true);
+      setProducts(prev => {
+        const next = prev.map(p =>
+          Number(p.category_id) === Number(id)
+            ? { ...p, category_id: null, category: "Uncategorized" }
+            : p
+        );
+        cache.set(CACHE_PRODUCTS, next);
+        return next;
+      });
       showToast(`Category "${name}" deleted`, "success");
+      loadProducts(true, true);
     } catch (err) {
       showToast(err.message || "Failed to delete category", "error");
     } finally { setCatSaving(false); }
@@ -500,17 +538,23 @@ export default function InventoryPage() {
   // ─── Product CRUD ─────────────────────────────────────────────────────────
 
   async function handleAdd() {
+    if (!canManage) return;
     setSaving(true);
     const loadId = showToast("Adding product…", "loading");
     try {
       const res  = await fetch(API, { method: "POST", headers: authHeader(), body: buildFormData() });
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
+      const created = data.product ?? buildProductFromForm(data.id ?? Date.now(), null);
+      setProducts(prev => {
+        const next = [created, ...prev];
+        cache.set(CACHE_PRODUCTS, next);
+        return next;
+      });
       dismissToast(loadId);
       showToast("Product added successfully", "success");
-      cache.invalidate(CACHE_PRODUCTS);
-      await loadProducts(true, true);
       handleClose();
+      loadProducts(true, true);
     } catch (err) {
       dismissToast(loadId);
       showToast(err.message || "Failed to add product", "error");
@@ -518,6 +562,7 @@ export default function InventoryPage() {
   }
 
   async function handleUpdate() {
+    if (!canManage) return;
     setSaving(true);
     const loadId = showToast("Saving changes…", "loading");
     const targetId = form.edit_id ? Number(form.edit_id) : selectedId;
@@ -529,11 +574,19 @@ export default function InventoryPage() {
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
+      setProducts(prev => {
+        const next = prev.map(p => {
+          if (Number(p.id) !== Number(targetId)) return p;
+          const serverProduct = data.product ?? null;
+          return serverProduct ? { ...p, ...serverProduct } : buildProductFromForm(targetId, p);
+        });
+        cache.set(CACHE_PRODUCTS, next);
+        return next;
+      });
       dismissToast(loadId);
       showToast("Product updated successfully", "success");
-      cache.invalidate(CACHE_PRODUCTS);
-      await loadProducts(true, true);
       handleClose();
+      loadProducts(true, true);
     } catch (err) {
       dismissToast(loadId);
       showToast(err.message || "Failed to update product", "error");
@@ -541,6 +594,7 @@ export default function InventoryPage() {
   }
 
   async function handleDelete() {
+    if (!canManage) return;
     if (!window.confirm("Delete this product?")) return;
     setSaving(true);
     const loadId = showToast("Deleting product…", "loading");
@@ -552,11 +606,15 @@ export default function InventoryPage() {
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
+      setProducts(prev => {
+        const next = prev.filter(p => Number(p.id) !== Number(selectedId));
+        cache.set(CACHE_PRODUCTS, next);
+        return next;
+      });
       dismissToast(loadId);
       showToast("Product deleted", "success");
-      cache.invalidate(CACHE_PRODUCTS);
-      await loadProducts(true, true);
       handleClose();
+      loadProducts(true, true);
     } catch (err) {
       dismissToast(loadId);
       showToast(err.message || "Failed to delete product", "error");
@@ -581,7 +639,7 @@ export default function InventoryPage() {
       <div className="page-area">
         <PageHeader
           title="Inventory"
-          onAdd={openAdd}
+          onAdd={canManage ? openAdd : undefined}
           search={search}
           onSearch={setSearch}
           showCategories
@@ -590,7 +648,7 @@ export default function InventoryPage() {
           onCategoryChange={setFilter}
           sortOrder={sortOrder}
           onToggleSort={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")}
-          extraActions={
+          extraActions={canManage ? (
             <button
               className="btn btn-outline btn-sm"
               onClick={() => setCatPanelOpen(true)}
@@ -600,7 +658,7 @@ export default function InventoryPage() {
               <i className="bi bi-tags" />
               Categories
             </button>
-          }
+          ) : null}
         />
 
         <div className="split-layout">
@@ -643,8 +701,8 @@ export default function InventoryPage() {
                     filtered.map(p => (
                       <tr
                         key={p.id}
-                        className={`clickable${selectedId === p.id ? " selected" : ""}`}
-                        onClick={() => openEdit(p)}
+                        className={`${canManage ? "clickable" : ""}${selectedId === p.id ? " selected" : ""}`}
+                        onClick={() => canManage && openEdit(p)}
                       >
                         <td className="cell-id">PRD-{String(p.id).padStart(3, "0")}</td>
                         <td>
@@ -685,55 +743,59 @@ export default function InventoryPage() {
       </div>
 
       {/* ── Product SlidePanel ─────────────────────────────────────────────── */}
-      <SlidePanel
-        isOpen={panelOpen}
-        onClose={handleClose}
-        title={panelMode === "add" ? "Add Product" : "Edit Product"}
-        mode={panelMode}
-        footer={panelMode === "edit" ? (
-          <>
-            <button className="btn btn-delete"  onClick={handleDelete} disabled={saving}>Delete</button>
-            <button className="btn btn-update"  onClick={handleUpdate} disabled={saving}>
-              {saving ? <><i className="bi bi-arrow-repeat spin" /> Saving…</> : "Update"}
-            </button>
-          </>
-        ) : (
-          <>
-            <button className="btn btn-cancel"  onClick={handleClose}  disabled={saving}>Cancel</button>
-            <button className="btn btn-primary" onClick={handleAdd}    disabled={saving}>
-              {saving ? <><i className="bi bi-arrow-repeat spin" /> Adding…</> : "Add Product"}
-            </button>
-          </>
-        )}
-      >
-        <InventoryForm
-          form={form}
-          onChange={updateForm}
+      {canManage && (
+        <SlidePanel
+          isOpen={panelOpen}
+          onClose={handleClose}
+          title={panelMode === "add" ? "Add Product" : "Edit Product"}
           mode={panelMode}
-          imagePreview={imagePreview}
-          onFileChange={handleFileChange}
-          onRemoveImage={handleRemoveImage}
-          categories={categories}
-        />
-      </SlidePanel>
+          footer={panelMode === "edit" ? (
+            <>
+              <button className="btn btn-delete"  onClick={handleDelete} disabled={saving}>Delete</button>
+              <button className="btn btn-update"  onClick={handleUpdate} disabled={saving}>
+                {saving ? <><i className="bi bi-arrow-repeat spin" /> Saving…</> : "Update"}
+              </button>
+            </>
+          ) : (
+            <>
+              <button className="btn btn-cancel"  onClick={handleClose}  disabled={saving}>Cancel</button>
+              <button className="btn btn-primary" onClick={handleAdd}    disabled={saving}>
+                {saving ? <><i className="bi bi-arrow-repeat spin" /> Adding…</> : "Add Product"}
+              </button>
+            </>
+          )}
+        >
+          <InventoryForm
+            form={form}
+            onChange={updateForm}
+            mode={panelMode}
+            imagePreview={imagePreview}
+            onFileChange={handleFileChange}
+            onRemoveImage={handleRemoveImage}
+            categories={categories}
+          />
+        </SlidePanel>
+      )}
 
       {/* ── Manage Categories SlidePanel ───────────────────────────────────── */}
-      <SlidePanel
-        isOpen={catPanelOpen}
-        onClose={() => setCatPanelOpen(false)}
-        title="Manage Categories"
-        mode="add"
-        footer={
-          <button className="btn btn-cancel" onClick={() => setCatPanelOpen(false)}>Close</button>
-        }
-      >
-        <ManageCategoriesPanel
-          categories={categories}
-          onAdd={handleAddCategory}
-          onDelete={handleDeleteCategory}
-          saving={catSaving}
-        />
-      </SlidePanel>
+      {canManage && (
+        <SlidePanel
+          isOpen={catPanelOpen}
+          onClose={() => setCatPanelOpen(false)}
+          title="Manage Categories"
+          mode="add"
+          footer={
+            <button className="btn btn-cancel" onClick={() => setCatPanelOpen(false)}>Close</button>
+          }
+        >
+          <ManageCategoriesPanel
+            categories={categories}
+            onAdd={handleAddCategory}
+            onDelete={handleDeleteCategory}
+            saving={catSaving}
+          />
+        </SlidePanel>
+      )}
     </>
   );
 }

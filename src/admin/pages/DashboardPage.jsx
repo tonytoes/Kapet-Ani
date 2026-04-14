@@ -41,6 +41,7 @@ const KEYS = {
   status:   "dashboard/status",
   category: "dashboard/category",
 };
+const DASHBOARD_REFRESH_MS = 15000;
 
 // ─── Pure canvas line chart ───────────────────────────────────────────────────
 
@@ -296,7 +297,7 @@ export default function DashboardPage() {
   const [error,    setError]    = useState(null);
   const [trendTab, setTrendTab] = useState("revenue");
 
-  const load = useCallback(async (force = false) => {
+  const load = useCallback(async (force = false, silent = false) => {
     const allCached = Object.values(KEYS).every(k => cache.get(k) !== null);
     if (!force && allCached) {
       setStats(cache.get(KEYS.stats));
@@ -309,7 +310,7 @@ export default function DashboardPage() {
       setLoading(false);
       return;
     }
-    setLoading(true);
+    if (!silent) setLoading(true);
     try {
       const [s, o, st, sel, tr, sts, cat] = await Promise.all([
         apiFetch("stats"),
@@ -335,13 +336,23 @@ export default function DashboardPage() {
   }, [cache]);
 
   useEffect(() => {
-    load();
+    load(false, false);
     function onUserUpdated() {
       Object.values(KEYS).forEach(k => cache.invalidate(k));
-      load(true);
+      load(true, true);
     }
+
+    const pollId = window.setInterval(() => {
+      if (document.visibilityState === "visible") {
+        load(true, true);
+      }
+    }, DASHBOARD_REFRESH_MS);
+
     window.addEventListener("userUpdated", onUserUpdated);
-    return () => window.removeEventListener("userUpdated", onUserUpdated);
+    return () => {
+      window.clearInterval(pollId);
+      window.removeEventListener("userUpdated", onUserUpdated);
+    };
   }, [load]);
 
   if (loading) return <Skeleton />;

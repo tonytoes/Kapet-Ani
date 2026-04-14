@@ -9,6 +9,7 @@ import Badge       from "../components/Badge";
 import PageHeader  from "../components/PageHeader";
 import SlidePanel  from "../components/SlidePanel";
 import { maskEmail } from "../utils";
+import { canAssignElevatedRoles, canManageAdminPanels } from "../utils";
 import { LINK_PATH } from "../data/LinkPath.jsx";
 import { useCache }  from "../data/CacheContext";   // ← NEW
 
@@ -110,7 +111,7 @@ function ImageBlock({ preview, onFileChange, onRemove }) {
 
 // ─── User Form ────────────────────────────────────────────────────────────────
 
-function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveImage }) {
+function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveImage, canAssignElevated }) {
   const fields = [
     { label: "First Name", id: "first_name", type: "text",  placeholder: "First name" },
     { label: "Last Name",  id: "last_name",  type: "text",  placeholder: "Last name" },
@@ -120,6 +121,19 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
       placeholder: mode === "edit" ? "Leave blank to keep current" : "Password",
     },
   ];
+
+  const roleOptions = [
+    { value: "user", label: "User" },
+    { value: "staff", label: "Staff" },
+    ...(canAssignElevated ? [
+      { value: "admin", label: "Admin" },
+      { value: "superadmin", label: "SuperAdmin" },
+    ] : []),
+  ];
+
+  if (!canAssignElevated && (form.status === "admin" || form.status === "superadmin")) {
+    roleOptions.push({ value: form.status, label: `${form.status === "admin" ? "Admin" : "SuperAdmin"} (Locked)` });
+  }
 
   return (
     <>
@@ -134,10 +148,9 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
       <div className="form-group">
         <label className="form-label">Role</label>
         <select className="form-control" value={form.status} onChange={e => onChange("status", e.target.value)}>
-          <option value="user">User</option>
-          <option value="admin">Staff</option>
-          <option value="admin">Admin</option>
-          <option value="admin">SuperAdmin</option>
+          {roleOptions.map(opt => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
         </select>
       </div>
     </>
@@ -149,6 +162,8 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
 
 export default function UsersPage() {
   const cache = useCache();   // ← NEW
+  const canManage = canManageAdminPanels();
+  const canAssignElevated = canAssignElevatedRoles();
 
   const [users,      setUsers]      = useState(() => cache.get(CACHE_KEY) ?? []);
   const [loading,    setLoading]    = useState(() => cache.get(CACHE_KEY) === null);
@@ -250,6 +265,7 @@ export default function UsersPage() {
   }
 
   function openEdit(user) {
+    if (!canManage) return;
     setSelectedId(user.id);
     setForm({
       first_name: user.first_name ?? "",
@@ -264,6 +280,7 @@ export default function UsersPage() {
   }
 
   function openAdd() {
+    if (!canManage) return;
     setSelectedId(null);
     setForm(EMPTY_FORM);
     resetImageState(null);
@@ -286,21 +303,45 @@ export default function UsersPage() {
     return fd;
   }
 
+  function buildUserFromForm(id, prev = null) {
+    const first = form.first_name?.trim() ?? "";
+    const last  = form.last_name?.trim() ?? "";
+    const username = `${first} ${last}`.trim() || prev?.username || "New User";
+    return {
+      ...(prev ?? {}),
+      id,
+      first_name: first,
+      last_name: last,
+      username,
+      email: form.email,
+      status: form.status,
+      image_url: removeImage ? null : (imagePreview ?? prev?.image_url ?? null),
+      totalSpent: prev?.totalSpent ?? "₱0.00",
+      password: prev?.password ?? "••••••••",
+    };
+  }
+
   // ─── CRUD (invalidate cache on mutation) ─────────────────────────────────
 
   async function handleAdd() {
+    if (!canManage) return;
     setSaving(true);
     const loadId = showToast("Adding user…", "loading");
     try {
       const res  = await fetch(API, { method: "POST", headers: authHeader(), body: buildFormData() });
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
+      const created = data.user ?? buildUserFromForm(data.id ?? Date.now(), null);
+      setUsers(prev => {
+        const next = [created, ...prev];
+        cache.set(CACHE_KEY, next);
+        return next;
+      });
       dismissToast(loadId);
       showToast("User added successfully", "success");
-      cache.invalidate(CACHE_KEY);             // ← bust cache
-      await loadUsers(true, true);             // ← force fresh fetch
       notifyUserUpdated();
       handleClose();
+      loadUsers(true, true);
     } catch (err) {
       dismissToast(loadId);
       showToast(err.message || "Failed to add user", "error");
@@ -310,18 +351,27 @@ export default function UsersPage() {
   }
 
   async function handleUpdate() {
+    if (!canManage) return;
     setSaving(true);
     const loadId = showToast("Saving changes…", "loading");
     try {
       const res  = await fetch(API, { method: "POST", headers: authHeader(), body: buildFormData({ id: selectedId, _method: "PUT" }) });
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
+      setUsers(prev => {
+        const next = prev.map(u => {
+          if (u.id !== selectedId) return u;
+          const serverUser = data.user ?? null;
+          return serverUser ? { ...u, ...serverUser } : buildUserFromForm(selectedId, u);
+        });
+        cache.set(CACHE_KEY, next);
+        return next;
+      });
       dismissToast(loadId);
       showToast("User updated successfully", "success");
-      cache.invalidate(CACHE_KEY);             // ← bust cache
-      await loadUsers(true, true);             // ← force fresh fetch
       notifyUserUpdated();
       handleClose();
+      loadUsers(true, true);
     } catch (err) {
       dismissToast(loadId);
       showToast(err.message || "Failed to update user", "error");
@@ -331,6 +381,7 @@ export default function UsersPage() {
   }
 
   async function handleDelete() {
+    if (!canManage) return;
     if (!window.confirm("Delete this user?")) return;
     setSaving(true);
     const loadId = showToast("Deleting user…", "loading");
@@ -338,12 +389,16 @@ export default function UsersPage() {
       const res  = await fetch(API, { method: "DELETE", headers: { "Content-Type": "application/json", ...authHeader() }, body: JSON.stringify({ id: selectedId }) });
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
+      setUsers(prev => {
+        const next = prev.filter(u => u.id !== selectedId);
+        cache.set(CACHE_KEY, next);
+        return next;
+      });
       dismissToast(loadId);
       showToast("User deleted", "success");
-      cache.invalidate(CACHE_KEY);             // ← bust cache
-      await loadUsers(true, true);             // ← force fresh fetch
       notifyUserUpdated();
       handleClose();
+      loadUsers(true, true);
     } catch (err) {
       dismissToast(loadId);
       showToast(err.message || "Failed to delete user", "error");
@@ -378,7 +433,7 @@ export default function UsersPage() {
       <div className="page-area">
         <PageHeader
           title="Users"
-          onAdd={openAdd}
+          onAdd={canManage ? openAdd : undefined}
           search={search}
           onSearch={setSearch}
           showCategories
@@ -427,8 +482,8 @@ export default function UsersPage() {
                     filtered.map(u => (
                       <tr
                         key={u.id}
-                        className={`clickable${selectedId === u.id ? " selected" : ""}`}
-                        onClick={() => openEdit(u)}
+                        className={`${canManage ? "clickable" : ""}${selectedId === u.id ? " selected" : ""}`}
+                        onClick={() => canManage && openEdit(u)}
                       >
                         <td className="cell-id">{u.id}</td>
                         <td>
@@ -456,36 +511,39 @@ export default function UsersPage() {
         </div>
       </div>
 
-      <SlidePanel
-        isOpen={panelOpen}
-        onClose={handleClose}
-        title={panelMode === "add" ? "Add User" : "Edit User"}
-        mode={panelMode}
-        footer={panelMode === "edit" ? (
-          <>
-            <button className="btn btn-delete"  onClick={handleDelete} disabled={saving}>Delete</button>
-            <button className="btn btn-update"  onClick={handleUpdate} disabled={saving}>
-              {saving ? <><i className="bi bi-arrow-repeat spin" /> Saving…</> : "Update"}
-            </button>
-          </>
-        ) : (
-          <>
-            <button className="btn btn-cancel"  onClick={handleClose}  disabled={saving}>Cancel</button>
-            <button className="btn btn-primary" onClick={handleAdd}    disabled={saving}>
-              {saving ? <><i className="bi bi-arrow-repeat spin" /> Adding…</> : "Add"}
-            </button>
-          </>
-        )}
-      >
-        <UserForm
-          form={form}
-          onChange={updateForm}
+      {canManage && (
+        <SlidePanel
+          isOpen={panelOpen}
+          onClose={handleClose}
+          title={panelMode === "add" ? "Add User" : "Edit User"}
           mode={panelMode}
-          imagePreview={imagePreview}
-          onFileChange={handleFileChange}
-          onRemoveImage={handleRemoveImage}
-        />
-      </SlidePanel>
+          footer={panelMode === "edit" ? (
+            <>
+              <button className="btn btn-delete"  onClick={handleDelete} disabled={saving}>Delete</button>
+              <button className="btn btn-update"  onClick={handleUpdate} disabled={saving}>
+                {saving ? <><i className="bi bi-arrow-repeat spin" /> Saving…</> : "Update"}
+              </button>
+            </>
+          ) : (
+            <>
+              <button className="btn btn-cancel"  onClick={handleClose}  disabled={saving}>Cancel</button>
+              <button className="btn btn-primary" onClick={handleAdd}    disabled={saving}>
+                {saving ? <><i className="bi bi-arrow-repeat spin" /> Adding…</> : "Add"}
+              </button>
+            </>
+          )}
+        >
+          <UserForm
+            form={form}
+            onChange={updateForm}
+            mode={panelMode}
+            imagePreview={imagePreview}
+            onFileChange={handleFileChange}
+            onRemoveImage={handleRemoveImage}
+            canAssignElevated={canAssignElevated}
+          />
+        </SlidePanel>
+      )}
     </>
   );
 }
