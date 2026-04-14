@@ -42,163 +42,6 @@ const KEYS = {
   category: "dashboard/category",
 };
 
-// ─── CSS ──────────────────────────────────────────────────────────────────────
-
-const DB_STYLES = `
-  .db-wrap { padding: 22px 26px 40px; display: flex; flex-direction: column; gap: 20px; flex: 1; }
-
-  /* KPI row */
-  .db-kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-  @media (max-width: 1100px) { .db-kpi-row { grid-template-columns: repeat(2, 1fr); } }
-
-  .db-kpi { background: var(--bg-card); border-radius: 16px; box-shadow: var(--shadow-card); padding: 20px 22px; display: flex; flex-direction: column; gap: 4px; position: relative; overflow: hidden; transition: transform 0.18s, box-shadow 0.18s; }
-  .db-kpi:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.10); }
-  .db-kpi-accent { position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 16px 16px 0 0; }
-  .db-kpi-icon { width: 40px; height: 40px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 1.05rem; margin-bottom: 10px; }
-  .db-kpi-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); }
-  .db-kpi-value { font-size: 1.7rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; line-height: 1.1; margin: 2px 0; }
-  .db-kpi-sub { font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 5px; margin-top: 2px; }
-  .db-kpi-badge-up   { background: #DCFCE7; color: #16A34A; padding: 2px 7px; border-radius: 20px; font-size: 0.68rem; font-weight: 700; }
-  .db-kpi-badge-down { background: #FEE2E2; color: #DC2626; padding: 2px 7px; border-radius: 20px; font-size: 0.68rem; font-weight: 700; }
-  .db-kpi-badge-neu  { background: #F3F4F6; color: var(--text-secondary); padding: 2px 7px; border-radius: 20px; font-size: 0.68rem; font-weight: 700; }
-
-  /* Main chart row */
-  .db-mid-row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; align-items: start; }
-  @media (max-width: 1000px) { .db-mid-row { grid-template-columns: 1fr; } }
-
-  /* Donut + top selling row */
-  .db-bot-row { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 16px; align-items: start; }
-  @media (max-width: 1100px) { .db-bot-row { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 760px)  { .db-bot-row { grid-template-columns: 1fr; } }
-
-  /* Card shell */
-  .db-card { background: var(--bg-card); border-radius: 16px; box-shadow: var(--shadow-card); padding: 22px 24px; }
-  .db-card-title { font-size: 0.88rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 8px; margin-bottom: 18px; }
-  .db-card-title i { color: var(--brand-mid); font-size: 0.95rem; }
-  .db-card-title-sub { font-size: 0.72rem; font-weight: 400; color: var(--text-muted); margin-left: auto; }
-
-  /* Line chart */
-  .db-chart-wrap { position: relative; width: 100%; }
-  .db-chart-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
-  .db-chart-tab { padding: 5px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border-light); background: transparent; color: var(--text-muted); transition: all 0.15s; font-family: var(--font-body); }
-  .db-chart-tab.active { background: var(--brand-mid); color: #fff; border-color: var(--brand-mid); }
-
-  /* Donut chart */
-  .db-donut-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
-  .db-donut-canvas { max-width: 180px; max-height: 180px; }
-  .db-legend { width: 100%; display: flex; flex-direction: column; gap: 7px; margin-top: 4px; }
-  .db-legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; }
-  .db-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-  .db-legend-label { color: var(--text-secondary); flex: 1; }
-  .db-legend-val { font-weight: 700; color: var(--text-primary); }
-
-  /* Top selling */
-  .db-sell-item { margin-bottom: 14px; }
-  .db-sell-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
-  .db-sell-name { font-size: 0.82rem; font-weight: 600; color: var(--text-primary); }
-  .db-sell-meta { font-size: 0.72rem; color: var(--text-muted); }
-  .db-sell-track { height: 8px; background: #F3F4F6; border-radius: 99px; overflow: hidden; }
-  .db-sell-fill { height: 100%; border-radius: 99px; background: var(--brand-progress); transition: width 1s cubic-bezier(0.4,0,0.2,1); }
-
-
-
-  .db-sell-fill {
-  height: 100%;
-  border-radius: 99px;
-  background: var(--brand-progress);
-  transition: width 1s cubic-bezier(0.4,0,0.2,1);
-
-  position: relative;
-  overflow: visible;
-
-  /* 🔥 base ember glow */
-  box-shadow:
-    0 0 8px rgba(255, 120, 0, 0.25),
-    0 0 18px rgba(255, 90, 0, 0.15);
-
-  animation: emberPulse 2.4s ease-in-out infinite;
-}
-
-
-
-.db-sell-fill::after {
-  content: "";
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-
-  animation: matchFlicker 1.6s infinite ease-in-out;
-}
-
-
-@keyframes emberPulse {
-  0% {
-    box-shadow:
-      0 0 6px rgba(255, 110, 0, 0.18),
-      0 0 14px rgba(255, 80, 0, 0.12);
-    filter: brightness(1);
-  }
-
-  50% {
-    box-shadow:
-      0 0 12px rgba(255, 140, 0, 0.4),
-      0 0 26px rgba(255, 90, 0, 0.2);
-    filter: brightness(1.1);
-  }
-
-  100% {
-    box-shadow:
-      0 0 6px rgba(255, 110, 0, 0.18),
-      0 0 14px rgba(255, 80, 0, 0.12);
-    filter: brightness(1);
-  }
-}
-
-@keyframes matchFlicker {
-  0%   { opacity: 1; transform: translateY(-50%) scale(1); }
-  50%  { opacity: 0.85; transform: translateY(-50%) scale(1.15); }
-  100% { opacity: 1; transform: translateY(-50%) scale(1); }
-}
-
-
-
-
-
-
-  
-  /* Tables */
-  .db-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-  .db-table th { padding: 9px 12px; text-align: left; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); border-bottom: 1px solid var(--border-light); white-space: nowrap; }
-  .db-table td { padding: 11px 12px; border-bottom: 1px solid #F9FAFB; vertical-align: middle; }
-  .db-table tr:last-child td { border-bottom: none; }
-  .db-table tbody tr { transition: background 0.1s; }
-  .db-table tbody tr:hover { background: #FAFAFA; }
-
-  /* Skeleton */
-  @keyframes shimmer { 0%{background-position:-400px 0} 100%{background-position:400px 0} }
-  .db-skel { background: linear-gradient(90deg,#F3F4F6 25%,#E5E7EB 50%,#F3F4F6 75%); background-size: 800px 100%; animation: shimmer 1.4s infinite; border-radius: 8px; }
-
-  /* Summary pills in pending */
-  .db-pending-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid #F9FAFB; }
-  .db-pending-item:last-child { border-bottom: none; }
-  .db-pending-icon { width: 34px; height: 34px; border-radius: 9px; background: #FFF7ED; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
-  .db-pending-name { flex: 1; font-size: 0.82rem; font-weight: 500; color: var(--text-primary); }
-
-  /* Empty state */
-  .db-empty { text-align: center; padding: 30px 0; color: var(--text-muted); font-size: 0.82rem; }
-  .db-empty i { font-size: 1.6rem; display: block; margin-bottom: 8px; }
-
-  /* Stock qty pill */
-  .db-qty-pill { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; }
-  .db-qty-zero { background: #FEE2E2; color: #DC2626; }
-  .db-qty-low  { background: #FFF7ED; color: #C2410C; }
-`;
-
 // ─── Pure canvas line chart ───────────────────────────────────────────────────
 
 function LineChart({ data, metric }) {
@@ -369,16 +212,46 @@ function Skeleton() {
       <div className="db-kpi-row">
         {[1,2,3,4].map(i => (
           <div key={i} className="db-kpi">
-            <div className="db-skel" style={{ width: 40, height: 40, borderRadius: 11, marginBottom: 10 }} />
-            <div className="db-skel" style={{ width: "50%", height: 11, marginBottom: 6 }} />
-            <div className="db-skel" style={{ width: "75%", height: 28, marginBottom: 6 }} />
-            <div className="db-skel" style={{ width: "60%", height: 10 }} />
+            <div className="db-kpi-accent db-kpi-accent-skeleton" />
+            <div className="db-skel db-skel-kpi-icon" />
+            <div className="db-skel db-skel-kpi-label" />
+            <div className="db-skel db-skel-kpi-value" />
+            <div className="db-skel db-skel-kpi-sub" />
           </div>
         ))}
       </div>
       <div className="db-mid-row">
-        <div className="db-card" style={{ height: 280 }}><div className="db-skel" style={{ width: "100%", height: "100%", borderRadius: 12 }} /></div>
-        <div className="db-card" style={{ height: 280 }}><div className="db-skel" style={{ width: "100%", height: "100%", borderRadius: 12 }} /></div>
+        <div className="db-card db-skeleton-card">
+          <div className="db-skel db-skel-title" />
+          <div className="db-skel db-skel-tab-row" />
+          <div className="db-skel db-skel-chart" />
+        </div>
+        <div className="db-card db-skeleton-card">
+          <div className="db-skel db-skel-title" />
+          {[1,2,3].map(i => <div key={i} className="db-skel db-skel-line" />)}
+          <div className="db-skel db-skel-grid" />
+        </div>
+      </div>
+      <div className="db-bot-row">
+        {[1,2,3].map(i => (
+          <div key={i} className="db-card db-skeleton-card db-skeleton-bot-card">
+            <div className="db-skel db-skel-title" />
+            <div className="db-skel db-skel-donut" />
+            {[1,2,3].map(k => <div key={k} className="db-skel db-skel-line" />)}
+          </div>
+        ))}
+      </div>
+      <div className="db-table-row">
+        {[1,2].map(i => (
+          <div key={i} className="db-card db-table-card">
+            <div className="db-table-head">
+              <div className="db-skel db-skel-table-title" />
+            </div>
+            <div className="db-table-scroll">
+              {[1,2,3,4].map(k => <div key={k} className="db-skel db-skel-row" />)}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -484,8 +357,6 @@ export default function DashboardPage() {
   const growthType = stats?.growthPct > 0 ? "up" : stats?.growthPct < 0 ? "down" : "neu";
 
   return (
-    <>
-      <style>{DB_STYLES}</style>
       <div className="db-wrap">
 
         {/* ── KPI Row ─────────────────────────────────────────────────────── */}
@@ -573,35 +444,29 @@ export default function DashboardPage() {
                   </div>
                 ))}
                 {stats.pendingOrders > 3 && (
-                  <div style={{ marginTop: 12, fontSize: "0.75rem", color: "var(--text-muted)", textAlign: "center" }}>
+                  <div className="db-pending-more">
                     +{stats.pendingOrders - 3} more pending orders
                   </div>
                 )}
               </>
             ) : (
               <div className="db-empty">
-                <i className="bi bi-check-circle" style={{ color: "#22C55E" }} />
+                <i className="bi bi-check-circle db-empty-icon-success" />
                 No pending orders
               </div>
             )}
 
             {/* Today at a glance */}
-            <div style={{
-              marginTop: 18, paddingTop: 16, borderTop: "1px solid var(--border-light)",
-              display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12
-            }}>
+            <div className="db-glance-grid">
               {[
                 { label: "Today's Sales", value: stats?.salesToday, icon: "bi-sun", color: "#C9873A" },
                 { label: "This Month",    value: stats?.salesMonth,  icon: "bi-calendar3", color: "#3B82F6" },
               ].map(s => (
-                <div key={s.label} style={{
-                  background: "#FAFAFA", borderRadius: 10, padding: "10px 12px",
-                  border: "1px solid var(--border-light)"
-                }}>
-                  <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginBottom: 4, display: "flex", alignItems: "center", gap: 4 }}>
+                <div key={s.label} className="db-glance-card">
+                  <div className="db-glance-label">
                     <i className={`bi ${s.icon}`} style={{ color: s.color }} />{s.label}
                   </div>
-                  <div style={{ fontWeight: 800, fontSize: "0.95rem", color: "var(--text-primary)" }}>{s.value ?? "—"}</div>
+                  <div className="db-glance-value">{s.value ?? "—"}</div>
                 </div>
               ))}
             </div>
@@ -652,7 +517,7 @@ export default function DashboardPage() {
                     <div className="db-legend-item" key={s.label}>
                       <div className="db-legend-dot" style={{ background: s.color }} />
                       <span className="db-legend-label">{s.label}</span>
-                      <span className="db-legend-val" style={{ fontSize: "0.72rem" }}>{s.display}</span>
+                      <span className="db-legend-val db-legend-display">{s.display}</span>
                     </div>
                   ))}
                 </div>
@@ -673,13 +538,7 @@ export default function DashboardPage() {
               <div className="db-sell-item" key={item.name}>
                 <div className="db-sell-header">
                   <span className="db-sell-name">
-                    <span style={{
-                      display: "inline-flex", alignItems: "center", justifyContent: "center",
-                      width: 18, height: 18, borderRadius: "50%",
-                      background: i === 0 ? "#FFF5E6" : "#F3F4F6",
-                      color: i === 0 ? "#C9873A" : "#9CA3AF",
-                      fontSize: "0.65rem", fontWeight: 800, marginRight: 6
-                    }}>{i + 1}</span>
+                    <span className={`db-rank-badge${i === 0 ? " is-top" : ""}`}>{i + 1}</span>
                     {item.name}
                   </span>
                   <span className="db-sell-meta">{item.total_sold} sold · {item.revenue}</span>
@@ -695,18 +554,18 @@ export default function DashboardPage() {
         </div>
 
         {/* ── Recent Orders + Low Stock row ───────────────────────────────── */}
-        <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr", gap: 16 }}>
+        <div className="db-table-row">
 
           {/* Recent orders */}
-          <div className="db-card" style={{ padding: 0, overflow: "hidden" }}>
-            <div style={{ padding: "18px 22px 14px" }}>
-              <div className="db-card-title" style={{ marginBottom: 0 }}>
+          <div className="db-card db-table-card">
+            <div className="db-table-head">
+              <div className="db-card-title db-table-title">
                 <i className="bi bi-clock-history" />
                 Recent Orders
                 <span className="db-card-title-sub">latest 7</span>
               </div>
             </div>
-            <div style={{ overflowX: "auto" }}>
+            <div className="db-table-scroll">
               {orders.length > 0 ? (
                 <table className="db-table">
                   <thead>
@@ -721,17 +580,17 @@ export default function DashboardPage() {
                   <tbody>
                     {orders.map((o, i) => (
                       <tr key={o.id ?? i}>
-                        <td style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 500 }}>{o.id}</td>
-                        <td style={{ fontWeight: 600 }}>{o.buyer}</td>
-                        <td style={{ color: "var(--text-secondary)" }}>{o.date}</td>
-                        <td style={{ fontWeight: 700 }}>{o.amount}</td>
+                        <td className="db-cell-id">{o.id}</td>
+                        <td className="db-cell-strong">{o.buyer}</td>
+                        <td className="db-cell-muted">{o.date}</td>
+                        <td className="db-cell-strong">{o.amount}</td>
                         <td><Badge status={o.status} /></td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               ) : (
-                <div className="db-empty" style={{ padding: "24px 0" }}>
+                <div className="db-empty db-empty-table">
                   <i className="bi bi-bag" />No orders yet.
                 </div>
               )}
@@ -739,15 +598,15 @@ export default function DashboardPage() {
           </div>
 
           {/* Low stock */}
-          <div className="db-card" style={{ padding: 0, overflow: "hidden" }}>
-            <div style={{ padding: "18px 22px 14px" }}>
-              <div className="db-card-title" style={{ marginBottom: 0 }}>
-                <i className="bi bi-exclamation-triangle-fill" style={{ color: "#F97316" }} />
+          <div className="db-card db-table-card">
+            <div className="db-table-head">
+              <div className="db-card-title db-table-title">
+                <i className="bi bi-exclamation-triangle-fill db-warn-icon" />
                 Low Stock Alert
                 <span className="db-card-title-sub">{stock.length} items</span>
               </div>
             </div>
-            <div style={{ overflowX: "auto" }}>
+            <div className="db-table-scroll">
               {stock.length > 0 ? (
                 <table className="db-table">
                   <thead>
@@ -760,8 +619,8 @@ export default function DashboardPage() {
                   <tbody>
                     {stock.map(s => (
                       <tr key={s.no}>
-                        <td style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 500 }}>{s.no}</td>
-                        <td style={{ fontWeight: 600 }}>{s.name}</td>
+                        <td className="db-cell-id">{s.no}</td>
+                        <td className="db-cell-strong">{s.name}</td>
                         <td>
                           <span className={`db-qty-pill ${s.remaining === 0 ? "db-qty-zero" : "db-qty-low"}`}>
                             {s.remaining === 0 ? "Out" : s.remaining}
@@ -772,8 +631,8 @@ export default function DashboardPage() {
                   </tbody>
                 </table>
               ) : (
-                <div className="db-empty" style={{ padding: "24px 0" }}>
-                  <i className="bi bi-check-circle" style={{ color: "#22C55E" }} />
+                <div className="db-empty db-empty-table">
+                  <i className="bi bi-check-circle db-empty-icon-success" />
                   All products well stocked.
                 </div>
               )}
@@ -782,6 +641,5 @@ export default function DashboardPage() {
         </div>
 
       </div>
-    </>
   );
 }
