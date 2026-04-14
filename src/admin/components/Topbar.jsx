@@ -68,6 +68,10 @@ export default function Topbar({ title, onToggle }) {
     navigate("/");
   }
 
+  function handleBackToHomepage() {
+    navigate("/");
+  }
+
   return (
     <div className="kp-topbar">
       <div className="topbar-left">
@@ -123,6 +127,22 @@ export default function Topbar({ title, onToggle }) {
                   {userData?.role ? userData.role.charAt(0).toUpperCase() + userData.role.slice(1) : ""}
                 </div>
               </div>
+
+              <button
+                onClick={handleBackToHomepage}
+                onMouseEnter={e => e.currentTarget.style.background = "#F5F7FA"}
+                onMouseLeave={e => e.currentTarget.style.background = "none"}
+                style={{
+                  width: "100%", padding: "10px 16px",
+                  border: "none", outline: "none", background: "none",
+                  display: "flex", alignItems: "center", gap: 9,
+                  cursor: "pointer", fontSize: "0.83rem", fontWeight: 600,
+                  color: "var(--text-primary)", fontFamily: "var(--font-body)", transition: "background 0.14s",
+                }}
+              >
+                <i className="bi bi-house-door"></i>
+                Back to Homepage
+              </button>
 
               <button
                 onClick={handleLogout}

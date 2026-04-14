@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logo1 from "../../assets/images/logo_brown_transparent.png";
 import "../../styles/navbar2.css";
 import CartDrawer from "../layout/CartDrawer";
 
 function Navbar({ activePage }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const showAdminShortcut = ["admin", "superadmin"].includes((user?.role || "").toLowerCase());
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) setUser(JSON.parse(storedUser));
+  }, []);
 
   return (
     <>
@@ -24,12 +31,17 @@ function Navbar({ activePage }) {
           </ul>
 
           <div className="nav-actions">
-            <a href="/login" className="nav-icon1">
+            <a href={user ? "/user" : "/login"} className="nav-icon1">
               <svg width={24} height={24} viewBox="0 0 24 24" fill="none">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
             </a>
+            {showAdminShortcut && (
+              <a href="/admin" className="nav-admin-btn2" title="Open Admin Panel">
+                Admin
+              </a>
+            )}
 
             <div className="nav-cart" onClick={() => setIsCartOpen(true)}>
               <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">

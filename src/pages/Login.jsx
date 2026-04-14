@@ -52,7 +52,7 @@ function Login() {
       if (data.success) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        navigate(["staff", "admin", "superadmin"].includes(data.user.role) ? "/admin" : "/");
+        navigate("/");
       } else {
         setError(data.message);
       }

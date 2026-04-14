@@ -142,8 +142,8 @@ function listUsers(): void
         SELECT
             id, first_name, last_name,
             CONCAT(first_name, ' ', last_name) AS username,
-            email, role AS status,
-            image_name, image_type, image_blob,
+            email, role AS status, created_at,
+            image_name,
             (SELECT COALESCE(SUM(total_price), 0)
              FROM orders WHERE user_id = users.id) AS total_spent
         FROM users
@@ -154,7 +154,7 @@ function listUsers(): void
 
     $formatted = array_map(function ($u) {
         $imageUrl = null;
-        if (!empty($u['image_blob']) && !empty($u['image_type'])) {
+        if (!empty($u['image_name'])) {
             $imageUrl = LINK_PATH . "getImage.php?id=" . $u['id'];
         }
 
@@ -165,6 +165,7 @@ function listUsers(): void
             'last_name'  => $u['last_name'],
             'email'      => $u['email'],
             'status'     => ucfirst($u['status']),
+            'created_at' => $u['created_at'],
             'totalSpent' => '₱' . number_format($u['total_spent'], 2),
             'password'   => '••••••••',
             'image_name' => $u['image_name'],
@@ -191,16 +192,16 @@ function addUser(array $data): void
     $role       = strtolower($data['status'] ?? 'user');
     $requesterRole = getRequesterRole();
 
-    if (in_array($role, ['admin', 'superadmin'], true) && $requesterRole !== 'superadmin') {
-        sendResponse(403, false, 'Only superadmin can assign Admin or SuperAdmin roles');
-    }
-
     if (!$first_name || !$last_name || !$email || !$password) {
         sendResponse(400, false, 'All fields are required');
     }
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         sendResponse(400, false, 'Invalid email format');
+    }
+
+    if (in_array($role, ['admin', 'superadmin'], true) && $requesterRole !== 'superadmin') {
+        sendResponse(403, false, 'Only superadmin can assign Admin or SuperAdmin roles');
     }
 
     $check = $conn->prepare("SELECT id FROM users WHERE email = ?");
@@ -246,10 +247,6 @@ function updateUser(array $data): void
     $removeImg  = ($data['remove_image']     ?? '') === '1';
     $requesterRole = getRequesterRole();
 
-    if (in_array($role, ['admin', 'superadmin'], true) && $requesterRole !== 'superadmin') {
-        sendResponse(403, false, 'Only superadmin can assign Admin or SuperAdmin roles');
-    }
-
     if (!$id) {
         sendResponse(400, false, 'User ID required');
     }
@@ -258,8 +255,37 @@ function updateUser(array $data): void
         sendResponse(400, false, 'Invalid email format');
     }
 
+    $currentUserStmt = $conn->prepare("SELECT role, password FROM users WHERE id = ? LIMIT 1");
+    $currentUserStmt->execute([$id]);
+    $currentUser = $currentUserStmt->fetch(PDO::FETCH_ASSOC);
+    if (!$currentUser) {
+        sendResponse(404, false, 'User not found');
+    }
+
+    $currentTargetRole = strtolower((string) $currentUser['role']);
+    if (
+        in_array($role, ['admin', 'superadmin'], true) &&
+        $requesterRole !== 'superadmin' &&
+        $role !== $currentTargetRole
+    ) {
+        sendResponse(403, false, 'Only superadmin can assign Admin or SuperAdmin roles');
+    }
+
+    $newPasswordRaw = $data['new_password'] ?? $data['password'] ?? '';
+    $passwordChange = !empty($newPasswordRaw) && $newPasswordRaw !== '••••••••';
+    if ($passwordChange) {
+        if (strlen($newPasswordRaw) < 8) {
+            sendResponse(400, false, 'New password must be at least 8 characters');
+        }
+        // If current_password is provided, verify it (used by user self-service page).
+        $currentPasswordRaw = $data['current_password'] ?? '';
+        if ($currentPasswordRaw !== '' && !password_verify($currentPasswordRaw, $currentUser['password'])) {
+            sendResponse(400, false, 'Current password is incorrect');
+        }
+    }
+
     $image          = extractImage();
-    $passwordChange = !empty($data['password']) && $data['password'] !== '••••••••';
+    $hashedPassword = $passwordChange ? password_hash($newPasswordRaw, PASSWORD_DEFAULT) : null;
 
     if ($image) {
         // ── New image uploaded ───────────────────────────────────────────
@@ -279,7 +305,7 @@ function updateUser(array $data): void
         $stmt->bindValue($i++, $image['type']);
         $stmt->bindValue($i++, $image['blob'], PDO::PARAM_LOB);
         if ($passwordChange) {
-            $stmt->bindValue($i++, password_hash($data['password'], PASSWORD_DEFAULT));
+            $stmt->bindValue($i++, $hashedPassword);
         }
         $stmt->bindValue($i, $id, PDO::PARAM_INT);
         $stmt->execute();
@@ -295,7 +321,7 @@ function updateUser(array $data): void
         $stmt   = $conn->prepare($sql);
         $params = [$first_name, $last_name, $email, $role];
         if ($passwordChange) {
-            $params[] = password_hash($data['password'], PASSWORD_DEFAULT);
+            $params[] = $hashedPassword;
         }
         $params[] = $id;
         $stmt->execute($params);
@@ -310,7 +336,7 @@ function updateUser(array $data): void
         $stmt   = $conn->prepare($sql);
         $params = [$first_name, $last_name, $email, $role];
         if ($passwordChange) {
-            $params[] = password_hash($data['password'], PASSWORD_DEFAULT);
+            $params[] = $hashedPassword;
         }
         $params[] = $id;
         $stmt->execute($params);

@@ -8,6 +8,7 @@ function Navbar({ activePage }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [user, setUser] = useState(null); 
+  const showAdminShortcut = ["admin", "superadmin"].includes((user?.role || "").toLowerCase());
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) setUser(JSON.parse(storedUser));
@@ -49,6 +50,11 @@ function Navbar({ activePage }) {
                 <circle cx="12" cy="7" r="4" />
               </svg>
             </a>
+            {showAdminShortcut && (
+              <a href="/admin" className="nav-admin-btn" title="Open Admin Panel">
+                Admin
+              </a>
+            )}
 
             <div className="nav-cart1 d-flex align-items-center gap-1" onClick={() => setIsCartOpen(true)}>
               <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
