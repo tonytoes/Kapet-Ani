@@ -198,6 +198,18 @@
   font-weight: 600;
   letter-spacing: 0.1em;
   padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(181, 147, 120, 0.35);
+  backdrop-filter: blur(2px);
+}
+
+.not-for-sale-badge {
+  background: rgba(45, 27, 14, 0.9);
+  color: #f7efe7;
+  border-color: rgba(255, 255, 255, 0.24);
+  letter-spacing: 0.12em;
+  padding: 6px 12px;
+  box-shadow: 0 6px 18px rgba(45, 27, 14, 0.22);
 }
 .product-info {
   padding: 18px 4px 0;

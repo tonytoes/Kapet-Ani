@@ -13,6 +13,7 @@ import InventoryAlertPage    from "./pages/InventoryAlertPage";
 import UsersPage             from "./pages/UsersPage";
 import ComplaintsPage        from "./pages/ComplaintsPage";
 import TransactionsPage      from "./pages/TransactionsPage";
+import WebsiteContentPage    from "./pages/WebsiteContentPage";
 import { CacheProvider }     from "./data/CacheContext";  
 
 const PAGE_TITLES = {
@@ -21,6 +22,7 @@ const PAGE_TITLES = {
   inventoryalert: "Inventory Alert",
   users:          "Users",
   transactions:   "Transactions",
+  websitecontent: "Website Content",
 };
 
 export default function App() {
@@ -34,6 +36,7 @@ export default function App() {
     if (page === "users") return <UsersPage />;
     if (page === "complaints") return <ComplaintsPage />;
     if (page === "transactions") return <TransactionsPage />;
+    if (page === "websitecontent") return <WebsiteContentPage />;
     return <DashboardPage onNavigate={setPage} />;
   }
 

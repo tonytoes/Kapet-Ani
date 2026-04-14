@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { page: "inventoryalert", icon: "bi-graph-down",       label: "Inventory Alert" },
   { page: "users",          icon: "bi-people",         label: "Users" },
   { page: "transactions",   icon: "bi-receipt",        label: "Transactions" },
+  { page: "websitecontent", icon: "bi-pencil-square",  label: "Website Content" },
 ];
 
 export default function Sidebar({ activePage, onNavigate, collapsed }) {

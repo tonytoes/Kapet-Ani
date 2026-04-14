@@ -4,164 +4,145 @@ import Newsletter from "../components/layout/Newsletter.jsx";
 import Footer from "../components/layout/Footer.jsx";
 import Navbar2 from "../components/layout/Navbar2.jsx";
 import ProductModal from "../components/layout/ProductModal.jsx";
-import bobatea from "../assets/images/bobatea.jpg";
-import chocodrink from "../assets/images/chocodrink.jpg";
-import matchavanilla from "../assets/images/matchavanilla2.jpg";
-import pandangfrappe from "../assets/images/pandangfrappe.jpg";
-import ubefrappe from "../assets/images/ubefrappe.jpg";
-import orangesoda from "../assets/images/orangesoda.jpg";
-import basket1 from "../assets/images/basket1.jpg";
-import basket2 from "../assets/images/basket2.jpg";
-import basket3 from "../assets/images/basket3.jpg";
-import basket4 from "../assets/images/basket4.jpg";
-import basket5 from "../assets/images/basket5.jpg";
-import basket6 from "../assets/images/basket6.jpg";
-import banigBento from "../assets/images/Banig Bento.webp";
-import banigBoxy from "../assets/images/Banig Boxy.webp";
-import banigCrossbody from "../assets/images/Banig Crossbody.webp";
-import banigClassic from "../assets/images/Banig Filo Classic Premium.webp";
-import banigTote from "../assets/images/Banig John Tote.webp";
-import banigSmall from "../assets/images/Banig Small Bag.jpg";
-import coaster1 from "../assets/images/coaster1.jpg";
-import coaster2 from "../assets/images/coaster2.jpg";
-import coaster3 from "../assets/images/coaster3.jpg";
-import coaster4 from "../assets/images/coaster4.jpg";
-import coaster5 from "../assets/images/coaster5.jpg";
-import coaster6 from "../assets/images/coaster6.jpg";
-const allProductCards = [
-  // Cold & Specialty Drinks (6)
-  { 
-    id: 1, category: "Cold & Specialty Drinks", name: "Boba Tea", price: 1250.0, originalPrice: 1500.0, onSale: true, img: bobatea, image: bobatea, description: "Delicious boba tea with premium tea leaves and chewy tapioca pearls.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
-  },
-  { 
-    id: 2, category: "Cold & Specialty Drinks", name: "Iced Chocolate", price: 1250.0, originalPrice: 1500.0, onSale: true, img: chocodrink, image: chocodrink, description: "Rich creamy iced chocolate made with premium cocoa.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
-  },
-  { 
-    id: 3, category: "Cold & Specialty Drinks", name: "Matcha Vanilla", price: 1250.0, originalPrice: 1500.0, onSale: true, img: matchavanilla, image: matchavanilla, description: "Smooth matcha blended with vanilla for unique flavor.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
-  },
-  { 
-    id: 4, category: "Cold & Specialty Drinks", name: "Pandan Frappe", price: 1250.0, originalPrice: 1500.0, onSale: true, img: pandangfrappe, image: pandangfrappe, description: "Exotic pandan frappe with creamy texture.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
-  },
-  { 
-    id: 5, category: "Cold & Specialty Drinks", name: "Ube Frappe", price: 1250.0, originalPrice: 1500.0, onSale: true, img: ubefrappe, image: ubefrappe, description: "Purple yam frappe - sweet Filipino favorite.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
-  },
-  { 
-    id: 6, category: "Cold & Specialty Drinks", name: "Orange Fizz Soda", price: 1250.0, originalPrice: 1500.0, onSale: true, img: orangesoda, image: orangesoda, description: "Sparkling orange soda with citrus burst.", dimensions: { length: 10, height: 20, width: 10, weight: 500 }
-  },
+import { LINK_PATH } from "../admin/data/LinkPath.jsx";
 
-  // Hand-Made Baskets (6)
-  { 
-    id: 7, category: "Hand-Made Baskets", name: "Abaca Basket 1", price: 1250.0, originalPrice: 1500.0, onSale: true, img: basket1, image: basket1, description: "Handwoven abaca basket for stylish storage.", dimensions: { length: 12, height: 8, width: 12, weight: 800 }
-  },
-  { 
-    id: 8, category: "Hand-Made Baskets", name: "Abaca Basket 2", price: 1350.0, originalPrice: 1600.0, onSale: true, img: basket2, image: basket2, description: "Medium abaca basket with natural patterns.", dimensions: { length: 14, height: 10, width: 14, weight: 900 }
-  },
-  { 
-    id: 9, category: "Hand-Made Baskets", name: "Abaca Basket 3", price: 1450.0, originalPrice: 1700.0, onSale: true, img: basket3, image: basket3, description: "Large abaca basket for laundry storage.", dimensions: { length: 16, height: 12, width: 16, weight: 1100 }
-  },
-  { 
-    id: 10, category: "Hand-Made Baskets", name: "Rattan Basket", price: 1850.0, originalPrice: 2100.0, onSale: true, img: basket4, image: basket4, description: "Elegant rattan basket with sturdy construction.", dimensions: { length: 14, height: 10, width: 14, weight: 950 }
-  },
-  { 
-    id: 11, category: "Hand-Made Baskets", name: "Bamboo Basket", price: 1350.0, originalPrice: 1600.0, onSale: true, img: basket5, image: basket5, description: "Lightweight bamboo basket with traditional weave.", dimensions: { length: 12, height: 8, width: 12, weight: 700 }
-  },
-  { 
-    id: 12, category: "Hand-Made Baskets", name: "Seagrass Basket", price: 1550.0, originalPrice: 1800.0, onSale: true, img: basket6, image: basket6, description: "Beautiful seagrass basket with coastal charm.", dimensions: { length: 16, height: 12, width: 16, weight: 1000 }
-  },
+const API_PRODUCTS = `${LINK_PATH}Inventorycontroller.php`;
+const API_CATEGORIES = `${LINK_PATH}Inventorycontroller.php?resource=categories`;
+const API_CONTENT = `${LINK_PATH}WebsiteContentController.php?page=product`;
 
-  // Clay-Pot Mug (6)
-  { 
-    id: 13, category: "Clay-Pot Mug", name: "Banga Brew Cup", price: 850.0, originalPrice: 1100.0, onSale: true, img: "../assets/images/Banga Brew Cup.png", image: "../../assets/images/Banga Brew Cup.png", description: "Traditional clay pot mug for hot beverages.", dimensions: { length: 4, height: 5, width: 4, weight: 400 }
-  },
-  { 
-    id: 14, category: "Clay-Pot Mug", name: "Earthy Ceramic Cup", price: 950.0, originalPrice: 1200.0, onSale: true, img: "../assets/images/Earthy Ceramic Cup.png", image: "../../assets/images/Earthy Ceramic Cup.png", description: "Handcrafted ceramic cup with earthy tones.", dimensions: { length: 4.5, height: 5.5, width: 4.5, weight: 450 }
-  },
-  { 
-    id: 15, category: "Clay-Pot Mug", name: "Talavera Brew Cup", price: 1050.0, originalPrice: 1300.0, onSale: true, img: "../assets/images/Talavera Brew Cup.png", image: "../../assets/images/Talavera Brew Cup.png", description: "Colorful Talavera-style clay mug.", dimensions: { length: 4, height: 5, width: 4, weight: 420 }
-  },
-  { 
-    id: 16, category: "Clay-Pot Mug", name: "Terracotta Cup", price: 750.0, originalPrice: 1000.0, onSale: true, img: "../assets/images/Terracotta Cup.png", image: "../../assets/images/Terracotta Cup.png", description: "Classic terracotta mug with rustic charm.", dimensions: { length: 3.5, height: 4.5, width: 3.5, weight: 350 }
-  },
-  { 
-    id: 17, category: "Clay-Pot Mug", name: "Tapayan Clay Cup", price: 900.0, originalPrice: 1150.0, onSale: true, img: "../assets/images/Tapayan Clay Cup.png", image: "../../assets/images/Tapayan Clay Cup.png", description: "Traditional Filipino clay cup design.", dimensions: { length: 4, height: 5, width: 4, weight: 380 }
-  },
-  { 
-    id: 18, category: "Clay-Pot Mug", name: "Traditional Mug", price: 800.0, originalPrice: 1050.0, onSale: true, img: "../assets/images/Traditional_Mug.png", image: "../../assets/images/Traditional_Mug.png", description: "Authentic traditional clay mug.", dimensions: { length: 4, height: 4.5, width: 4, weight: 360 }
-  },
-
-  // Coaster Set (6)
-  { 
-    id: 19, category: "Coaster Set", name: "Abaca Coaster Set", price: 650.0, originalPrice: 850.0, onSale: true, img: coaster4, image: coaster4, description: "Set of 6 handwoven abaca coasters.", dimensions: { length: 4, height: 0.5, width: 4, weight: 200 }
-  },
-  { 
-    id: 20, category: "Coaster Set", name: "Rattan Coaster Set", price: 750.0, originalPrice: 950.0, onSale: true, img: coaster5, image: coaster5, description: "Premium rattan coaster set of 6 pieces.", dimensions: { length: 4, height: 0.5, width: 4, weight: 250 }
-  },
-  { 
-    id: 21, category: "Coaster Set", name: "Seagrass Coasters", price: 550.0, originalPrice: 750.0, onSale: true, img: coaster1, image: coaster1, description: "Coastal seagrass coaster set (6 pieces).", dimensions: { length: 4, height: 0.5, width: 4, weight: 180 }
-  },
-  { 
-    id: 22, category: "Coaster Set", name: "Bamboo Coasters", price: 600.0, originalPrice: 800.0, onSale: true, img: coaster3, image: coaster3, description: "Eco-friendly bamboo coaster set.", dimensions: { length: 4, height: 0.5, width: 4, weight: 220 }
-  },
-  { 
-    id: 23, category: "Coaster Set", name: "Palm Leaf Coasters", price: 700.0, originalPrice: 900.0, onSale: true, img: coaster2, image: coaster2, description: "Unique palm leaf coaster set of 6.", dimensions: { length: 4, height: 0.5, width: 4, weight: 210 }
-  },
-  { 
-    id: 24, category: "Coaster Set", name: "Clay Coaster Set", price: 800.0, originalPrice: 1000.0, onSale: true, img: coaster6, image: coaster6, description: "Handmade clay coaster set with natural finish.", dimensions: { length: 4, height: 0.5, width: 4, weight: 300 }
-  },
-
-  // Hand-Made Bags (6)
-  { 
-    id: 25, category: "Hand-Made Bags", name: "Banig Bento", price: 2250.0, originalPrice: 2500.0, onSale: true, img: banigBento, image: banigBento, description: "Compact banig bento bag for daily essentials.", dimensions: { length: 10, height: 8, width: 4, weight: 400 }
-  },
-  { 
-    id: 26, category: "Hand-Made Bags", name: "Banig Boxy", price: 2450.0, originalPrice: 2700.0, onSale: true, img: banigBoxy, image: banigBoxy, description: "Structured boxy banig bag with modern design.", dimensions: { length: 12, height: 10, width: 5, weight: 500 }
-  },
-  { 
-    id: 27, category: "Hand-Made Bags", name: "Banig Crossbody", price: 1950.0, originalPrice: 2200.0, onSale: true, img: banigCrossbody, image: banigCrossbody, description: "Convenient crossbody banig bag.", dimensions: { length: 9, height: 7, width: 3, weight: 350 }
-  },
-  { 
-    id: 28, category: "Hand-Made Bags", name: "Banig Pinoy Classic", price: 2650.0, originalPrice: 2900.0, onSale: true, img: banigClassic, image: banigClassic, description: "Classic Filipino banig bag with premium craftsmanship.", dimensions: { length: 14, height: 12, width: 6, weight: 600 }
-  },
-  { 
-    id: 29, category: "Hand-Made Bags", name: "Banig Tote Bag", price: 2150.0, originalPrice: 2400.0, onSale: true, img: banigTote, image: banigTote, description: "Spacious tote bag made from traditional banig.", dimensions: { length: 15, height: 13, width: 5, weight: 550 }
-  },
-  { 
-    id: 30, category: "Hand-Made Bags", name: "Banig Small Bag", price: 1750.0, originalPrice: 2000.0, onSale: true, img: banigSmall, image: banigSmall, description: "Chic small banig bag perfect for evenings.", dimensions: { length: 8, height: 6, width: 3, weight: 300 }
-  }
-];
+const PRODUCT_DEFAULTS = {
+  allProductsLabel: "All Products",
+  categoriesTitle: "Categories",
+  heroTitle: "SHOP COFFEE AND CULTURAL HERITAGE PRODUCTS",
+  searchPlaceholder: "Search Products...",
+  pagerLabel: "Page",
+  pagerOfLabel: "of",
+  sortFeaturedLabel: "Sort By: Featured",
+  sortLowLabel: "Price: Low to High",
+  sortHighLabel: "Price: High to Low",
+  loadingProductsLabel: "Loading products...",
+  noProductsLabel: "No products found.",
+  addToCartLabel: "ADD TO CART",
+  outOfStockLabel: "OUT OF STOCK",
+  modalBreadcrumb: "Collection / Studio Pieces",
+  modalOutOfStock: "Out of Stock",
+  modalItemAdded: "Item Added",
+  modalAddToCart: "Add to Cart",
+  modalStock: "Stock",
+  modalCategory: "Category",
+  modalStatus: "Status",
+  modalInStock: "In Stock",
+  modalLocalProduct: "Local Product",
+  modalActiveStatus: "Active",
+};
 
 function Product() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentCategory, setCurrentCategory] = useState("Hand-Made Bags");
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState(["All Products"]);
+  const [currentCategory, setCurrentCategory] = useState("All Products");
+  const [search, setSearch] = useState("");
+  const [sortOrder, setSortOrder] = useState("best");
+  const [loading, setLoading] = useState(true);
+  const [contentMap, setContentMap] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredItems, setFilteredItems] = useState([]);
   const itemsPerPage = 6;
 
-  const categories = [
-    "All Products",
-    "Cold & Specialty Drinks",
-    "Hand-Made Baskets",
-    "Clay-Pot Mug",
-    "Coaster Set",
-    "Hand-Made Bags"
-  ];
+  const addToCart = useCallback((product) => {
+    const cartKey = "cart_items";
+    const current = JSON.parse(localStorage.getItem(cartKey) || "[]");
+    const match = current.find((i) => i.id === product.id);
+    if (match) {
+      match.qty += 1;
+    } else {
+      current.push({
+        id: product.id,
+        name: product.name,
+        image: product.image,
+        price: product.price,
+        originalPrice: product.originalPrice,
+        discount: product.discount,
+        qty: 1,
+      });
+    }
+    localStorage.setItem(cartKey, JSON.stringify(current));
+    window.dispatchEvent(new CustomEvent("cart:updated", { detail: { count: current.length } }));
+  }, []);
+
+  const formatCurrency = useCallback((n) =>
+    Number(n || 0).toLocaleString("en-PH", { style: "currency", currency: "PHP" }), []);
+
+  const normalizeProducts = useCallback((rows = []) => {
+    return rows
+      .map((p) => {
+        const base = Number(p.price || 0);
+        const discount = Number(p.discount || 0);
+        const total = Number(p.totalprice || base);
+        const finalPrice = discount > 0 ? total : base;
+        return {
+          id: p.id,
+          category: p.category || "Uncategorized",
+          name: p.name,
+          description: p.description || "No description available.",
+          originalPrice: base,
+          price: finalPrice,
+          discount,
+          onSale: discount > 0,
+          qty: Number(p.qty || 0),
+          status: p.status,
+          img: p.image_url || "https://via.placeholder.com/240x240?text=No+Image",
+          image: p.image_url || "https://via.placeholder.com/640x640?text=No+Image",
+        };
+      })
+      .filter((p) => p.name);
+  }, []);
+
+  const loadProducts = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [pRes, cRes] = await Promise.all([
+        fetch(API_PRODUCTS),
+        fetch(API_CATEGORIES),
+      ]);
+      const pData = await pRes.json();
+      const cData = await cRes.json();
+      const normalized = normalizeProducts(pData?.products || []);
+      setProducts(normalized);
+      const catNames = (cData?.categories || []).map((c) => c.name).filter(Boolean);
+      const fromProducts = [...new Set(normalized.map((p) => p.category))];
+      const merged = [PRODUCT_DEFAULTS.allProductsLabel, ...new Set([...catNames, ...fromProducts])];
+      setCategories(merged);
+    } catch {
+      setProducts([]);
+      setCategories([PRODUCT_DEFAULTS.allProductsLabel]);
+    } finally {
+      setLoading(false);
+    }
+  }, [normalizeProducts]);
 
   // Filter products based on category
-  const filterProducts = useCallback((category) => {
+  const filterProducts = useCallback((category, searchText = search, order = sortOrder) => {
     setCurrentPage(1);
-    const isAll = category === "All Products";
-    
-    const filtered = allProductCards.filter(card => {
-      return isAll || card.category === category;
+    const isAll = category === (contentMap.allProductsLabel?.title || PRODUCT_DEFAULTS.allProductsLabel);
+
+    let filtered = products.filter((card) => {
+      const passCategory = isAll || card.category === category;
+      const q = searchText.trim().toLowerCase();
+      const passSearch = !q || card.name.toLowerCase().includes(q) || card.category.toLowerCase().includes(q);
+      return passCategory && passSearch;
     });
-    
+
+    if (order === "low") filtered.sort((a, b) => a.price - b.price);
+    if (order === "high") filtered.sort((a, b) => b.price - a.price);
+
     setFilteredItems(filtered);
-  }, [allProductCards]);
+  }, [products, search, sortOrder]);
 
   // Update display logic
   const getVisibleItems = useCallback(() => {
-    const isAllProducts = currentCategory === "All Products";
+    const isAllProducts = currentCategory === (contentMap.allProductsLabel?.title || PRODUCT_DEFAULTS.allProductsLabel);
     
     if (!isAllProducts) {
       return filteredItems;
@@ -176,7 +157,7 @@ function Product() {
 
   // Pager info
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
-  const isAllProducts = currentCategory === "All Products";
+  const isAllProducts = currentCategory === (contentMap.allProductsLabel?.title || PRODUCT_DEFAULTS.allProductsLabel);
   const showPager = isAllProducts && filteredItems.length > itemsPerPage;
 
   // Handle product click - open modal
@@ -194,7 +175,7 @@ function Product() {
   // Handle category selection
   const handleCategoryClick = (category) => {
     setCurrentCategory(category);
-    filterProducts(category);
+    filterProducts(category, search, sortOrder);
   };
 
   // Handle pagination
@@ -210,24 +191,49 @@ function Product() {
     }
   };
 
-  // Initialize with default category
   useEffect(() => {
-    filterProducts("Hand-Made Bags");
+    loadProducts();
+  }, [loadProducts]);
+
+  useEffect(() => {
+    const loadContent = async () => {
+      try {
+        const res = await fetch(API_CONTENT);
+        const data = await res.json();
+        const map = {};
+        (data?.items || []).forEach((item) => {
+          if (item?.content_key) map[item.content_key] = item;
+        });
+        setContentMap(map);
+      } catch {
+        setContentMap({});
+      }
+    };
+    loadContent();
   }, []);
 
-  // Re-filter when category changes
+  // Re-filter when list controls change
   useEffect(() => {
-    filterProducts(currentCategory);
-  }, [currentCategory, filterProducts]);
+    filterProducts(currentCategory, search, sortOrder);
+  }, [currentCategory, search, sortOrder, filterProducts]);
 
   const visibleItems = getVisibleItems();
+  const txt = (key) => contentMap[key]?.title || contentMap[key]?.description || PRODUCT_DEFAULTS[key] || "";
+  const categoryCounts = categories.reduce((acc, category) => {
+    if (category === txt("allProductsLabel")) {
+      acc[category] = products.length;
+      return acc;
+    }
+    acc[category] = products.filter((p) => p.category === category).length;
+    return acc;
+  }, {});
 
   return (
     <>
       <Navbar2 activePage="product" />
       <div className="main-wrapper">
         <aside className="sidebar">
-          <div className="category-header">Categories <span>▼</span></div>
+          <div className="category-header">{txt("categoriesTitle")} <span>▼</span></div>
           <ul className="category-list">
             {categories.map((category) => (
               <li 
@@ -235,7 +241,7 @@ function Product() {
                 className={currentCategory === category ? 'active' : ''}
                 onClick={() => handleCategoryClick(category)}
               >
-                {category} <span>(6)</span>
+                {category} <span>({categoryCounts[category] || 0})</span>
               </li>
             ))}
           </ul>
@@ -243,7 +249,7 @@ function Product() {
 
         <main className="content-area">
           <div className="hero-banner">
-            <h1>SHOP COFFEE AND CULTURAL HERITAGE PRODUCTS</h1>
+            <h1>{txt("heroTitle")}</h1>
           </div>
 
           <div className="toolbar">
@@ -257,7 +263,7 @@ function Product() {
                 >
                   &lt;
                 </button>
-                <span>Page {currentPage} of {totalPages}</span>
+                <span>{txt("pagerLabel")} {currentPage} {txt("pagerOfLabel")} {totalPages}</span>
                 <button 
                   className="pager-btn"
                   disabled={currentPage === totalPages}
@@ -267,19 +273,27 @@ function Product() {
                 </button>
               </div>
               
-              <input type="text" placeholder="Search Products..." />
-              
-              <select className="sort-select">
-                <option>Sort By: Best Selling</option>
-                <option>Price: Low to High</option>
-                <option>Price: High to Low</option>
+              <input
+                id="productSearch"
+                type="text"
+                placeholder={txt("searchPlaceholder")}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+
+              <select className="sort-select" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+                <option value="best">{txt("sortFeaturedLabel")}</option>
+                <option value="low">{txt("sortLowLabel")}</option>
+                <option value="high">{txt("sortHighLabel")}</option>
               </select>
             </div>
           </div>
 
           <div className="products-container">
             <div className="product-grid">
-              {visibleItems.map((product) => (
+              {loading && <div>{txt("loadingProductsLabel")}</div>}
+              {!loading && visibleItems.length === 0 && <div>{txt("noProductsLabel")}</div>}
+              {!loading && visibleItems.map((product) => (
                 <div 
                   key={product.id}
                   className={`product-card clickable ${product.category}`}
@@ -292,8 +306,23 @@ function Product() {
                     <img src={product.img} alt={product.name} />
                   </div>
                   <h3 className="product-name">{product.name}</h3>
-                  <div className="product-price">{product.price.toLocaleString('en-US', {style: 'currency', currency: 'PHP'})}</div>
-                  <button className="shop-btn">ADD TO CART</button>
+                  <div className="product-price">{formatCurrency(product.price)}</div>
+                  {product.onSale && (
+                    <div style={{ fontSize: "0.78rem", marginBottom: 10 }}>
+                      <span style={{ textDecoration: "line-through", color: "#9CA3AF", marginRight: 6 }}>{formatCurrency(product.originalPrice)}</span>
+                      <span style={{ color: "#B45309", fontWeight: 700 }}>-{product.discount}%</span>
+                    </div>
+                  )}
+                  <button
+                    className="shop-btn"
+                    disabled={product.qty <= 0}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (product.qty > 0) addToCart(product);
+                    }}
+                  >
+                    {product.qty <= 0 ? txt("outOfStockLabel") : txt("addToCartLabel")}
+                  </button>
                 </div>
               ))}
             </div>
@@ -306,6 +335,20 @@ function Product() {
         <ProductModal 
           product={selectedProduct} 
           onClose={closeModal}
+          onAddToCart={addToCart}
+          formatCurrency={formatCurrency}
+          labels={{
+            breadcrumb: txt("modalBreadcrumb"),
+            outOfStock: txt("modalOutOfStock"),
+            itemAdded: txt("modalItemAdded"),
+            addToCart: txt("modalAddToCart"),
+            stock: txt("modalStock"),
+            category: txt("modalCategory"),
+            status: txt("modalStatus"),
+            inStock: txt("modalInStock"),
+            localProduct: txt("modalLocalProduct"),
+            activeStatus: txt("modalActiveStatus"),
+          }}
         />
       )}
 
