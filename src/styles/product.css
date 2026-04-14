@@ -334,6 +334,16 @@ body {
   color: var(--text-color);
 }
 
+.product-discount-row {
+  min-height: 18px;
+  font-size: 0.78rem;
+  margin-bottom: 10px;
+}
+
+.product-discount-placeholder {
+  visibility: hidden;
+}
+
 .product-card.hidden {
   display: none;
 }

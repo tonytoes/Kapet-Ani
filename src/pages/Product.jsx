@@ -307,12 +307,16 @@ function Product() {
                   </div>
                   <h3 className="product-name">{product.name}</h3>
                   <div className="product-price">{formatCurrency(product.price)}</div>
-                  {product.onSale && (
-                    <div style={{ fontSize: "0.78rem", marginBottom: 10 }}>
-                      <span style={{ textDecoration: "line-through", color: "#9CA3AF", marginRight: 6 }}>{formatCurrency(product.originalPrice)}</span>
-                      <span style={{ color: "#B45309", fontWeight: 700 }}>-{product.discount}%</span>
-                    </div>
-                  )}
+                  <div className="product-discount-row">
+                    {product.onSale ? (
+                      <>
+                        <span style={{ textDecoration: "line-through", color: "#9CA3AF", marginRight: 6 }}>{formatCurrency(product.originalPrice)}</span>
+                        <span style={{ color: "#B45309", fontWeight: 700 }}>-{product.discount}%</span>
+                      </>
+                    ) : (
+                      <span className="product-discount-placeholder">.</span>
+                    )}
+                  </div>
                   <button
                     className="shop-btn"
                     disabled={product.qty <= 0}
