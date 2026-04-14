@@ -3,6 +3,7 @@ ob_start();
 ini_set('display_errors', 0);
 error_reporting(0);
 
+//$allowedOrigins = ['https://cornflowerblue-skunk-618358.hostingersite.com'];
 $allowedOrigins = ['http://localhost:5173'];
 
 

@@ -13,8 +13,8 @@ import SlidePanel from "../components/SlidePanel";
 import { LINK_PATH } from "../data/LinkPath.jsx";
 import { useCache }  from "../data/CacheContext";
 
-const API            = `${LINK_PATH}inventoryController.php`;
-const API_CATEGORIES = `${LINK_PATH}inventoryController.php?resource=categories`;
+const API            = `${LINK_PATH}Inventorycontroller.php`;
+const API_CATEGORIES = `${LINK_PATH}Inventorycontroller.php?resource=categories`;
 const CACHE_PRODUCTS = "inventory";
 const CACHE_CATS     = "inventory_categories";
 

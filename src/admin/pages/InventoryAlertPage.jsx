@@ -11,9 +11,9 @@ import SlidePanel from "../components/SlidePanel";
 import { LINK_PATH } from "../data/LinkPath.jsx";
 import { useCache }  from "../data/CacheContext";
 
-const API      = `${LINK_PATH}inventoryAlertController.php`;
-const API_CATS = `${LINK_PATH}inventoryAlertController.php?resource=categories`;
-const API_PRODS= `${LINK_PATH}inventoryAlertController.php?resource=products`;
+const API      = `${LINK_PATH}InventoryAlertController.php`;
+const API_CATS = `${LINK_PATH}InventoryAlertController.php?resource=categories`;
+const API_PRODS= `${LINK_PATH}InventoryAlertController.php?resource=products`;
 
 const CACHE_ALERTS = "inventory_alerts";
 
