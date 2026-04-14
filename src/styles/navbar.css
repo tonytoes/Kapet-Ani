@@ -150,8 +150,30 @@
   stroke-width: 2;
 }
 
+.nav-avatar-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+}
+
+.nav-avatar-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(212, 197, 176, 0.55);
+  background: rgba(255, 255, 255, 0.15);
+}
+
 .nav-icon:hover {
   stroke: #ffffff;
+}
+
+#navbar.scrolled .nav-avatar-img {
+  border-color: rgba(151, 80, 48, 0.4);
+  background: #fff;
 }
 
 .nav-admin-btn {

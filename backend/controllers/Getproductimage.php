@@ -22,8 +22,5 @@ if (!$row || empty($row['image_blob'])) {
 
 header("Content-Type: " . $row['image_type']);
 header("Content-Length: " . strlen($row['image_blob']));
-// ✅ FIX: replaced "public, max-age=86400" — that caused the browser to serve
-//         the old cached image for 24 hrs after an update, making it appear
-//         as though the image never changed.
-header("Cache-Control: no-cache, must-revalidate");
+header("Cache-Control: public, max-age=300, stale-while-revalidate=600");
 echo $row['image_blob'];

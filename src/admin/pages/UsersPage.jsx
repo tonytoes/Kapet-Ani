@@ -164,7 +164,7 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
     { label: "Email",      id: "email",      type: "email", placeholder: "email@example.com" },
     {
       label: "Password", id: "password", type: "text",
-      placeholder: mode === "edit" ? "Leave blank to keep current" : "Password",
+      placeholder: mode === "edit" ? "Leave blank to keep current password" : "Password",
     },
   ];
 
@@ -478,7 +478,7 @@ export default function UsersPage() {
 
       <div className="page-area">
         <PageHeader
-          title="Users"
+          title={<><span>Users</span> <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>({filtered.length})</span></>}
           onAdd={canManage ? openAdd : undefined}
           search={search}
           onSearch={setSearch}

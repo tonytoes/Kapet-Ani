@@ -45,29 +45,29 @@ const HOME_DEFAULTS = {
   blog3Date: "September 15, 2025",
   featured1Name: "Matcha Vanilla",
   featured2Name: "Ube Frappe",
-  more1Name: "Abaca Basket 1",
-  more2Name: "Abaca Basket 2",
-  more3Name: "Abaca Basket 3",
+  more1Name: "Abaca Basket (Bicol)",
+  more2Name: "Abaca Basket (Laguna)",
+  more3Name: "Abaca Basket (Leyte)",
   more4Name: "Rattan Basket",
   more5Name: "Bamboo Basket",
   more6Name: "Seagrass Basket",
   more7Name: "Palm Leaf Coasters",
   more8Name: "Banig Crossbody",
-  more9Name: "Clay Mug",
+  more9Name: "Banga Brew Cup",
 };
 
 const PRODUCT_NAME_KEYS = [
   ["Matcha Vanilla", "featured1Name"],
   ["Ube Frappe", "featured2Name"],
-  ["Abaca Basket 1", "more1Name"],
-  ["Abaca Basket 2", "more2Name"],
-  ["Abaca Basket 3", "more3Name"],
+  ["Abaca Basket (Bicol)", "more1Name"],
+  ["Abaca Basket (Laguna)", "more2Name"],
+  ["Abaca Basket (Leyte)", "more3Name"],
   ["Rattan Basket", "more4Name"],
   ["Bamboo Basket", "more5Name"],
   ["Seagrass Basket", "more6Name"],
   ["Palm Leaf Coasters", "more7Name"],
   ["Banig Crossbody", "more8Name"],
-  ["Clay Mug", "more9Name"],
+  ["Banga Brew Cup", "more9Name"],
 ];
 
 const PRODUCT_NAME_BY_KEY = Object.fromEntries(PRODUCT_NAME_KEYS.map(([dbName, key]) => [key, dbName]));
@@ -96,13 +96,14 @@ const HOME_IMAGE_DEFAULTS = {
 function Home() {
   const [pricingMap, setPricingMap] = useState({});
   const [contentMap, setContentMap] = useState({});
+  const normalizeName = useCallback((value) => String(value || "").trim().replace(/\s+/g, " ").toLowerCase(), []);
 
   const formatCurrency = useCallback((value) => {
     return Number(value || 0).toLocaleString("en-PH", { style: "currency", currency: "PHP" });
   }, []);
 
   const renderPrice = useCallback((name) => {
-    const p = pricingMap[name];
+    const p = pricingMap[normalizeName(name)];
     if (!p) {
       return (
         <p className="product-price">
@@ -112,17 +113,18 @@ function Home() {
       );
     }
     const original = Number(p.price || 0);
-    const discounted = Number(p.discount || 0) > 0 ? Number(p.totalprice || original) : original;
+    const hasDiscount = Number(p.discount || 0) > 0;
+    const discounted = hasDiscount ? Number(p.totalprice || original) : original;
     return (
       <p className="product-price">
-        <s>{formatCurrency(original)}</s>
+        {hasDiscount ? <s>{formatCurrency(original)}</s> : null}
         <span>{formatCurrency(discounted)}</span>
       </p>
     );
-  }, [formatCurrency, pricingMap]);
+  }, [formatCurrency, normalizeName, pricingMap]);
 
-  const renderSaleBadge = useCallback((name) => {
-    const p = pricingMap[name];
+  const renderSaleBadge = useCallback((name, forceOnSale = false) => {
+    const p = pricingMap[normalizeName(name)];
     const qty = Number(p?.qty || 0);
     const discount = Number(p?.discount || 0);
 
@@ -134,12 +136,12 @@ function Home() {
       );
     }
 
-    if (discount > 0) {
+    if (discount > 0 || forceOnSale) {
       return <span className="on-sale-badge">On Sale.</span>;
     }
 
     return null;
-  }, [pricingMap]);
+  }, [normalizeName, pricingMap]);
 
   const contentText = useCallback((key) => {
     const item = contentMap[key];
@@ -206,7 +208,7 @@ function Home() {
         const data = await res.json();
         const map = {};
         (data?.products || []).forEach((item) => {
-          if (item?.name) map[item.name] = item;
+          if (item?.name) map[normalizeName(item.name)] = item;
         });
         setPricingMap(map);
       } catch {
@@ -214,7 +216,7 @@ function Home() {
       }
     };
     loadPricing();
-  }, []);
+  }, [normalizeName]);
 
   useEffect(() => {
     const loadContent = async () => {
@@ -270,7 +272,7 @@ function Home() {
             <div className="product-card1 fade-up">
               <div className="product-img">
                 <img src={contentImage("featured1Image")} alt={displayName("featured1Name")} />
-                {renderSaleBadge(sourceNameForPricing("featured1Name"))}
+                {renderSaleBadge(sourceNameForPricing("featured1Name"), true)}
               </div>
               <div className="product-info">
                 <p className="product-name">{displayName("featured1Name")}</p>
@@ -280,7 +282,7 @@ function Home() {
             <div className="product-card1 fade-up" style={{ transitionDelay: "0.1s" }}>
               <div className="product-img">
                 <img src={contentImage("featured2Image")} alt={displayName("featured2Name")} />
-                {renderSaleBadge(sourceNameForPricing("featured2Name"))}
+                {renderSaleBadge(sourceNameForPricing("featured2Name"), true)}
               </div>
               <div className="product-info">
                 <p className="product-name">{displayName("featured2Name")}</p>

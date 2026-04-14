@@ -39,7 +39,10 @@ function getRequesterRole(): ?string
 {
     global $conn;
 
-    $header = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['Authorization'] ?? '';
+    $header = $_SERVER['HTTP_AUTHORIZATION']
+        ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION']
+        ?? $_SERVER['Authorization']
+        ?? '';
     if (!$header && function_exists('getallheaders')) {
         $all = getallheaders();
         if (is_array($all)) {
@@ -138,7 +141,8 @@ function listUsers(): void
 {
     global $conn;
 
-    $stmt = $conn->query("
+    $archiveEmail = 'deleted.user@system.local';
+    $stmt = $conn->prepare("
         SELECT
             id, first_name, last_name,
             CONCAT(first_name, ' ', last_name) AS username,
@@ -147,9 +151,10 @@ function listUsers(): void
             (SELECT COALESCE(SUM(total_price), 0)
              FROM orders WHERE user_id = users.id) AS total_spent
         FROM users
+        WHERE email <> ?
         ORDER BY created_at DESC
     ");
-
+    $stmt->execute([$archiveEmail]);
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $formatted = array_map(function ($u) {
@@ -157,7 +162,6 @@ function listUsers(): void
         if (!empty($u['image_name'])) {
             $imageUrl = LINK_PATH . "getImage.php?id=" . $u['id'];
         }
-
         return [
             'id'         => (int) $u['id'],
             'username'   => $u['username'],
@@ -356,9 +360,45 @@ function deleteUser(array $data): void
 
     $id = (int) ($data['id'] ?? 0);
     if (!$id) sendResponse(400, false, 'User ID required');
+    try {
+        $conn->beginTransaction();
 
-    $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
-    $stmt->execute([$id]);
+        // Archive user receives ownership of historical orders.
+        $archiveStmt = $conn->prepare("SELECT id FROM users WHERE email = ? LIMIT 1");
+        $archiveStmt->execute(['deleted.user@system.local']);
+        $archiveUser = $archiveStmt->fetch(PDO::FETCH_ASSOC);
+        if (!$archiveUser) {
+            throw new RuntimeException('Archive user not found. Create deleted.user@system.local first.');
+        }
+        $archiveUserId = (int)($archiveUser['id'] ?? 0);
+        if ($archiveUserId <= 0) {
+            throw new RuntimeException('Archive user is invalid.');
+        }
+        if ($id === $archiveUserId) {
+            throw new RuntimeException('Archive user cannot be deleted.');
+        }
 
-    sendResponse(200, true, 'User deleted');
+        // Remove dependent cart rows first to satisfy FK constraints.
+        $clearCart = $conn->prepare("DELETE FROM cart_items WHERE user_id = ?");
+        $clearCart->execute([$id]);
+
+        // Preserve historical orders by reassigning to archive user.
+        $moveOrders = $conn->prepare("UPDATE orders SET user_id = ? WHERE user_id = ?");
+        $moveOrders->execute([$archiveUserId, $id]);
+
+        $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
+        $stmt->execute([$id]);
+
+        $conn->commit();
+        sendResponse(200, true, 'User deleted');
+    } catch (Throwable $e) {
+        if ($conn->inTransaction()) $conn->rollBack();
+
+        // Keep message user-friendly for known FK blockers.
+        if (str_contains($e->getMessage(), 'orders_ibfk_1')) {
+            sendResponse(409, false, 'Cannot delete this user yet because they have order records.');
+        }
+
+        sendResponse(400, false, $e->getMessage());
+    }
 }

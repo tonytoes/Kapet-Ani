@@ -43,7 +43,8 @@ export function getCurrentUserRole() {
   try {
     const raw = localStorage.getItem("user");
     if (!raw) return "user";
-    const role = JSON.parse(raw)?.role;
+    const parsed = JSON.parse(raw) || {};
+    const role = parsed?.role ?? parsed?.status;
     return typeof role === "string" ? role.toLowerCase() : "user";
   } catch {
     return "user";

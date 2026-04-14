@@ -136,7 +136,7 @@ function listProducts(): void
     $stmt = $conn->query("
         SELECT
             p.id, p.name, p.description, p.price, p.qty,
-            p.image_name, p.image_type, p.image_blob,
+            p.image_name, p.image_type,
             p.category_id,
             p.discount, p.totalprice,
             c.name AS category_name
@@ -149,9 +149,9 @@ function listProducts(): void
 
     $formatted = array_map(function ($p) {
         $imageUrl = null;
-        if (!empty($p['image_blob']) && !empty($p['image_type'])) {
-            // ✅ FIX: append timestamp to bust browser cache after image update
-            $imageUrl = LINK_PATH . "Getproductimage.php?id=" . $p['id'] . "&t=" . time();
+        if (!empty($p['image_name']) && !empty($p['image_type'])) {
+            // Keep image URL stable for browser caching.
+            $imageUrl = LINK_PATH . "Getproductimage.php?id=" . $p['id'];
         }
 
         $qty    = (int) $p['qty'];
@@ -177,6 +177,8 @@ function listProducts(): void
         ];
     }, $products);
 
+    // Small cache window to reduce repeated DB hits while keeping data fresh.
+    header('Cache-Control: public, max-age=20, stale-while-revalidate=40');
     sendResponse(200, true, 'Products fetched', ['products' => $formatted]);
 }
 
@@ -202,6 +204,10 @@ function addProduct(array $data): void
 
     $image = extractImage();
 
+    $imageName = $image ? $image['name'] : '';
+    $imageBlob = $image ? $image['blob'] : '';
+    $imageType = $image ? $image['type'] : '';
+
     $stmt = $conn->prepare("
         INSERT INTO products
             (name, description, price, qty, category_id, image_name, image_blob, image_type, discount, totalprice)
@@ -212,9 +218,9 @@ function addProduct(array $data): void
     $stmt->bindValue(3,  $price);
     $stmt->bindValue(4,  $qty);
     $stmt->bindValue(5,  $category_id ?: null, PDO::PARAM_INT);
-    $stmt->bindValue(6,  $image ? $image['name'] : null);
-    $stmt->bindValue(7,  $image ? $image['blob'] : null, PDO::PARAM_LOB);
-    $stmt->bindValue(8,  $image ? $image['type'] : null);
+    $stmt->bindValue(6,  $imageName);
+    $stmt->bindValue(7,  $imageBlob, PDO::PARAM_LOB);
+    $stmt->bindValue(8,  $imageType);
     $stmt->bindValue(9,  $discount);
     $stmt->bindValue(10, $totalprice);
     $stmt->execute();
@@ -274,7 +280,7 @@ function updateProduct(array $data): void
         $stmt = $conn->prepare("
             UPDATE products
             SET name=?, description=?, price=?, qty=?, category_id=?,
-                image_name=NULL, image_type=NULL, image_blob=NULL,
+                image_name='', image_type='', image_blob='',
                 discount=?, totalprice=?
             WHERE id=?
         ");

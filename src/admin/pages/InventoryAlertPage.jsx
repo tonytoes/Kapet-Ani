@@ -362,7 +362,7 @@ export default function InventoryAlertPage() {
 
       <div className="page-area">
         <PageHeader
-          title="Inventory Alert"
+          title={<><span>Inventory Alert</span> <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>({filtered.length})</span></>}
           onAdd={canManage ? openAdd : undefined}
           search={search}
           onSearch={setSearch}

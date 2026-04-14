@@ -64,15 +64,15 @@ function ensureHomeSeed(): void
         ['home', 'more', 'more7Image', null, null, null, null, null],
         ['home', 'more', 'more8Image', null, null, null, null, null],
         ['home', 'more', 'more9Image', null, null, null, null, null],
-        ['home', 'more', 'more1Name', 'Abaca Basket 1', null, null, null, null],
-        ['home', 'more', 'more2Name', 'Abaca Basket 2', null, null, null, null],
-        ['home', 'more', 'more3Name', 'Abaca Basket 3', null, null, null, null],
+        ['home', 'more', 'more1Name', 'Abaca Basket (Bicol)', null, null, null, null],
+        ['home', 'more', 'more2Name', 'Abaca Basket (Laguna)', null, null, null, null],
+        ['home', 'more', 'more3Name', 'Abaca Basket (Leyte)', null, null, null, null],
         ['home', 'more', 'more4Name', 'Rattan Basket', null, null, null, null],
         ['home', 'more', 'more5Name', 'Bamboo Basket', null, null, null, null],
         ['home', 'more', 'more6Name', 'Seagrass Basket', null, null, null, null],
         ['home', 'more', 'more7Name', 'Palm Leaf Coasters', null, null, null, null],
         ['home', 'more', 'more8Name', 'Banig Crossbody', null, null, null, null],
-        ['home', 'more', 'more9Name', 'Clay Mug', null, null, null, null],
+        ['home', 'more', 'more9Name', 'Banga Brew Cup', null, null, null, null],
         ['home', 'voucher', 'vouchersSectionLabel', 'Product Vouchers', null, null, null, null],
         ['home', 'voucher', 'voucherImageMain', null, null, null, null, null],
         ['home', 'voucher', 'voucherImage2', null, null, null, null, null],
@@ -311,6 +311,17 @@ function replacePlaceholderContent(): void
         'blog1Date' => 'December 3, 2019',
         'blog2Date' => 'April 26, 2023',
         'blog3Date' => 'September 15, 2025',
+        'more1Name' => 'Abaca Basket (Bicol)',
+        'more2Name' => 'Abaca Basket (Laguna)',
+        'more3Name' => 'Abaca Basket (Leyte)',
+        'more9Name' => 'Banga Brew Cup',
+    ];
+
+    $legacyTitleByKey = [
+        'more1Name' => 'Abaca Basket 1',
+        'more2Name' => 'Abaca Basket 2',
+        'more3Name' => 'Abaca Basket 3',
+        'more9Name' => 'Clay Mug',
     ];
 
     $select = $conn->prepare("SELECT description FROM website_content WHERE content_key = ? LIMIT 1");
@@ -340,7 +351,11 @@ function replacePlaceholderContent(): void
         $row = $selectTitle->fetch(PDO::FETCH_ASSOC);
         if (!$row) continue;
         $existing = trim((string)($row['title'] ?? ''));
-        if ($existing === '' || $existing === 'October 9, 2018') {
+        if (
+            $existing === '' ||
+            $existing === 'October 9, 2018' ||
+            (isset($legacyTitleByKey[$key]) && $existing === $legacyTitleByKey[$key])
+        ) {
             $updateTitle->execute([$newTitle, $key]);
         }
     }
@@ -447,6 +462,8 @@ function listContent(): void
         ];
     }, $rows);
 
+    // Content edits are infrequent; brief cache improves page load speed.
+    header('Cache-Control: public, max-age=30, stale-while-revalidate=60');
     sendResponse(200, true, 'Website content fetched', ['items' => $formatted]);
 }
 

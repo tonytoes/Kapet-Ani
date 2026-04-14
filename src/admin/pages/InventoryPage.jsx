@@ -638,7 +638,7 @@ export default function InventoryPage() {
 
       <div className="page-area">
         <PageHeader
-          title="Inventory"
+          title={<><span>Inventory</span> <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>({filtered.length})</span></>}
           onAdd={canManage ? openAdd : undefined}
           search={search}
           onSearch={setSearch}
