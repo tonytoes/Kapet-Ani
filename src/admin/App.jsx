@@ -23,18 +23,19 @@ const PAGE_TITLES = {
   transactions:   "Transactions",
 };
 
-const PAGES = {
-  dashboard:      <DashboardPage />,
-  inventory:      <InventoryPage />,
-  inventoryalert: <InventoryAlertPage />,
-  users:          <UsersPage />,
-  complaints:     <ComplaintsPage />,
-  transactions:   <TransactionsPage />,
-};
-
 export default function App() {
   const [page, setPage]           = useState("dashboard");
   const [collapsed, setCollapsed] = useState(false);
+
+  function renderPage() {
+    if (page === "dashboard") return <DashboardPage onNavigate={setPage} />;
+    if (page === "inventory") return <InventoryPage />;
+    if (page === "inventoryalert") return <InventoryAlertPage />;
+    if (page === "users") return <UsersPage />;
+    if (page === "complaints") return <ComplaintsPage />;
+    if (page === "transactions") return <TransactionsPage />;
+    return <DashboardPage onNavigate={setPage} />;
+  }
 
   return (
     // ↓ CacheProvider wraps everything so all pages share one cache
@@ -57,7 +58,7 @@ export default function App() {
             title={PAGE_TITLES[page]}
             onToggle={() => setCollapsed(c => !c)}
           />
-          {PAGES[page]}
+          {renderPage()}
         </div>
       </div>
     </CacheProvider>

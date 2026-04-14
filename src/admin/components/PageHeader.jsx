@@ -1,3 +1,52 @@
+import { useEffect, useRef, useState } from "react";
+
+function HeaderCategorySelect({ value, onChange, options }) {
+  const [open, setOpen] = useState(false);
+  const boxRef = useRef(null);
+  const selected = options.find(opt => opt.value === value);
+
+  useEffect(() => {
+    function onOutsideClick(e) {
+      if (boxRef.current && !boxRef.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onOutsideClick);
+    return () => document.removeEventListener("mousedown", onOutsideClick);
+  }, []);
+
+  return (
+    <div className={`kp-select header-select${open ? " open" : ""}`} ref={boxRef}>
+      <button
+        type="button"
+        className="kp-select-trigger header-select-trigger"
+        onClick={() => setOpen(prev => !prev)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+      >
+        <span>{selected?.label ?? "Select"}</span>
+        <i className="bi bi-chevron-down" />
+      </button>
+      {open && (
+        <div className="kp-select-menu header-select-menu" role="listbox">
+          {options.map(opt => (
+            <button
+              type="button"
+              key={opt.value}
+              className={`kp-select-option${value === opt.value ? " active" : ""}`}
+              onClick={() => {
+                if (!opt.disabled) onChange(opt.value);
+                setOpen(false);
+              }}
+              disabled={opt.disabled}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function PageHeader({
   title,
   onAdd,
@@ -31,17 +80,11 @@ export default function PageHeader({
         </button>
 
         {showCategories && (
-          <select
-            className="categories-btn"
+          <HeaderCategorySelect
             value={categoryValue}
-            onChange={(e) => onCategoryChange(e.target.value)}
-          >
-            {categories.map(c => (
-              <option key={c.value} value={c.value} disabled={c.disabled}>
-                {c.label}
-              </option>
-            ))}
-          </select>
+            onChange={onCategoryChange}
+            options={categories}
+          />
         )}
 
         {onSearch && (

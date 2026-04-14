@@ -111,6 +111,52 @@ function ImageBlock({ preview, onFileChange, onRemove }) {
 
 // ─── User Form ────────────────────────────────────────────────────────────────
 
+function ThemedSelect({ value, onChange, options, placeholder = "Select role" }) {
+  const [open, setOpen] = useState(false);
+  const boxRef = useRef(null);
+  const selected = options.find(o => o.value === value);
+
+  useEffect(() => {
+    function onOutsideClick(e) {
+      if (boxRef.current && !boxRef.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onOutsideClick);
+    return () => document.removeEventListener("mousedown", onOutsideClick);
+  }, []);
+
+  return (
+    <div className={`kp-select${open ? " open" : ""}`} ref={boxRef}>
+      <button
+        type="button"
+        className="kp-select-trigger"
+        onClick={() => setOpen(prev => !prev)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+      >
+        <span>{selected?.label ?? placeholder}</span>
+        <i className="bi bi-chevron-down" />
+      </button>
+      {open && (
+        <div className="kp-select-menu" role="listbox">
+          {options.map(opt => (
+            <button
+              type="button"
+              key={opt.value}
+              className={`kp-select-option${value === opt.value ? " active" : ""}`}
+              onClick={() => {
+                onChange(opt.value);
+                setOpen(false);
+              }}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveImage, canAssignElevated }) {
   const fields = [
     { label: "First Name", id: "first_name", type: "text",  placeholder: "First name" },
@@ -147,11 +193,11 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
       ))}
       <div className="form-group">
         <label className="form-label">Role</label>
-        <select className="form-control" value={form.status} onChange={e => onChange("status", e.target.value)}>
-          {roleOptions.map(opt => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
-          ))}
-        </select>
+        <ThemedSelect
+          value={form.status}
+          onChange={v => onChange("status", v)}
+          options={roleOptions}
+        />
       </div>
     </>
   );

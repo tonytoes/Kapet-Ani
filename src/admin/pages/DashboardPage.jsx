@@ -260,9 +260,15 @@ function Skeleton() {
 
 // ─── KPI Card ─────────────────────────────────────────────────────────────────
 
-function KpiCard({ icon, label, value, sub, badge, badgeType = "neu", accentColor }) {
+function KpiCard({ icon, label, value, sub, badge, badgeType = "neu", accentColor, onClick }) {
   return (
-    <div className="db-kpi">
+    <div
+      className={`db-kpi${onClick ? " db-nav-card" : ""}`}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => (e.key === "Enter" || e.key === " ") && onClick() : undefined}
+    >
       <div className="db-kpi-accent" style={{ background: accentColor }} />
       <div className="db-kpi-icon" style={{ background: accentColor + "22", color: accentColor }}>
         <i className={`bi ${icon}`} />
@@ -283,8 +289,11 @@ function KpiCard({ icon, label, value, sub, badge, badgeType = "neu", accentColo
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export default function DashboardPage() {
+export default function DashboardPage({ onNavigate }) {
   const cache = useCache();
+  const go = useCallback((target) => {
+    if (typeof onNavigate === "function") onNavigate(target);
+  }, [onNavigate]);
 
   const [stats,    setStats]    = useState(() => cache.get(KEYS.stats)    ?? null);
   const [orders,   setOrders]   = useState(() => cache.get(KEYS.orders)   ?? []);
@@ -380,6 +389,7 @@ export default function DashboardPage() {
             badge={stats?.growthPct != null ? `${Math.abs(stats.growthPct)}% vs last month` : null}
             badgeType={growthType}
             accentColor="#C9873A"
+            onClick={() => go("transactions")}
           />
           <KpiCard
             icon="bi-bag-check-fill"
@@ -388,6 +398,7 @@ export default function DashboardPage() {
             sub={`${stats?.ordersToday ?? 0} today · ${stats?.pendingOrders ?? 0} pending`}
             badge={null}
             accentColor="#3B82F6"
+            onClick={() => go("transactions")}
           />
           <KpiCard
             icon="bi-people-fill"
@@ -397,6 +408,7 @@ export default function DashboardPage() {
             badge={`+${stats?.newSignups ?? 0} this week`}
             badgeType="up"
             accentColor="#8B5CF6"
+            onClick={() => go("users")}
           />
           <KpiCard
             icon="bi-box-seam-fill"
@@ -406,6 +418,7 @@ export default function DashboardPage() {
             badge={stats?.outOfStock > 0 ? `${stats.outOfStock} out of stock` : "all in stock"}
             badgeType={stats?.outOfStock > 0 ? "down" : "up"}
             accentColor="#22C55E"
+            onClick={() => go("inventory")}
           />
         </div>
 
@@ -439,7 +452,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Pending orders */}
-          <div className="db-card">
+          <div className="db-card db-nav-card" onClick={() => go("transactions")} role="button" tabIndex={0} onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && go("transactions")}>
             <div className="db-card-title">
               <i className="bi bi-hourglass-split" />
               Pending Orders
@@ -539,7 +552,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Top selling */}
-          <div className="db-card">
+          <div className="db-card db-nav-card" onClick={() => go("inventory")} role="button" tabIndex={0} onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && go("inventory")}>
             <div className="db-card-title">
               <i className="bi bi-fire" />
               Top Selling Products
@@ -568,7 +581,7 @@ export default function DashboardPage() {
         <div className="db-table-row">
 
           {/* Recent orders */}
-          <div className="db-card db-table-card">
+          <div className="db-card db-table-card db-nav-card" onClick={() => go("transactions")} role="button" tabIndex={0} onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && go("transactions")}>
             <div className="db-table-head">
               <div className="db-card-title db-table-title">
                 <i className="bi bi-clock-history" />
@@ -609,7 +622,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Low stock */}
-          <div className="db-card db-table-card">
+          <div className="db-card db-table-card db-nav-card" onClick={() => go("inventoryalert")} role="button" tabIndex={0} onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && go("inventoryalert")}>
             <div className="db-table-head">
               <div className="db-card-title db-table-title">
                 <i className="bi bi-exclamation-triangle-fill db-warn-icon" />
