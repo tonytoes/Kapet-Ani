@@ -10,7 +10,7 @@ function Navbar({ activePage }) {
   const [user, setUser] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState("");
   const [cartCount, setCartCount] = useState(() => getCartCount(getCartItems()));
-  const showAdminShortcut = ["admin", "superadmin"].includes((user?.role || "").toLowerCase());
+  const showAdminShortcut = ["staff","admin", "superadmin"].includes((user?.role || "").toLowerCase());
 
   useEffect(() => {
     const syncUser = () => {

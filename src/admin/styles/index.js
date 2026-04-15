@@ -330,7 +330,7 @@ const STYLES = `
   .badge-superadmin  { background: #F3E8FF; color: #9333EA; }
   .badge-customer    { background: var(--color-blue-bg); color: var(--color-blue); }
   .badge-outofstock { background: var(--color-red-bg); color: var(--color-red); }
-  .badge-lowstock { background: var(--color-red-bg); color: #ff4c4c; }
+  .badge-lowstock { background: #FFF7ED; color: #F97316; }
   .badge-cancelled { background: var(--color-red-bg); color: var(--color-red); }
 
   /* Page header */
