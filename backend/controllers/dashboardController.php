@@ -35,14 +35,14 @@ function getDashboardStats()
 
     $stmt = $conn->query("
         SELECT
-            COALESCE(SUM(total_price), 0) AS totalSales,
+            COALESCE(SUM(CASE WHEN status = 'confirmed' THEN total_price ELSE 0 END), 0) AS totalSales,
             COALESCE(SUM(CASE WHEN MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE()) THEN total_price ELSE 0 END), 0) AS salesMonth,
             COALESCE(SUM(CASE WHEN DATE(created_at) = CURDATE() THEN total_price ELSE 0 END), 0) AS salesToday,
             COUNT(*) AS totalOrders,
             COUNT(CASE WHEN status = 'pending' THEN 1 END) AS pendingOrders,
             COUNT(CASE WHEN DATE(created_at) = CURDATE() THEN 1 END) AS ordersToday
         FROM orders
-        WHERE status IN ('confirmed','shipped','delivered','pending')
+        WHERE status IN ('confirmed','pending')
     ");
     $salesData = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -50,7 +50,7 @@ function getDashboardStats()
     $stmt = $conn->query("
         SELECT COALESCE(SUM(total_price), 0) AS salesLastMonth
         FROM orders
-        WHERE status IN ('confirmed','shipped','delivered')
+        WHERE status IN ('confirmed')
           AND MONTH(created_at) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
           AND YEAR(created_at)  = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
     ");
@@ -217,7 +217,7 @@ function getTopSelling()
         FROM order_items oi
         JOIN products p ON oi.prod_id = p.id
         JOIN orders o ON oi.order_id = o.id
-        WHERE o.status IN ('confirmed','shipped','delivered')
+        WHERE o.status IN ('confirmed')
         GROUP BY oi.prod_id
         ORDER BY total_sold DESC
         LIMIT 5
@@ -251,7 +251,7 @@ function getSalesTrend()
             COALESCE(SUM(total_price), 0) AS revenue,
             COUNT(*) AS orders
         FROM orders
-        WHERE status IN ('confirmed','shipped','delivered')
+        WHERE status IN ('confirmed')
           AND created_at >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
         GROUP BY DATE(created_at)
         ORDER BY day ASC
@@ -327,7 +327,7 @@ function getCategorySales()
         JOIN products p ON oi.prod_id = p.id
         JOIN orders o ON oi.order_id = o.id
         LEFT JOIN categories c ON p.category_id = c.id
-        WHERE o.status IN ('confirmed','shipped','delivered')
+        WHERE o.status IN ('confirmed')
         GROUP BY p.category_id
         ORDER BY revenue DESC
         LIMIT 6
@@ -362,7 +362,7 @@ function getTxHeatmap()
     $stmt = $conn->query("
         SELECT DATE(created_at) AS day, COUNT(*) AS total
         FROM orders
-        WHERE status IN ('confirmed','shipped','delivered','pending')
+        WHERE status IN('confirmed','pending')
           AND created_at >= DATE_SUB(CURDATE(), INTERVAL 364 DAY)
         GROUP BY DATE(created_at)
         ORDER BY day ASC
