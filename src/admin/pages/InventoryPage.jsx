@@ -4,6 +4,7 @@
  *   but can be manually overridden if needed
  * - Product ID is hidden in add mode (auto-assigned by DB)
  * - Discount (0–100%) can be set per product; Total Price is auto-computed
+ * - Paginated: 30 rows per page
  */
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
@@ -18,6 +19,7 @@ const API            = `${LINK_PATH}Inventorycontroller.php`;
 const API_CATEGORIES = `${LINK_PATH}Inventorycontroller.php?resource=categories`;
 const CACHE_PRODUCTS = "inventory";
 const CACHE_CATS     = "inventory_categories";
+const PAGE_SIZE      = 30;
 
 function authHeader() {
   const token = localStorage.getItem("token");
@@ -27,6 +29,80 @@ function authHeader() {
 const EMPTY_FORM = {
   name: "", description: "", price: "", qty: "", category_id: "", discount: "0",
 };
+
+// ─── Pagination Bar ───────────────────────────────────────────────────────────
+
+function PaginationBar({ page, totalPages, totalItems, onPage }) {
+  const safePage = Math.min(page, totalPages);
+  const start    = (safePage - 1) * PAGE_SIZE + 1;
+  const end      = Math.min(safePage * PAGE_SIZE, totalItems);
+
+  const pageNums = Array.from({ length: totalPages }, (_, i) => i + 1)
+    .filter(n => n === 1 || n === totalPages || Math.abs(n - safePage) <= 1)
+    .reduce((acc, n, idx, arr) => {
+      if (idx > 0 && n - arr[idx - 1] > 1) acc.push("…");
+      acc.push(n);
+      return acc;
+    }, []);
+
+  const btnBase = {
+    padding: "5px 10px", borderRadius: 7,
+    border: "1.5px solid var(--border, #e5e7eb)",
+    background: "none", fontSize: "0.82rem", fontWeight: 600,
+    transition: "background 0.15s", cursor: "pointer",
+  };
+
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      padding: "12px 16px",
+      borderTop: "1px solid var(--border, #e5e7eb)",
+      background: "var(--bg-surface, #fff)",
+      flexWrap: "wrap", gap: 8,
+    }}>
+      <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", fontWeight: 500 }}>
+        Showing {start}–{end} of {totalItems} products
+      </span>
+      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+        <button
+          onClick={() => onPage(p => Math.max(1, p - 1))}
+          disabled={safePage === 1}
+          style={{ ...btnBase, color: safePage === 1 ? "var(--text-muted)" : "var(--text)", cursor: safePage === 1 ? "not-allowed" : "pointer" }}
+        >
+          <i className="bi bi-chevron-left" />
+        </button>
+
+        {pageNums.map((item, idx) =>
+          item === "…" ? (
+            <span key={`el-${idx}`} style={{ padding: "0 4px", color: "var(--text-muted)", fontSize: "0.82rem" }}>…</span>
+          ) : (
+            <button
+              key={item}
+              onClick={() => onPage(item)}
+              style={{
+                ...btnBase,
+                minWidth: 32, padding: "5px 8px",
+                borderColor: safePage === item ? "var(--brand-mid, #8b5cf6)" : "var(--border, #e5e7eb)",
+                background:  safePage === item ? "var(--brand-mid, #8b5cf6)" : "none",
+                color:       safePage === item ? "#fff" : "var(--text)",
+              }}
+            >
+              {item}
+            </button>
+          )
+        )}
+
+        <button
+          onClick={() => onPage(p => Math.min(totalPages, p + 1))}
+          disabled={safePage === totalPages}
+          style={{ ...btnBase, color: safePage === totalPages ? "var(--text-muted)" : "var(--text)", cursor: safePage === totalPages ? "not-allowed" : "pointer" }}
+        >
+          <i className="bi bi-chevron-right" />
+        </button>
+      </div>
+    </div>
+  );
+}
 
 // ─── Toast ────────────────────────────────────────────────────────────────────
 
@@ -94,7 +170,6 @@ function InventoryForm({ form, onChange, mode, imagePreview, onFileChange, onRem
     <>
       <ImageBlock preview={imagePreview} onFileChange={onFileChange} onRemove={onRemoveImage} />
 
-      {/* Product ID — only visible in edit mode */}
       {mode === "edit" && (
         <div className="form-group">
           <label className="form-label">Product ID</label>
@@ -135,7 +210,6 @@ function InventoryForm({ form, onChange, mode, imagePreview, onFileChange, onRem
         </div>
       </div>
 
-      {/* ── Discount + Total Price ───────────────────────────────────────── */}
       <div className="form-row cols-2">
         <div className="form-group">
           <label className="form-label">
@@ -184,7 +258,6 @@ function InventoryForm({ form, onChange, mode, imagePreview, onFileChange, onRem
         </div>
       </div>
 
-      {/* Discount summary hint */}
       {price > 0 && discount > 0 && (
         <div style={{
           fontSize: "0.78rem", color: "var(--text-muted)",
@@ -317,6 +390,7 @@ export default function InventoryPage() {
   const [search,    setSearch]    = useState("");
   const [filter,    setFilter]    = useState("all");
   const [sortOrder, setSortOrder] = useState("desc");
+  const [page,      setPage]      = useState(1);
 
   const [panelOpen,  setPanelOpen]  = useState(false);
   const [panelMode,  setPanelMode]  = useState("edit");
@@ -404,6 +478,15 @@ export default function InventoryPage() {
     return res;
   }, [products, search, filter, sortOrder]);
 
+  // ─── Pagination derived values ────────────────────────────────────────────
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage   = Math.min(page, totalPages);
+  const pageSlice  = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+
+  // Reset page when filters change
+  const resetPage = () => setPage(1);
+
   // ─── Image handlers ───────────────────────────────────────────────────────
 
   function handleFileChange(e) {
@@ -429,7 +512,7 @@ export default function InventoryPage() {
       price:       product.price,
       qty:         product.qty,
       category_id: product.category_id ?? "",
-      discount:    String(product.discount ?? 0),   // ← discount field
+      discount:    String(product.discount ?? 0),
     });
     resetImageState(product.image_url ?? null);
     setPanelMode("edit");
@@ -455,17 +538,15 @@ export default function InventoryPage() {
     if (imageFile)   fd.append("image", imageFile);
     if (removeImage) fd.append("remove_image", "1");
     return fd;
-    // NOTE: discount is included automatically via ...rest spread above
   }
 
   function buildProductFromForm(id, prev = null) {
-    const priceNum = Number(form.price) || 0;
+    const priceNum    = Number(form.price) || 0;
     const discountNum = Math.min(100, Math.max(0, Number(form.discount) || 0));
-    const totalPrice = priceNum * (1 - discountNum / 100);
+    const totalPrice  = priceNum * (1 - discountNum / 100);
     const selectedCategory = categories.find(c => Number(c.id) === Number(form.category_id));
     const status =
       Number(form.qty) === 0 ? "Out of Stock" : Number(form.qty) < 10 ? "Low Stock" : "Available";
-
     return {
       ...(prev ?? {}),
       id,
@@ -564,7 +645,7 @@ export default function InventoryPage() {
   async function handleUpdate() {
     if (!canManage) return;
     setSaving(true);
-    const loadId = showToast("Saving changes…", "loading");
+    const loadId  = showToast("Saving changes…", "loading");
     const targetId = form.edit_id ? Number(form.edit_id) : selectedId;
     try {
       const res  = await fetch(API, {
@@ -641,13 +722,13 @@ export default function InventoryPage() {
           title={<><span>Inventory</span> <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>({filtered.length})</span></>}
           onAdd={canManage ? openAdd : undefined}
           search={search}
-          onSearch={setSearch}
+          onSearch={v => { setSearch(v); resetPage(); }}
           showCategories
           categories={filterOptions}
           categoryValue={filter}
-          onCategoryChange={setFilter}
+          onCategoryChange={v => { setFilter(v); resetPage(); }}
           sortOrder={sortOrder}
-          onToggleSort={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")}
+          onToggleSort={() => { setSortOrder(prev => prev === "asc" ? "desc" : "asc"); resetPage(); }}
           extraActions={canManage ? (
             <button
               className="btn btn-outline btn-sm"
@@ -688,7 +769,7 @@ export default function InventoryPage() {
                         </div>
                       </td>
                     </tr>
-                  ) : filtered.length === 0 ? (
+                  ) : pageSlice.length === 0 ? (
                     <tr>
                       <td colSpan={9} style={{ textAlign: "center", padding: 40 }}>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, color: "var(--text-muted)" }}>
@@ -698,7 +779,7 @@ export default function InventoryPage() {
                       </td>
                     </tr>
                   ) : (
-                    filtered.map(p => (
+                    pageSlice.map(p => (
                       <tr
                         key={p.id}
                         className={`${canManage ? "clickable" : ""}${selectedId === p.id ? " selected" : ""}`}
@@ -722,7 +803,7 @@ export default function InventoryPage() {
                             ? <span style={{ color: "#A16207", fontWeight: 600 }}>{p.discount}%</span>
                             : <span style={{ color: "var(--text-muted)" }}>—</span>}
                         </td>
-                       <td className="cell-amount">
+                        <td className="cell-amount">
                           ₱{(
                             Number(p.discount) === 0
                               ? Number(p.price)
@@ -738,6 +819,16 @@ export default function InventoryPage() {
                 </tbody>
               </table>
             </div>
+
+            {/* ── Pagination ── */}
+            {!loading && filtered.length > PAGE_SIZE && (
+              <PaginationBar
+                page={safePage}
+                totalPages={totalPages}
+                totalItems={filtered.length}
+                onPage={setPage}
+              />
+            )}
           </div>
         </div>
       </div>

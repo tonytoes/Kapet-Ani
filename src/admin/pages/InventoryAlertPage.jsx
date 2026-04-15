@@ -2,6 +2,7 @@
  * src/admin/pages/InventoryAlertPage.jsx
  * Cache key: "inventory_alerts"
  * Consistent with InventoryPage / UsersPage patterns.
+ * Paginated: 30 rows per page
  */
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
@@ -17,6 +18,7 @@ const API_CATS = `${LINK_PATH}InventoryAlertController.php?resource=categories`;
 const API_PRODS= `${LINK_PATH}InventoryAlertController.php?resource=products`;
 
 const CACHE_ALERTS = "inventory_alerts";
+const PAGE_SIZE    = 30;
 
 function authHeader() {
   const token = localStorage.getItem("token");
@@ -39,6 +41,80 @@ const CONDITIONS = [
   { value: ">=", label: "Greater Than or Equal To (≥)" },
   { value: ">",  label: "Greater Than (>)" },
 ];
+
+// ─── Pagination Bar ───────────────────────────────────────────────────────────
+
+function PaginationBar({ page, totalPages, totalItems, label = "rules", onPage }) {
+  const safePage = Math.min(page, totalPages);
+  const start    = (safePage - 1) * PAGE_SIZE + 1;
+  const end      = Math.min(safePage * PAGE_SIZE, totalItems);
+
+  const pageNums = Array.from({ length: totalPages }, (_, i) => i + 1)
+    .filter(n => n === 1 || n === totalPages || Math.abs(n - safePage) <= 1)
+    .reduce((acc, n, idx, arr) => {
+      if (idx > 0 && n - arr[idx - 1] > 1) acc.push("…");
+      acc.push(n);
+      return acc;
+    }, []);
+
+  const btnBase = {
+    padding: "5px 10px", borderRadius: 7,
+    border: "1.5px solid var(--border, #e5e7eb)",
+    background: "none", fontSize: "0.82rem", fontWeight: 600,
+    transition: "background 0.15s", cursor: "pointer",
+  };
+
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      padding: "12px 16px",
+      borderTop: "1px solid var(--border, #e5e7eb)",
+      background: "var(--bg-surface, #fff)",
+      flexWrap: "wrap", gap: 8,
+    }}>
+      <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", fontWeight: 500 }}>
+        Showing {start}–{end} of {totalItems} {label}
+      </span>
+      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+        <button
+          onClick={() => onPage(p => Math.max(1, p - 1))}
+          disabled={safePage === 1}
+          style={{ ...btnBase, color: safePage === 1 ? "var(--text-muted)" : "var(--text)", cursor: safePage === 1 ? "not-allowed" : "pointer" }}
+        >
+          <i className="bi bi-chevron-left" />
+        </button>
+
+        {pageNums.map((item, idx) =>
+          item === "…" ? (
+            <span key={`el-${idx}`} style={{ padding: "0 4px", color: "var(--text-muted)", fontSize: "0.82rem" }}>…</span>
+          ) : (
+            <button
+              key={item}
+              onClick={() => onPage(item)}
+              style={{
+                ...btnBase,
+                minWidth: 32, padding: "5px 8px",
+                borderColor: safePage === item ? "var(--brand-mid, #8b5cf6)" : "var(--border, #e5e7eb)",
+                background:  safePage === item ? "var(--brand-mid, #8b5cf6)" : "none",
+                color:       safePage === item ? "#fff" : "var(--text)",
+              }}
+            >
+              {item}
+            </button>
+          )
+        )}
+
+        <button
+          onClick={() => onPage(p => Math.min(totalPages, p + 1))}
+          disabled={safePage === totalPages}
+          style={{ ...btnBase, color: safePage === totalPages ? "var(--text-muted)" : "var(--text)", cursor: safePage === totalPages ? "not-allowed" : "pointer" }}
+        >
+          <i className="bi bi-chevron-right" />
+        </button>
+      </div>
+    </div>
+  );
+}
 
 // ─── Toast ────────────────────────────────────────────────────────────────────
 
@@ -146,9 +222,10 @@ export default function InventoryAlertPage() {
   const [products,        setProducts]        = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
 
-  const [search,     setSearch]     = useState("");
+  const [search,       setSearch]       = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [sortOrder,  setSortOrder]  = useState("desc");
+  const [sortOrder,    setSortOrder]    = useState("desc");
+  const [page,         setPage]         = useState(1);
 
   const [panelOpen,  setPanelOpen]  = useState(false);
   const [panelMode,  setPanelMode]  = useState("edit");
@@ -224,13 +301,20 @@ export default function InventoryAlertPage() {
       a.product_name.toLowerCase().includes(q) ||
       a.category_name.toLowerCase().includes(q)
     );
-    if (statusFilter === "online")  res = res.filter(a => a.status  === "Online");
-    if (statusFilter === "offline") res = res.filter(a => a.status  === "Offline");
-    if (statusFilter === "warning") res = res.filter(a => a.alert   === "Warning");
-    if (statusFilter === "normal")  res = res.filter(a => a.alert   === "Normal");
+    if (statusFilter === "online")  res = res.filter(a => a.status === "Online");
+    if (statusFilter === "offline") res = res.filter(a => a.status === "Offline");
+    if (statusFilter === "warning") res = res.filter(a => a.alert  === "Warning");
+    if (statusFilter === "normal")  res = res.filter(a => a.alert  === "Normal");
     res.sort((a, b) => sortOrder === "asc" ? a.rule_id - b.rule_id : b.rule_id - a.rule_id);
     return res;
   }, [alerts, search, statusFilter, sortOrder]);
+
+  // ─── Pagination derived values ────────────────────────────────────────────
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage   = Math.min(page, totalPages);
+  const pageSlice  = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const resetPage  = () => setPage(1);
 
   // ─── Panel helpers ────────────────────────────────────────────────────────
 
@@ -365,13 +449,13 @@ export default function InventoryAlertPage() {
           title={<><span>Inventory Alert</span> <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>({filtered.length})</span></>}
           onAdd={canManage ? openAdd : undefined}
           search={search}
-          onSearch={setSearch}
+          onSearch={v => { setSearch(v); resetPage(); }}
           showCategories
           categories={filterOptions}
           categoryValue={statusFilter}
-          onCategoryChange={setStatusFilter}
+          onCategoryChange={v => { setStatusFilter(v); resetPage(); }}
           sortOrder={sortOrder}
-          onToggleSort={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")}
+          onToggleSort={() => { setSortOrder(prev => prev === "asc" ? "desc" : "asc"); resetPage(); }}
         />
 
         <div className="split-layout">
@@ -401,7 +485,7 @@ export default function InventoryAlertPage() {
                         </div>
                       </td>
                     </tr>
-                  ) : filtered.length === 0 ? (
+                  ) : pageSlice.length === 0 ? (
                     <tr>
                       <td colSpan={9} style={{ textAlign: "center", padding: 40 }}>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, color: "var(--text-muted)" }}>
@@ -411,7 +495,7 @@ export default function InventoryAlertPage() {
                       </td>
                     </tr>
                   ) : (
-                    filtered.map(a => (
+                    pageSlice.map(a => (
                       <tr
                         key={a.rule_id}
                         className={`${canManage ? "clickable" : ""}${selectedId === a.rule_id ? " selected" : ""}`}
@@ -434,6 +518,17 @@ export default function InventoryAlertPage() {
                 </tbody>
               </table>
             </div>
+
+            {/* ── Pagination ── */}
+            {!loading && filtered.length > PAGE_SIZE && (
+              <PaginationBar
+                page={safePage}
+                totalPages={totalPages}
+                totalItems={filtered.length}
+                label="rules"
+                onPage={setPage}
+              />
+            )}
           </div>
         </div>
       </div>

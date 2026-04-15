@@ -2,6 +2,7 @@
  * src/admin/pages/UsersPage.jsx
  * Cache key: "users"
  * Invalidated after: add, update, delete
+ * Paginated: 30 rows per page
  */
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
@@ -11,62 +12,99 @@ import SlidePanel  from "../components/SlidePanel";
 import { maskEmail } from "../utils";
 import { canAssignElevatedRoles, canManageAdminPanels } from "../utils";
 import { LINK_PATH } from "../data/LinkPath.jsx";
-import { useCache }  from "../data/CacheContext";   // ← NEW
+import { useCache }  from "../data/CacheContext";
 import { PHONE_COUNTRIES, digitsOnly, formatLocalPhone11, splitStoredPhone, composeStoredPhone } from "../../utils/phone";
 
-const API        = `${LINK_PATH}usersController.php`;
-const CACHE_KEY  = "users";
+const API       = `${LINK_PATH}usersController.php`;
+const CACHE_KEY = "users";
+const PAGE_SIZE = 30;
+
+// ─── Pagination Bar ───────────────────────────────────────────────────────────
+
+function PaginationBar({ page, totalPages, totalItems, onPage }) {
+  const safePage = Math.min(page, totalPages);
+  const start    = (safePage - 1) * PAGE_SIZE + 1;
+  const end      = Math.min(safePage * PAGE_SIZE, totalItems);
+
+  const pageNums = Array.from({ length: totalPages }, (_, i) => i + 1)
+    .filter(n => n === 1 || n === totalPages || Math.abs(n - safePage) <= 1)
+    .reduce((acc, n, idx, arr) => {
+      if (idx > 0 && n - arr[idx - 1] > 1) acc.push("…");
+      acc.push(n);
+      return acc;
+    }, []);
+
+  const btnBase = {
+    padding: "5px 10px", borderRadius: 7,
+    border: "1.5px solid var(--border, #e5e7eb)",
+    background: "none", fontSize: "0.82rem", fontWeight: 600,
+    transition: "background 0.15s", cursor: "pointer",
+  };
+
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      padding: "12px 16px",
+      borderTop: "1px solid var(--border, #e5e7eb)",
+      background: "var(--bg-surface, #fff)",
+      flexWrap: "wrap", gap: 8,
+    }}>
+      <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", fontWeight: 500 }}>
+        Showing {start}–{end} of {totalItems} users
+      </span>
+      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+        <button
+          onClick={() => onPage(p => Math.max(1, p - 1))}
+          disabled={safePage === 1}
+          style={{ ...btnBase, color: safePage === 1 ? "var(--text-muted)" : "var(--text)", cursor: safePage === 1 ? "not-allowed" : "pointer" }}
+        >
+          <i className="bi bi-chevron-left" />
+        </button>
+
+        {pageNums.map((item, idx) =>
+          item === "…" ? (
+            <span key={`el-${idx}`} style={{ padding: "0 4px", color: "var(--text-muted)", fontSize: "0.82rem" }}>…</span>
+          ) : (
+            <button
+              key={item}
+              onClick={() => onPage(item)}
+              style={{
+                ...btnBase,
+                minWidth: 32, padding: "5px 8px",
+                borderColor: safePage === item ? "var(--brand-mid, #8b5cf6)" : "var(--border, #e5e7eb)",
+                background:  safePage === item ? "var(--brand-mid, #8b5cf6)" : "none",
+                color:       safePage === item ? "#fff" : "var(--text)",
+              }}
+            >
+              {item}
+            </button>
+          )
+        )}
+
+        <button
+          onClick={() => onPage(p => Math.min(totalPages, p + 1))}
+          disabled={safePage === totalPages}
+          style={{ ...btnBase, color: safePage === totalPages ? "var(--text-muted)" : "var(--text)", cursor: safePage === totalPages ? "not-allowed" : "pointer" }}
+        >
+          <i className="bi bi-chevron-right" />
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function EyeIcon({ open }) {
   return open ? (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <path
-        d="M2 12C3.8 8.2 7.5 6 12 6C16.5 6 20.2 8.2 22 12C20.2 15.8 16.5 18 12 18C7.5 18 3.8 15.8 2 12Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M2 12C3.8 8.2 7.5 6 12 6C16.5 6 20.2 8.2 22 12C20.2 15.8 16.5 18 12 18C7.5 18 3.8 15.8 2 12Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
       <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
     </svg>
   ) : (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <path d="M3 3L21 21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path
-        d="M10.6 6.2C11.1 6.07 11.55 6 12 6C16.5 6 20.2 8.2 22 12C21.15 13.79 19.85 15.28 18.23 16.37"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M6.1 7.9C4.39 8.99 3.01 10.43 2 12C3.8 15.8 7.5 18 12 18C13.81 18 15.48 17.64 16.94 16.99"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M9.9 9.9C9.36 10.44 9 11.18 9 12C9 13.66 10.34 15 12 15C12.82 15 13.56 14.64 14.1 14.1"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M10.6 6.2C11.1 6.07 11.55 6 12 6C16.5 6 20.2 8.2 22 12C21.15 13.79 19.85 15.28 18.23 16.37" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M6.1 7.9C4.39 8.99 3.01 10.43 2 12C3.8 15.8 7.5 18 12 18C13.81 18 15.48 17.64 16.94 16.99" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M9.9 9.9C9.36 10.44 9 11.18 9 12C9 13.66 10.34 15 12 15C12.82 15 13.56 14.64 14.1 14.1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -103,33 +141,17 @@ function Toast({ toasts }) {
       {toasts.map(t => (
         <div key={t.id} style={{
           display: "flex", alignItems: "center", gap: 10,
-          padding: "12px 18px",
-          borderRadius: 12,
-          background: t.type === "success" ? "#F0FDF4"
-                    : t.type === "error"   ? "#FEF2F2"
-                    : t.type === "loading" ? "#FFFBEB"
-                    : "#EFF6FF",
-          border: `1.5px solid ${
-            t.type === "success" ? "#86EFAC"
-          : t.type === "error"   ? "#FCA5A5"
-          : t.type === "loading" ? "#FCD34D"
-          : "#BFDBFE"}`,
+          padding: "12px 18px", borderRadius: 12,
+          background: t.type === "success" ? "#F0FDF4" : t.type === "error" ? "#FEF2F2" : t.type === "loading" ? "#FFFBEB" : "#EFF6FF",
+          border: `1.5px solid ${t.type === "success" ? "#86EFAC" : t.type === "error" ? "#FCA5A5" : t.type === "loading" ? "#FCD34D" : "#BFDBFE"}`,
           boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
           fontSize: "0.83rem", fontWeight: 600,
-          color: t.type === "success" ? "#15803D"
-               : t.type === "error"   ? "#DC2626"
-               : t.type === "loading" ? "#B45309"
-               : "#1D4ED8",
+          color: t.type === "success" ? "#15803D" : t.type === "error" ? "#DC2626" : t.type === "loading" ? "#B45309" : "#1D4ED8",
           minWidth: 220, maxWidth: 340,
-          animation: "slideUp 0.2s ease",
-          pointerEvents: "auto",
+          animation: "slideUp 0.2s ease", pointerEvents: "auto",
         }}>
-          <i className={`bi ${
-            t.type === "success" ? "bi-check-circle-fill"
-          : t.type === "error"   ? "bi-x-circle-fill"
-          : t.type === "loading" ? "bi-arrow-repeat spin"
-          : "bi-info-circle-fill"
-          }`} style={{ fontSize: "1rem", flexShrink: 0 }} />
+          <i className={`bi ${t.type === "success" ? "bi-check-circle-fill" : t.type === "error" ? "bi-x-circle-fill" : t.type === "loading" ? "bi-arrow-repeat spin" : "bi-info-circle-fill"}`}
+            style={{ fontSize: "1rem", flexShrink: 0 }} />
           {t.message}
         </div>
       ))}
@@ -202,10 +224,7 @@ function ThemedSelect({ value, onChange, options, placeholder = "Select role", d
               type="button"
               key={opt.value}
               className={`kp-select-option${value === opt.value ? " active" : ""}`}
-              onClick={() => {
-                onChange(opt.value);
-                setOpen(false);
-              }}
+              onClick={() => { onChange(opt.value); setOpen(false); }}
             >
               {opt.label}
             </button>
@@ -222,22 +241,16 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
   const selectedPhoneCountry = PHONE_COUNTRIES.find((c) => c.iso2 === phoneCountry) || PHONE_COUNTRIES[0];
   const roleLocked = !canAssignElevated && (form.status === "admin" || form.status === "superadmin");
 
-  useEffect(() => {
-    // Reset toggle when switching between users / modes.
-    setShowPassword(false);
-  }, [mode, form?.email]);
-
-  useEffect(() => {
-    setPhoneCountry(splitStoredPhone(form.phone || "").iso2);
-  }, [form.phone]);
+  useEffect(() => { setShowPassword(false); }, [mode, form?.email]);
+  useEffect(() => { setPhoneCountry(splitStoredPhone(form.phone || "").iso2); }, [form.phone]);
 
   const fields = [
-    { label: "First Name", id: "first_name", type: "text",  placeholder: "First name" },
-    { label: "Last Name",  id: "last_name",  type: "text",  placeholder: "Last name" },
-    { label: "Email",      id: "email",      type: "email", placeholder: "email@example.com" },
-    { label: "Phone",      id: "phone",      type: "tel",   placeholder: "0000 000 0000" },
-    { label: "Address",    id: "address",    type: "text",  placeholder: "Street address" },
-    { label: "Postal Code",id: "postalcode", type: "text",  placeholder: "Postal code" },
+    { label: "First Name",  id: "first_name", type: "text",     placeholder: "First name" },
+    { label: "Last Name",   id: "last_name",  type: "text",     placeholder: "Last name" },
+    { label: "Email",       id: "email",      type: "email",    placeholder: "email@example.com" },
+    { label: "Phone",       id: "phone",      type: "tel",      placeholder: "0000 000 0000" },
+    { label: "Address",     id: "address",    type: "text",     placeholder: "Street address" },
+    { label: "Postal Code", id: "postalcode", type: "text",     placeholder: "Postal code" },
     {
       label: "Password", id: "password", type: "password",
       placeholder: mode === "edit" ? "Leave blank to keep current password" : "Password",
@@ -245,10 +258,10 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
   ];
 
   const roleOptions = [
-    { value: "user", label: "User" },
+    { value: "user",  label: "User" },
     { value: "staff", label: "Staff" },
     ...(canAssignElevated ? [
-      { value: "admin", label: "Admin" },
+      { value: "admin",      label: "Admin" },
       { value: "superadmin", label: "SuperAdmin" },
     ] : []),
   ];
@@ -275,68 +288,66 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
               <button
                 type="button"
                 className="kp-admin-password-toggle"
-                onClick={() => setShowPassword((prev) => !prev)}
+                onClick={() => setShowPassword(prev => !prev)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 title={showPassword ? "Hide password" : "Show password"}
               >
                 <EyeIcon open={showPassword} />
               </button>
             </div>
-          ) : (
-            f.id === "phone" ? (
-              <div className="kp-admin-phone-wrap">
-                <div className="kp-admin-phone-country">
-                  <img
-                    src={selectedPhoneCountry?.flagUrl}
-                    alt={`${selectedPhoneCountry?.name || "Country"} flag`}
-                    className="kp-admin-phone-flag"
-                    loading="lazy"
-                  />
-                  <select
-                    className="kp-admin-phone-cc"
-                    value={phoneCountry}
-                    onChange={(e) => {
-                      const next = e.target.value;
-                      setPhoneCountry(next);
-                      const local = splitStoredPhone(form.phone || "").local;
-                      onChange("phone", composeStoredPhone(next, local));
-                    }}
-                    aria-label="Country code"
-                  >
-                    {PHONE_COUNTRIES.map((c) => (
-                      <option key={c.iso2} value={c.iso2}>
-                        {c.iso2 === phoneCountry ? `+${c.dialCode}` : `${c.name} (+${c.dialCode})`}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <input
-                  className="form-control kp-admin-phone-input"
-                  type="text"
-                  inputMode="numeric"
-                  placeholder={f.placeholder}
-                  value={formatLocalPhone11(splitStoredPhone(form.phone || "", phoneCountry).local)}
-                  onChange={e => onChange("phone", composeStoredPhone(phoneCountry, digitsOnly(e.target.value, 11)))}
+          ) : f.id === "phone" ? (
+            <div className="kp-admin-phone-wrap">
+              <div className="kp-admin-phone-country">
+                <img
+                  src={selectedPhoneCountry?.flagUrl}
+                  alt={`${selectedPhoneCountry?.name || "Country"} flag`}
+                  className="kp-admin-phone-flag"
+                  loading="lazy"
                 />
+                <select
+                  className="kp-admin-phone-cc"
+                  value={phoneCountry}
+                  onChange={e => {
+                    const next = e.target.value;
+                    setPhoneCountry(next);
+                    const local = splitStoredPhone(form.phone || "").local;
+                    onChange("phone", composeStoredPhone(next, local));
+                  }}
+                  aria-label="Country code"
+                >
+                  {PHONE_COUNTRIES.map(c => (
+                    <option key={c.iso2} value={c.iso2}>
+                      {c.iso2 === phoneCountry ? `+${c.dialCode}` : `${c.name} (+${c.dialCode})`}
+                    </option>
+                  ))}
+                </select>
               </div>
-            ) : f.id === "postalcode" ? (
               <input
-                className="form-control"
+                className="form-control kp-admin-phone-input"
                 type="text"
                 inputMode="numeric"
                 placeholder={f.placeholder}
-                value={form.postalcode}
-                onChange={e => onChange("postalcode", digitsOnly(e.target.value, 10))}
+                value={formatLocalPhone11(splitStoredPhone(form.phone || "", phoneCountry).local)}
+                onChange={e => onChange("phone", composeStoredPhone(phoneCountry, digitsOnly(e.target.value, 11)))}
               />
-            ) : (
-              <input
-                className="form-control"
-                type={f.type}
-                placeholder={f.placeholder}
-                value={form[f.id]}
-                onChange={e => onChange(f.id, e.target.value)}
-              />
-            )
+            </div>
+          ) : f.id === "postalcode" ? (
+            <input
+              className="form-control"
+              type="text"
+              inputMode="numeric"
+              placeholder={f.placeholder}
+              value={form.postalcode}
+              onChange={e => onChange("postalcode", digitsOnly(e.target.value, 10))}
+            />
+          ) : (
+            <input
+              className="form-control"
+              type={f.type}
+              placeholder={f.placeholder}
+              value={form[f.id]}
+              onChange={e => onChange(f.id, e.target.value)}
+            />
           )}
         </div>
       ))}
@@ -353,11 +364,10 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
   );
 }
 
-
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function UsersPage() {
-  const cache = useCache();   // ← NEW
+  const cache = useCache();
   const canManage = canManageAdminPanels();
   const canAssignElevated = canAssignElevatedRoles();
   const currentUserId = useMemo(() => {
@@ -366,9 +376,7 @@ export default function UsersPage() {
       const u = raw ? JSON.parse(raw) : null;
       const id = Number(u?.id || 0);
       return Number.isFinite(id) ? id : 0;
-    } catch {
-      return 0;
-    }
+    } catch { return 0; }
   }, []);
 
   const [users,      setUsers]      = useState(() => cache.get(CACHE_KEY) ?? []);
@@ -381,6 +389,7 @@ export default function UsersPage() {
   const [form,       setForm]       = useState(EMPTY_FORM);
   const [roleFilter, setRoleFilter] = useState("all");
   const [sortOrder,  setSortOrder]  = useState("desc");
+  const [page,       setPage]       = useState(1);
   const [imageFile,    setImageFile]    = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [removeImage,  setRemoveImage]  = useState(false);
@@ -392,46 +401,31 @@ export default function UsersPage() {
   function showToast(message, type = "success", duration = 3000) {
     const id = ++toastCounter.current;
     setToasts(prev => [...prev, { id, message, type }]);
-    if (type !== "loading") {
-      setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), duration);
-    }
+    if (type !== "loading") setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), duration);
     return id;
   }
+  function dismissToast(id) { setToasts(prev => prev.filter(t => t.id !== id)); }
 
-  function dismissToast(id) {
-    setToasts(prev => prev.filter(t => t.id !== id));
-  }
-
-  // ─── Fetch (respects cache) ──────────────────────────────────────────────
+  // ─── Fetch ──────────────────────────────────────────────────────────────
 
   const loadUsers = useCallback(async (silent = false, force = false) => {
-    // Return cached data if available and no forced refresh
     if (!force && cache.get(CACHE_KEY) !== null) {
-      setUsers(cache.get(CACHE_KEY));
-      setLoading(false);
-      return;
+      setUsers(cache.get(CACHE_KEY)); setLoading(false); return;
     }
-
     if (!silent) setLoading(true);
     try {
       const res  = await fetch(API, { headers: authHeader() });
       const data = await res.json();
-      if (data.success) {
-        setUsers(data.users);
-        cache.set(CACHE_KEY, data.users);   // ← store in cache
-      } else {
-        throw new Error(data.message);
-      }
+      if (data.success) { setUsers(data.users); cache.set(CACHE_KEY, data.users); }
+      else throw new Error(data.message);
     } catch (err) {
       showToast(err.message || "Failed to load users", "error");
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   }, [cache]);
 
   useEffect(() => { loadUsers(); }, [loadUsers]);
 
-  // ─── Filter + Sort ───────────────────────────────────────────────────────
+  // ─── Filter + Sort ────────────────────────────────────────────────────────
 
   const filtered = useMemo(() => {
     let res = [...users];
@@ -442,46 +436,41 @@ export default function UsersPage() {
     return res;
   }, [users, search, roleFilter, sortOrder]);
 
+  // ─── Pagination derived values ────────────────────────────────────────────
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage   = Math.min(page, totalPages);
+  const pageSlice  = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const resetPage  = () => setPage(1);
+
   // ─── Image handlers ──────────────────────────────────────────────────────
 
   function handleFileChange(e) {
     const file = e.target.files?.[0];
     if (!file) return;
-    setImageFile(file);
-    setRemoveImage(false);
+    setImageFile(file); setRemoveImage(false);
     setImagePreview(URL.createObjectURL(file));
   }
+  function handleRemoveImage() { setImageFile(null); setImagePreview(null); setRemoveImage(true); }
 
-  function handleRemoveImage() {
-    setImageFile(null);
-    setImagePreview(null);
-    setRemoveImage(true);
-  }
+  // ─── Panel helpers ────────────────────────────────────────────────────────
 
-  // ─── Panel helpers ───────────────────────────────────────────────────────
-
-  function updateForm(key, value) {
-    setForm(prev => ({ ...prev, [key]: value }));
-  }
+  function updateForm(key, value) { setForm(prev => ({ ...prev, [key]: value })); }
 
   function resetImageState(existingUrl = null) {
-    setImageFile(null);
-    setRemoveImage(false);
-    setImagePreview(existingUrl ?? null);
+    setImageFile(null); setRemoveImage(false); setImagePreview(existingUrl ?? null);
   }
 
   function openEdit(user) {
     if (!canManage) return;
     const targetRole = String(user?.status || "").toLowerCase();
     if (!canAssignElevated && targetRole === "superadmin" && Number(user.id) !== currentUserId) {
-      showToast("Only superadmin can edit a SuperAdmin account", "error");
-      return;
+      showToast("Only superadmin can edit a SuperAdmin account", "error"); return;
     }
     if (!canAssignElevated && targetRole === "admin") {
       const targetId = Number(user?.id || 0);
       if (!(currentUserId > 0 && targetId > 0 && targetId === currentUserId)) {
-        showToast("Only superadmin can edit other Admin accounts", "error");
-        return;
+        showToast("Only superadmin can edit other Admin accounts", "error"); return;
       }
     }
     setSelectedId(user.id);
@@ -509,15 +498,10 @@ export default function UsersPage() {
     setPanelOpen(true);
   }
 
-  function handleClose() {
-    setPanelOpen(false);
-    setSelectedId(null);
-    resetImageState(null);
-  }
+  function handleClose() { setPanelOpen(false); setSelectedId(null); resetImageState(null); }
 
   function buildFormData(extraFields = {}) {
     const fd = new FormData();
-    // Fallback token for servers that drop Authorization on multipart.
     try {
       const token = localStorage.getItem("token");
       if (token) fd.append("auth_token", token);
@@ -530,27 +514,22 @@ export default function UsersPage() {
   }
 
   function buildUserFromForm(id, prev = null) {
-    const first = form.first_name?.trim() ?? "";
-    const last  = form.last_name?.trim() ?? "";
+    const first    = form.first_name?.trim() ?? "";
+    const last     = form.last_name?.trim()  ?? "";
     const username = `${first} ${last}`.trim() || prev?.username || "New User";
     return {
       ...(prev ?? {}),
-      id,
-      first_name: first,
-      last_name: last,
-      username,
-      email: form.email,
-      phone: form.phone ?? "",
-      address: form.address ?? "",
-      postalcode: form.postalcode ?? "",
+      id, first_name: first, last_name: last, username,
+      email: form.email, phone: form.phone ?? "",
+      address: form.address ?? "", postalcode: form.postalcode ?? "",
       status: form.status,
       image_url: removeImage ? null : (imagePreview ?? prev?.image_url ?? null),
       totalSpent: prev?.totalSpent ?? "₱0.00",
-      password: prev?.password ?? "••••••••",
+      password:   prev?.password   ?? "••••••••",
     };
   }
 
-  // ─── CRUD (invalidate cache on mutation) ─────────────────────────────────
+  // ─── CRUD ─────────────────────────────────────────────────────────────────
 
   async function handleAdd() {
     if (!canManage) return;
@@ -561,11 +540,7 @@ export default function UsersPage() {
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
       const created = data.user ?? buildUserFromForm(data.id ?? Date.now(), null);
-      setUsers(prev => {
-        const next = [created, ...prev];
-        cache.set(CACHE_KEY, next);
-        return next;
-      });
+      setUsers(prev => { const next = [created, ...prev]; cache.set(CACHE_KEY, next); return next; });
       dismissToast(loadId);
       showToast("User added successfully", "success");
       notifyUserUpdated();
@@ -574,9 +549,7 @@ export default function UsersPage() {
     } catch (err) {
       dismissToast(loadId);
       showToast(err.message || "Failed to add user", "error");
-    } finally {
-      setSaving(false);
-    }
+    } finally { setSaving(false); }
   }
 
   async function handleUpdate() {
@@ -604,9 +577,7 @@ export default function UsersPage() {
     } catch (err) {
       dismissToast(loadId);
       showToast(err.message || "Failed to update user", "error");
-    } finally {
-      setSaving(false);
-    }
+    } finally { setSaving(false); }
   }
 
   async function handleDelete() {
@@ -618,11 +589,7 @@ export default function UsersPage() {
       const res  = await fetch(API, { method: "DELETE", headers: { "Content-Type": "application/json", ...authHeader() }, body: JSON.stringify({ id: selectedId }) });
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
-      setUsers(prev => {
-        const next = prev.filter(u => u.id !== selectedId);
-        cache.set(CACHE_KEY, next);
-        return next;
-      });
+      setUsers(prev => { const next = prev.filter(u => u.id !== selectedId); cache.set(CACHE_KEY, next); return next; });
       dismissToast(loadId);
       showToast("User deleted", "success");
       notifyUserUpdated();
@@ -631,18 +598,16 @@ export default function UsersPage() {
     } catch (err) {
       dismissToast(loadId);
       showToast(err.message || "Failed to delete user", "error");
-    } finally {
-      setSaving(false);
-    }
+    } finally { setSaving(false); }
   }
 
   // ─── UI ───────────────────────────────────────────────────────────────────
 
   const userCategories = [
-    { value: "all",   label: "All" },
-    { value: "user",  label: "User" },
-    { value: "staff", label: "Staff" },
-    { value: "admin", label: "Admin" },
+    { value: "all",        label: "All" },
+    { value: "user",       label: "User" },
+    { value: "staff",      label: "Staff" },
+    { value: "admin",      label: "Admin" },
     { value: "superadmin", label: "SuperAdmin" },
   ];
 
@@ -664,13 +629,13 @@ export default function UsersPage() {
           title={<><span>Users</span> <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>({filtered.length})</span></>}
           onAdd={canManage ? openAdd : undefined}
           search={search}
-          onSearch={setSearch}
+          onSearch={v => { setSearch(v); resetPage(); }}
           showCategories
           categories={userCategories}
           categoryValue={roleFilter}
-          onCategoryChange={setRoleFilter}
+          onCategoryChange={v => { setRoleFilter(v); resetPage(); }}
           sortOrder={sortOrder}
-          onToggleSort={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")}
+          onToggleSort={() => { setSortOrder(prev => prev === "asc" ? "desc" : "asc"); resetPage(); }}
         />
 
         <div className="split-layout">
@@ -698,7 +663,7 @@ export default function UsersPage() {
                         </div>
                       </td>
                     </tr>
-                  ) : filtered.length === 0 ? (
+                  ) : pageSlice.length === 0 ? (
                     <tr>
                       <td colSpan={7} style={{ textAlign: "center", padding: 40 }}>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, color: "var(--text-muted)" }}>
@@ -708,7 +673,7 @@ export default function UsersPage() {
                       </td>
                     </tr>
                   ) : (
-                    filtered.map(u => (
+                    pageSlice.map(u => (
                       <tr
                         key={u.id}
                         className={`${canManage ? "clickable" : ""}${selectedId === u.id ? " selected" : ""}`}
@@ -736,6 +701,16 @@ export default function UsersPage() {
                 </tbody>
               </table>
             </div>
+
+            {/* ── Pagination ── */}
+            {!loading && filtered.length > PAGE_SIZE && (
+              <PaginationBar
+                page={safePage}
+                totalPages={totalPages}
+                totalItems={filtered.length}
+                onPage={setPage}
+              />
+            )}
           </div>
         </div>
       </div>
