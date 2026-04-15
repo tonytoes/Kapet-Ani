@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import '../styles/user.css';
+import Chatbot from "../components/layout/Chatbot.jsx";
 import Navbar2 from "../components/layout/Navbar2.jsx";
 import Newsletter from "../components/layout/Newsletter";
 import Footer from "../components/layout/Footer.jsx";
@@ -646,6 +647,7 @@ function User() {
           )}
         </section>
       </main>
+      <Chatbot />
       <Newsletter/>
       <Footer/>
       </>

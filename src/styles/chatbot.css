@@ -1,0 +1,58 @@
+.chatbot {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #6b4f3b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.chatbot.float {
+  animation: floaty 2.5s ease-in-out infinite;
+}
+
+.chatbot-window {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 350px;
+  height: 500px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes floaty {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}

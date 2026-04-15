@@ -6,7 +6,7 @@ import Navbar2 from "../components/layout/Navbar2.jsx";
 import ProductModal from "../components/layout/ProductModal.jsx";
 import { LINK_PATH } from "../admin/data/LinkPath.jsx";
 import { getCartItems, saveCartItems } from "../utils/cart";
-
+import Chatbot from "../components/layout/Chatbot.jsx";
 const API_PRODUCTS = `${LINK_PATH}Inventorycontroller.php`;
 const API_CATEGORIES = `${LINK_PATH}Inventorycontroller.php?resource=categories`;
 const API_CONTENT = `${LINK_PATH}WebsiteContentController.php?page=product`;
@@ -373,7 +373,7 @@ function Product() {
           }}
         />
       )}
-
+      <Chatbot />
       <Newsletter />
       <Footer />
     </>

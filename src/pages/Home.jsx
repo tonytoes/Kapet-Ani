@@ -14,6 +14,7 @@ import mug2 from '../assets/images/mug1.jpg';
 import parallax from '../assets/images/parallax.png';
 import Navbar from '../components/layout/Navbar.jsx';
 import Newsletter from "../components/layout/Newsletter.jsx";
+import Chatbot from "../components/layout/Chatbot.jsx";
 import Footer from '../components/layout/Footer.jsx';
 import coffeeVideo from "../assets/video/coffee_video.mp4";
 import { LINK_PATH } from "../admin/data/LinkPath.jsx";
@@ -457,6 +458,7 @@ function Home() {
             </div>
           </div>
         </section>
+        <Chatbot />
         <Newsletter />
         <Footer />
 
