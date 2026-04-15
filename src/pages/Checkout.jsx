@@ -64,7 +64,7 @@ function Checkout() {
     const reference = `SIM-${mode.toUpperCase()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
     onChange("payment_mode", mode);
     onChange("payment_id", reference);
-    setPaymentNotice(`${mode} payment authorized. No real money is charged.`);
+    setPaymentNotice(`${mode} payment authorized.`);
   };
 
   const placeOrder = async (e) => {
@@ -121,7 +121,7 @@ function Checkout() {
         <div className="checkout-top">
           <a href="/product" className="checkout-back">&lt; Continue Shopping</a>
           <h1>Checkout</h1>
-          <p>Secure checkout. No real money will be charged.</p>
+          <p>Check Information before proceeding with payment.</p>
         </div>
 
         <form onSubmit={placeOrder} className="checkout-modern-grid">
