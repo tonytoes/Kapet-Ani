@@ -16,4 +16,4 @@ export default function SlidePanel({ isOpen, onClose, title, mode, footer, child
       </div>
     </aside>
   );
-}
+} //slidepanel

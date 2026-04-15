@@ -9,13 +9,14 @@
  *  - Top selling bar list
  *  - Recent orders table
  *  - Low stock table
+ *  - Order activity heatmap (365-day GitHub-style)
  *
  * Cache keys: "dashboard/stats" | "dashboard/orders" | "dashboard/stock"
  *             "dashboard/selling" | "dashboard/trend" | "dashboard/status"
- *             "dashboard/category"
+ *             "dashboard/category" | "dashboard/heatmap"
  */
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Badge        from "../components/Badge";
 import { LINK_PATH } from "../data/LinkPath.jsx";
 import { useCache }   from "../data/CacheContext";
@@ -40,6 +41,7 @@ const KEYS = {
   trend:    "dashboard/trend",
   status:   "dashboard/status",
   category: "dashboard/category",
+  heatmap:  "dashboard/heatmap",
 };
 const DASHBOARD_REFRESH_MS = 15000;
 
@@ -205,6 +207,202 @@ function DonutChart({ data, label }) {
   );
 }
 
+// ─── Order Activity Heatmap ───────────────────────────────────────────────────
+
+const HEATMAP_COLORS = ['#F3F4F6', '#FDE8CC', '#F5B96E', '#C9873A', '#8B5A2B'];
+
+function TxHeatmap({ data }) {
+  const [tooltip, setTooltip] = useState(null);
+
+  const { cells, months, total, activeDays, max } = useMemo(() => {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    // Start from the Monday of the week 364 days ago
+    const start = new Date(today); start.setDate(start.getDate() - 364);
+    const dow = start.getDay(); // 0=Sun
+    start.setDate(start.getDate() - (dow === 0 ? 6 : dow - 1)); // rewind to Monday
+
+    const maxVal = Math.max(1, ...Object.values(data));
+    const days   = [];
+    const cur    = new Date(start);
+    while (cur <= today) { days.push(new Date(cur)); cur.setDate(cur.getDate() + 1); }
+
+    // Build month labels keyed by week index (column)
+    const monthMap = {};
+    let lastMonth = -1;
+
+    days.forEach((d, idx) => {
+      const week = Math.floor(idx / 7);
+      const month = d.getMonth();
+
+      if (month !== lastMonth) {
+        monthMap[week] = d.toLocaleString('default', { month: 'short' });
+        lastMonth = month;
+      }
+    });
+
+    const total      = Object.values(data).reduce((a, b) => a + b, 0);
+    const activeDays = Object.keys(data).length;
+    return { cells: days, months: monthMap, total, activeDays, max: maxVal };
+  }, [data]);
+
+  function getColor(key) {
+    const count = data[key] || 0;
+
+    if (count === 0) return HEATMAP_COLORS[0];
+    if (count < 2)  return HEATMAP_COLORS[1];
+    if (count < 3)  return HEATMAP_COLORS[2];
+    if (count < 5)  return HEATMAP_COLORS[3];
+    return HEATMAP_COLORS[4]; // 5+ = darkest
+  }
+
+  const weeks = Math.ceil(cells.length / 7);
+
+  return (
+    <div className="db-card" style={{ userSelect: 'none' }}>
+      {/* Header */}
+      <div className="db-card-title">
+        <i className="bi bi-calendar3" />
+        Order Activity
+        <span className="db-card-title-sub">last 365 days</span>
+      </div>
+
+      {/* Summary row */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginBottom: 14,
+        fontSize: '0.78rem',
+        color: '#6B7280',
+      }}>
+        <span>
+          <strong style={{ color: '#1A1A2E' }}>{total.toLocaleString()}</strong> orders in the past year
+        </span>
+        <span>
+          <strong style={{ color: '#1A1A2E' }}>{activeDays}</strong> active days
+        </span>
+      </div>
+
+      {/* Month labels row */}
+      <div style={{ display: 'flex', paddingLeft: 28, marginBottom: 4, gap: 0, overflow: 'hidden' }}>
+        {Array.from({ length: weeks }, (_, i) => (
+          <span key={i} style={{ flex: 1, fontSize: 9, color: '#9CA3AF', fontWeight: 600, whiteSpace: 'nowrap' }}>
+            {months[i] || ''}
+          </span>
+        ))}
+      </div>
+
+      {/* Grid + day labels */}
+      <div style={{ display: 'flex', gap: 6 }}>
+        {/* Day-of-week labels */}
+          <div style={{
+            display: 'grid',
+            gridTemplateRows: 'repeat(7, 1fr)',
+            paddingBottom: 2,
+            width: 28,
+            flexShrink: 0,
+          }}>
+          {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d, i) => (
+            <span key={i} style={{
+                fontSize: '0.65rem',
+                color: '#9CA3AF',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                height: '100%',
+              }}>
+              {d}
+            </span>
+          ))}
+        </div>
+
+        {/* Cell grid */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateRows: 'repeat(7, 1fr)',
+            gridTemplateColumns: `repeat(${weeks}, 1fr)`,
+            gridAutoFlow: 'column',
+            gap: 3,
+          }}>
+            {cells.map((d, i) => {
+              const key = d.toLocaleDateString('en-CA');
+              const count = data[key] || 0;
+              return (
+                <div
+                  key={i}
+                  style={{
+                    background:   getColor(key),
+                    borderRadius: 3,
+                    aspectRatio:  '1',
+                    cursor:       'pointer',
+                    transition:   'transform .12s, box-shadow .12s',
+                    minWidth:     10,
+                    minHeight:    10,
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.transform  = 'scale(1.4)';
+                    e.currentTarget.style.boxShadow  = '0 2px 6px rgba(0,0,0,0.18)';
+                    e.currentTarget.style.zIndex     = '10';
+                    setTooltip({ x: e.clientX, y: e.clientY, date: d, count });
+                  }}
+                  onMouseMove={e => setTooltip(t => ({ ...t, x: e.clientX, y: e.clientY }))}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.transform = '';
+                    e.currentTarget.style.boxShadow = '';
+                    e.currentTarget.style.zIndex    = '';
+                    setTooltip(null);
+                  }}
+                />
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Legend */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 5,
+        marginTop: 14,
+        justifyContent: 'flex-end',
+      }}>
+        <span style={{ fontSize: 10, color: '#9CA3AF' }}>Less</span>
+        {HEATMAP_COLORS.map(c => (
+          <div key={c} style={{ width: 11, height: 11, borderRadius: 2, background: c, border: '1px solid rgba(0,0,0,0.06)' }} />
+        ))}
+        <span style={{ fontSize: 10, color: '#9CA3AF' }}>More</span>
+      </div>
+
+      {/* Fixed tooltip */}
+      {tooltip && (
+        <div style={{
+          position:       'fixed',
+          left:           tooltip.x + 14,
+          transform: 'translateX(-100%)',
+          top:            tooltip.y - 36,
+          background:     '#1A1A2E',
+          color:          '#fff',
+          fontSize:       11,
+          fontWeight:     600,
+          padding:        '5px 10px',
+          borderRadius:   8,
+          pointerEvents:  'none',
+          whiteSpace:     'nowrap',
+          zIndex:         9999,
+          boxShadow:      '0 4px 12px rgba(0,0,0,0.22)',
+          letterSpacing:  '0.01em',
+        }}>
+          {tooltip.count
+            ? <><span style={{ color: '#f0c27c' }}>{tooltip.count}</span> order{tooltip.count !== 1 ? 's' : ''} · </>
+            : 'No orders · '}
+          {tooltip.date.toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
 function Skeleton() {
@@ -254,6 +452,11 @@ function Skeleton() {
           </div>
         ))}
       </div>
+      {/* Heatmap skeleton */}
+      <div className="db-card" style={{ padding: '22px 24px' }}>
+        <div className="db-skel db-skel-title" style={{ marginBottom: 16 }} />
+        <div className="db-skel" style={{ width: '100%', height: 110, borderRadius: 10 }} />
+      </div>
     </div>
   );
 }
@@ -302,6 +505,7 @@ export default function DashboardPage({ onNavigate }) {
   const [trend,    setTrend]    = useState(() => cache.get(KEYS.trend)    ?? []);
   const [statuses, setStatuses] = useState(() => cache.get(KEYS.status)   ?? []);
   const [catSales, setCatSales] = useState(() => cache.get(KEYS.category) ?? []);
+  const [heatmap,  setHeatmap]  = useState(() => cache.get(KEYS.heatmap)  ?? {});
   const [loading,  setLoading]  = useState(() => cache.get(KEYS.stats)    === null);
   const [error,    setError]    = useState(null);
   const [trendTab, setTrendTab] = useState("revenue");
@@ -316,12 +520,13 @@ export default function DashboardPage({ onNavigate }) {
       setTrend(cache.get(KEYS.trend));
       setStatuses(cache.get(KEYS.status));
       setCatSales(cache.get(KEYS.category));
+      setHeatmap(cache.get(KEYS.heatmap));
       setLoading(false);
       return;
     }
     if (!silent) setLoading(true);
     try {
-      const [s, o, st, sel, tr, sts, cat] = await Promise.all([
+      const [s, o, st, sel, tr, sts, cat, hm] = await Promise.all([
         apiFetch("stats"),
         apiFetch("orders"),
         apiFetch("stock"),
@@ -329,14 +534,16 @@ export default function DashboardPage({ onNavigate }) {
         apiFetch("sales_trend"),
         apiFetch("order_status"),
         apiFetch("category_sales"),
+        apiFetch("heatmap"),
       ]);
-      if (s.success)   { setStats(s);              cache.set(KEYS.stats,    s);              }
-      if (o.success)   { setOrders(o.orders);       cache.set(KEYS.orders,   o.orders);       }
-      if (st.success)  { setStock(st.items);        cache.set(KEYS.stock,    st.items);       }
-      if (sel.success) { setSelling(sel.items);     cache.set(KEYS.selling,  sel.items);      }
-      if (tr.success)  { setTrend(tr.trend);        cache.set(KEYS.trend,    tr.trend);       }
-      if (sts.success) { setStatuses(sts.breakdown);cache.set(KEYS.status,   sts.breakdown);  }
-      if (cat.success) { setCatSales(cat.categories);cache.set(KEYS.category,cat.categories); }
+      if (s.success)   { setStats(s);               cache.set(KEYS.stats,    s);               }
+      if (o.success)   { setOrders(o.orders);        cache.set(KEYS.orders,   o.orders);        }
+      if (st.success)  { setStock(st.items);         cache.set(KEYS.stock,    st.items);        }
+      if (sel.success) { setSelling(sel.items);      cache.set(KEYS.selling,  sel.items);       }
+      if (tr.success)  { setTrend(tr.trend);         cache.set(KEYS.trend,    tr.trend);        }
+      if (sts.success) { setStatuses(sts.breakdown); cache.set(KEYS.status,   sts.breakdown);   }
+      if (cat.success) { setCatSales(cat.categories);cache.set(KEYS.category, cat.categories);  }
+      if (hm.success)  { setHeatmap(hm.heatmap);    cache.set(KEYS.heatmap,  hm.heatmap);      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -377,293 +584,320 @@ export default function DashboardPage({ onNavigate }) {
   const growthType = stats?.growthPct > 0 ? "up" : stats?.growthPct < 0 ? "down" : "neu";
 
   return (
-      <div className="db-wrap">
+    <div className="db-wrap">
 
-        {/* ── KPI Row ─────────────────────────────────────────────────────── */}
-        <div className="db-kpi-row">
-          <KpiCard
-            icon="bi-currency-dollar"
-            label="Total Revenue"
-            value={stats?.totalSales}
-            sub="all-time confirmed orders"
-            badge={stats?.growthPct != null ? `${Math.abs(stats.growthPct)}% vs last month` : null}
-            badgeType={growthType}
-            accentColor="#C9873A"
-            onClick={() => go("transactions")}
-          />
-          <KpiCard
-            icon="bi-bag-check-fill"
-            label="Total Orders"
-            value={stats?.totalOrders?.toLocaleString()}
-            sub={`${stats?.ordersToday ?? 0} today · ${stats?.pendingOrders ?? 0} pending`}
-            badge={null}
-            accentColor="#3B82F6"
-            onClick={() => go("transactions")}
-          />
-          <KpiCard
-            icon="bi-people-fill"
-            label="Registered Users"
-            value={stats?.totalUsers?.toLocaleString()}
-            sub="registered accounts"
-            badge={`+${stats?.newSignups ?? 0} this week`}
-            badgeType="up"
-            accentColor="#8B5CF6"
-            onClick={() => go("users")}
-          />
-          <KpiCard
-            icon="bi-box-seam-fill"
-            label="Total Products"
-            value={stats?.totalProducts?.toLocaleString()}
-            sub="in inventory"
-            badge={stats?.outOfStock > 0 ? `${stats.outOfStock} out of stock` : "all in stock"}
-            badgeType={stats?.outOfStock > 0 ? "down" : "up"}
-            accentColor="#22C55E"
-            onClick={() => go("inventory")}
-          />
+      {/* ── KPI Row ─────────────────────────────────────────────────────── */}
+      <div className="db-kpi-row">
+        <KpiCard
+          icon="bi-currency-dollar"
+          label="Total Revenue"
+          value={stats?.totalSales}
+          sub="all-time confirmed orders"
+          badge={stats?.growthPct != null ? `${Math.abs(stats.growthPct)}% vs last month` : null}
+          badgeType={growthType}
+          accentColor="#C9873A"
+          onClick={() => go("transactions")}
+        />
+        <KpiCard
+          icon="bi-bag-check-fill"
+          label="Total Orders"
+          value={stats?.totalOrders?.toLocaleString()}
+          sub={`${stats?.ordersToday ?? 0} today · ${stats?.pendingOrders ?? 0} pending`}
+          badge={null}
+          accentColor="#3B82F6"
+          onClick={() => go("transactions")}
+        />
+        <KpiCard
+          icon="bi-people-fill"
+          label="Registered Users"
+          value={stats?.totalUsers?.toLocaleString()}
+          sub="registered accounts"
+          badge={`+${stats?.newSignups ?? 0} this week`}
+          badgeType="up"
+          accentColor="#8B5CF6"
+          onClick={() => go("users")}
+        />
+        <KpiCard
+          icon="bi-box-seam-fill"
+          label="Total Products"
+          value={stats?.totalProducts?.toLocaleString()}
+          sub="in inventory"
+          badge={stats?.outOfStock > 0 ? `${stats.outOfStock} out of stock` : "all in stock"}
+          badgeType={stats?.outOfStock > 0 ? "down" : "up"}
+          accentColor="#22C55E"
+          onClick={() => go("inventory")}
+        />
+      </div>
+
+      {/* ── Mid Row: Trend chart + Pending orders ───────────────────────── */}
+      <div className="db-mid-row">
+
+        {/* Sales / Orders trend */}
+        <div className="db-card">
+          <div className="db-card-title">
+            <i className="bi bi-graph-up-arrow" />
+            7-Day Performance
+            <span className="db-card-title-sub">last 7 days</span>
+          </div>
+          <div className="db-chart-tabs">
+            {["revenue", "orders"].map(t => (
+              <button
+                key={t}
+                className={`db-chart-tab${trendTab === t ? " active" : ""}`}
+                onClick={() => setTrendTab(t)}
+              >
+                {t === "revenue" ? "Revenue" : "Orders"}
+              </button>
+            ))}
+          </div>
+          <div className="db-chart-wrap">
+            {trend.length > 0
+              ? <LineChart data={trend} metric={trendTab} />
+              : <div className="db-empty"><i className="bi bi-bar-chart" />No trend data yet.</div>
+            }
+          </div>
         </div>
 
-        {/* ── Mid Row: Trend chart + Pending orders ───────────────────────── */}
-        <div className="db-mid-row">
-
-          {/* Sales / Orders trend */}
-          <div className="db-card">
-            <div className="db-card-title">
-              <i className="bi bi-graph-up-arrow" />
-              7-Day Performance
-              <span className="db-card-title-sub">last 7 days</span>
-            </div>
-            <div className="db-chart-tabs">
-              {["revenue", "orders"].map(t => (
-                <button
-                  key={t}
-                  className={`db-chart-tab${trendTab === t ? " active" : ""}`}
-                  onClick={() => setTrendTab(t)}
-                >
-                  {t === "revenue" ? "Revenue" : "Orders"}
-                </button>
-              ))}
-            </div>
-            <div className="db-chart-wrap">
-              {trend.length > 0
-                ? <LineChart data={trend} metric={trendTab} />
-                : <div className="db-empty"><i className="bi bi-bar-chart" />No trend data yet.</div>
-              }
-            </div>
+        {/* Pending orders */}
+        <div
+          className="db-card db-nav-card"
+          onClick={() => go("transactions")}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && go("transactions")}
+        >
+          <div className="db-card-title">
+            <i className="bi bi-hourglass-split" />
+            Pending Orders
+            <span className="db-card-title-sub">{stats?.pendingOrders ?? 0} total</span>
           </div>
-
-          {/* Pending orders */}
-          <div className="db-card db-nav-card" onClick={() => go("transactions")} role="button" tabIndex={0} onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && go("transactions")}>
-            <div className="db-card-title">
-              <i className="bi bi-hourglass-split" />
-              Pending Orders
-              <span className="db-card-title-sub">{stats?.pendingOrders ?? 0} total</span>
+          {stats?.complaints?.length > 0 ? (
+            <>
+              {stats.complaints.map((c, i) => (
+                <div className="db-pending-item" key={c.id ?? i}>
+                  <div className="db-pending-icon">📦</div>
+                  <span className="db-pending-name">{c.name}</span>
+                  <Badge status={c.status} />
+                </div>
+              ))}
+              {stats.pendingOrders > 3 && (
+                <div className="db-pending-more">
+                  +{stats.pendingOrders - 3} more pending orders
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="db-empty">
+              <i className="bi bi-check-circle db-empty-icon-success" />
+              No pending orders
             </div>
-            {stats?.complaints?.length > 0 ? (
-              <>
-                {stats.complaints.map((c, i) => (
-                  <div className="db-pending-item" key={c.id ?? i}>
-                    <div className="db-pending-icon">📦</div>
-                    <span className="db-pending-name">{c.name}</span>
-                    <Badge status={c.status} />
+          )}
+
+          {/* Today at a glance */}
+          <div className="db-glance-grid">
+            {[
+              { label: "Today's Sales", value: stats?.salesToday, icon: "bi-sun",      color: "#C9873A" },
+              { label: "This Month",    value: stats?.salesMonth,  icon: "bi-calendar3", color: "#3B82F6" },
+            ].map(s => (
+              <div key={s.label} className="db-glance-card">
+                <div className="db-glance-label">
+                  <i className={`bi ${s.icon}`} style={{ color: s.color }} />{s.label}
+                </div>
+                <div className="db-glance-value">{s.value ?? "—"}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Bottom Row: Order status donut + Category donut + Top selling ── */}
+      <div className="db-bot-row">
+
+        {/* Order status donut */}
+        <div className="db-card">
+          <div className="db-card-title">
+            <i className="bi bi-pie-chart-fill" />
+            Order Status
+          </div>
+          {statuses.length > 0 ? (
+            <div className="db-donut-wrap">
+              <DonutChart data={statuses} label="orders" />
+              <div className="db-legend">
+                {statuses.map(s => (
+                  <div className="db-legend-item" key={s.label}>
+                    <div className="db-legend-dot" style={{ background: s.color }} />
+                    <span className="db-legend-label">{s.label}</span>
+                    <span className="db-legend-val">{s.value}</span>
                   </div>
                 ))}
-                {stats.pendingOrders > 3 && (
-                  <div className="db-pending-more">
-                    +{stats.pendingOrders - 3} more pending orders
+              </div>
+            </div>
+          ) : (
+            <div className="db-empty"><i className="bi bi-pie-chart" />No order data.</div>
+          )}
+        </div>
+
+        {/* Category revenue donut */}
+        <div className="db-card">
+          <div className="db-card-title">
+            <i className="bi bi-tags-fill" />
+            Revenue by Category
+          </div>
+          {catSales.length > 0 ? (
+            <div className="db-donut-wrap">
+              <DonutChart
+                data={catSales.map(c => ({ ...c, value: Math.round(c.value) }))}
+                label="revenue"
+              />
+              <div className="db-legend">
+                {catSales.map(s => (
+                  <div className="db-legend-item" key={s.label}>
+                    <div className="db-legend-dot" style={{ background: s.color }} />
+                    <span className="db-legend-label">{s.label}</span>
+                    <span className="db-legend-val db-legend-display">{s.display}</span>
                   </div>
-                )}
-              </>
-            ) : (
-              <div className="db-empty">
-                <i className="bi bi-check-circle db-empty-icon-success" />
-                No pending orders
+                ))}
               </div>
-            )}
-
-            {/* Today at a glance */}
-            <div className="db-glance-grid">
-              {[
-                { label: "Today's Sales", value: stats?.salesToday, icon: "bi-sun", color: "#C9873A" },
-                { label: "This Month",    value: stats?.salesMonth,  icon: "bi-calendar3", color: "#3B82F6" },
-              ].map(s => (
-                <div key={s.label} className="db-glance-card">
-                  <div className="db-glance-label">
-                    <i className={`bi ${s.icon}`} style={{ color: s.color }} />{s.label}
-                  </div>
-                  <div className="db-glance-value">{s.value ?? "—"}</div>
-                </div>
-              ))}
             </div>
-          </div>
+          ) : (
+            <div className="db-empty"><i className="bi bi-tags" />No category data.</div>
+          )}
         </div>
 
-        {/* ── Bottom Row: Order status donut + Category donut + Top selling ── */}
-        <div className="db-bot-row">
-
-          {/* Order status donut */}
-          <div className="db-card">
-            <div className="db-card-title">
-              <i className="bi bi-pie-chart-fill" />
-              Order Status
-            </div>
-            {statuses.length > 0 ? (
-              <div className="db-donut-wrap">
-                <DonutChart data={statuses} label="orders" />
-                <div className="db-legend">
-                  {statuses.map(s => (
-                    <div className="db-legend-item" key={s.label}>
-                      <div className="db-legend-dot" style={{ background: s.color }} />
-                      <span className="db-legend-label">{s.label}</span>
-                      <span className="db-legend-val">{s.value}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="db-empty"><i className="bi bi-pie-chart" />No order data.</div>
-            )}
+        {/* Top selling */}
+        <div
+          className="db-card db-nav-card"
+          onClick={() => go("inventory")}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && go("inventory")}
+        >
+          <div className="db-card-title">
+            <i className="bi bi-fire" />
+            Top Selling Products
+            <span className="db-card-title-sub">by units sold</span>
           </div>
-
-          {/* Category revenue donut */}
-          <div className="db-card">
-            <div className="db-card-title">
-              <i className="bi bi-tags-fill" />
-              Revenue by Category
-            </div>
-            {catSales.length > 0 ? (
-              <div className="db-donut-wrap">
-                <DonutChart
-                  data={catSales.map(c => ({ ...c, value: Math.round(c.value) }))}
-                  label="revenue"
-                />
-                <div className="db-legend">
-                  {catSales.map(s => (
-                    <div className="db-legend-item" key={s.label}>
-                      <div className="db-legend-dot" style={{ background: s.color }} />
-                      <span className="db-legend-label">{s.label}</span>
-                      <span className="db-legend-val db-legend-display">{s.display}</span>
-                    </div>
-                  ))}
-                </div>
+          {selling.length > 0 ? selling.map((item, i) => (
+            <div className="db-sell-item" key={item.name}>
+              <div className="db-sell-header">
+                <span className="db-sell-name">
+                  <span className={`db-rank-badge${i === 0 ? " is-top" : ""}`}>{i + 1}</span>
+                  {item.name}
+                </span>
+                <span className="db-sell-meta">{item.total_sold} sold · {item.revenue}</span>
               </div>
-            ) : (
-              <div className="db-empty"><i className="bi bi-tags" />No category data.</div>
-            )}
-          </div>
-
-          {/* Top selling */}
-          <div className="db-card db-nav-card" onClick={() => go("inventory")} role="button" tabIndex={0} onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && go("inventory")}>
-            <div className="db-card-title">
-              <i className="bi bi-fire" />
-              Top Selling Products
-              <span className="db-card-title-sub">by units sold</span>
-            </div>
-            {selling.length > 0 ? selling.map((item, i) => (
-              <div className="db-sell-item" key={item.name}>
-                <div className="db-sell-header">
-                  <span className="db-sell-name">
-                    <span className={`db-rank-badge${i === 0 ? " is-top" : ""}`}>{i + 1}</span>
-                    {item.name}
-                  </span>
-                  <span className="db-sell-meta">{item.total_sold} sold · {item.revenue}</span>
-                </div>
-                <div className="db-sell-track">
-                  <div className="db-sell-fill" style={{ width: `${item.pct}%` }} />
-                </div>
+              <div className="db-sell-track">
+                <div className="db-sell-fill" style={{ width: `${item.pct}%` }} />
               </div>
-            )) : (
-              <div className="db-empty"><i className="bi bi-fire" />No sales data yet.</div>
-            )}
-          </div>
+            </div>
+          )) : (
+            <div className="db-empty"><i className="bi bi-fire" />No sales data yet.</div>
+          )}
         </div>
-
-        {/* ── Recent Orders + Low Stock row ───────────────────────────────── */}
-        <div className="db-table-row">
-
-          {/* Recent orders */}
-          <div className="db-card db-table-card db-nav-card" onClick={() => go("transactions")} role="button" tabIndex={0} onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && go("transactions")}>
-            <div className="db-table-head">
-              <div className="db-card-title db-table-title">
-                <i className="bi bi-clock-history" />
-                Recent Orders
-                <span className="db-card-title-sub">latest 7</span>
-              </div>
-            </div>
-            <div className="db-table-scroll">
-              {orders.length > 0 ? (
-                <table className="db-table">
-                  <thead>
-                    <tr>
-                      <th>Order No.</th>
-                      <th>Buyer</th>
-                      <th>Date</th>
-                      <th>Amount</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {orders.map((o, i) => (
-                      <tr key={o.id ?? i}>
-                        <td className="db-cell-id">{o.id}</td>
-                        <td className="db-cell-strong">{o.buyer}</td>
-                        <td className="db-cell-muted">{o.date}</td>
-                        <td className="db-cell-strong">{o.amount}</td>
-                        <td><Badge status={o.status} /></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <div className="db-empty db-empty-table">
-                  <i className="bi bi-bag" />No orders yet.
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Low stock */}
-          <div className="db-card db-table-card db-nav-card" onClick={() => go("inventoryalert")} role="button" tabIndex={0} onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && go("inventoryalert")}>
-            <div className="db-table-head">
-              <div className="db-card-title db-table-title">
-                <i className="bi bi-exclamation-triangle-fill db-warn-icon" />
-                Low Stock Alert
-                <span className="db-card-title-sub">{stock.length} items</span>
-              </div>
-            </div>
-            <div className="db-table-scroll">
-              {stock.length > 0 ? (
-                <table className="db-table">
-                  <thead>
-                    <tr>
-                      <th>Product</th>
-                      <th>Name</th>
-                      <th>Qty</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {stock.map(s => (
-                      <tr key={s.no}>
-                        <td className="db-cell-id">{s.no}</td>
-                        <td className="db-cell-strong">{s.name}</td>
-                        <td>
-                          <span className={`db-qty-pill ${s.remaining === 0 ? "db-qty-zero" : "db-qty-low"}`}>
-                            {s.remaining === 0 ? "Out" : s.remaining}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <div className="db-empty db-empty-table">
-                  <i className="bi bi-check-circle db-empty-icon-success" />
-                  All products well stocked.
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
       </div>
+
+      {/* ── Recent Orders + Low Stock row ───────────────────────────────── */}
+      <div className="db-table-row">
+
+        {/* Recent orders */}
+        <div
+          className="db-card db-table-card db-nav-card"
+          onClick={() => go("transactions")}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && go("transactions")}
+        >
+          <div className="db-table-head">
+            <div className="db-card-title db-table-title">
+              <i className="bi bi-clock-history" />
+              Recent Orders
+              <span className="db-card-title-sub">latest 7</span>
+            </div>
+          </div>
+          <div className="db-table-scroll">
+            {orders.length > 0 ? (
+              <table className="db-table">
+                <thead>
+                  <tr>
+                    <th>Order No.</th>
+                    <th>Buyer</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orders.map((o, i) => (
+                    <tr key={o.id ?? i}>
+                      <td className="db-cell-id">{o.id}</td>
+                      <td className="db-cell-strong">{o.buyer}</td>
+                      <td className="db-cell-muted">{o.date}</td>
+                      <td className="db-cell-strong">{o.amount}</td>
+                      <td><Badge status={o.status} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <div className="db-empty db-empty-table">
+                <i className="bi bi-bag" />No orders yet.
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Low stock */}
+        <div
+          className="db-card db-table-card db-nav-card"
+          onClick={() => go("inventoryalert")}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && go("inventoryalert")}
+        >
+          <div className="db-table-head">
+            <div className="db-card-title db-table-title">
+              <i className="bi bi-exclamation-triangle-fill db-warn-icon" />
+              Low Stock Alert
+              <span className="db-card-title-sub">{stock.length} items</span>
+            </div>
+          </div>
+          <div className="db-table-scroll">
+            {stock.length > 0 ? (
+              <table className="db-table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Name</th>
+                    <th>Qty</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {stock.map(s => (
+                    <tr key={s.no}>
+                      <td className="db-cell-id">{s.no}</td>
+                      <td className="db-cell-strong">{s.name}</td>
+                      <td>
+                        <span className={`db-qty-pill ${s.remaining === 0 ? "db-qty-zero" : "db-qty-low"}`}>
+                          {s.remaining === 0 ? "Out" : s.remaining}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <div className="db-empty db-empty-table">
+                <i className="bi bi-check-circle db-empty-icon-success" />
+                All products well stocked.
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Order Activity Heatmap ───────────────────────────────────────── */}
+      <TxHeatmap data={heatmap} />
+
+    </div>
   );
 }
