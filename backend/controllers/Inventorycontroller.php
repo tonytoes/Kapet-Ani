@@ -311,7 +311,21 @@ function deleteProduct(array $data): void
     $id = (int) ($data['id'] ?? 0);
     if (!$id) sendResponse(400, false, 'Product ID required');
 
-    $stmt = $conn->prepare("DELETE FROM products WHERE id = ?");
-    $stmt->execute([$id]);
-    sendResponse(200, true, 'Product deleted');
+    try {
+        $conn->beginTransaction();
+
+        // Orphan order_items rows — preserves order history, clears the FK
+        $conn->prepare("UPDATE order_items SET prod_id = NULL WHERE prod_id = ?")
+             ->execute([$id]);
+
+        $conn->prepare("DELETE FROM products WHERE id = ?")
+             ->execute([$id]);
+
+        $conn->commit();
+        sendResponse(200, true, 'Product deleted');
+
+    } catch (Throwable $e) {
+        if ($conn->inTransaction()) $conn->rollBack();
+        sendResponse(400, false, $e->getMessage());
+    }
 }
