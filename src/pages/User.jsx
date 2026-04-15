@@ -115,6 +115,8 @@ function User() {
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
   const fileRef = useRef(null);
+  const logoutRef = useRef(false);
+  const profileAbortRef = useRef(null);
   const navigate = useNavigate();
 
   function readAvatarCache(userId) {
@@ -143,6 +145,7 @@ function User() {
   }
 
   useEffect(() => {
+    logoutRef.current = false;
     const parsed = getStoredUser();
     if (!parsed) {
       navigate("/login"); // 👈 redirect guests away
@@ -157,16 +160,33 @@ function User() {
       if (cachedAvatar) setImagePreview(cachedAvatar);
       fetchProfile(parsed);
     }
+    return () => {
+      if (profileAbortRef.current) {
+        try { profileAbortRef.current.abort(); } catch {}
+      }
+    };
   }, [navigate]);
 
   async function fetchProfile(currentUser) {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(API, { headers: { Authorization: `Bearer ${token}` } });
+      if (!token || logoutRef.current) return;
+      if (profileAbortRef.current) {
+        try { profileAbortRef.current.abort(); } catch {}
+      }
+      const ac = new AbortController();
+      profileAbortRef.current = ac;
+      const res = await fetch(API, { headers: { Authorization: `Bearer ${token}` }, signal: ac.signal });
       const data = await res.json();
       if (!data.success) return;
       const me = data.users.find(u => Number(u.id) === Number(currentUser.id));
       if (!me) return;
+      // If logout happened while request was in-flight, don't write anything back.
+      if (logoutRef.current) return;
+      const stillToken = localStorage.getItem("token");
+      const stillUserRaw = localStorage.getItem("user");
+      const stillUser = stillUserRaw ? (() => { try { return JSON.parse(stillUserRaw); } catch { return null; } })() : null;
+      if (!stillToken || !stillUser || Number(stillUser.id) !== Number(currentUser.id)) return;
       if (!me.image_url) {
         setImagePreview(null);
         setImageLoading(false);
@@ -319,8 +339,23 @@ function User() {
 
   const handleLogout = () => {
     if (!window.confirm("Are you sure you want to log out?")) return;
+    logoutRef.current = true;
+    if (profileAbortRef.current) {
+      try { profileAbortRef.current.abort(); } catch {}
+    }
+    // Clear auth + cached avatar and notify navbars in this same tab.
+    try {
+      sessionStorage.removeItem("user");
+    } catch {}
+    if (user?.id) {
+      try {
+        localStorage.removeItem(`${AVATAR_CACHE_PREFIX}${user.id}`);
+        sessionStorage.removeItem(`${AVATAR_CACHE_PREFIX}${user.id}`);
+      } catch {}
+    }
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    window.dispatchEvent(new Event("userUpdated"));
     navigate("/login");
   };
 

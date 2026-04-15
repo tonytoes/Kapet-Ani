@@ -357,13 +357,16 @@ function updateUser(array $data): void
     $newPasswordRaw = $data['new_password'] ?? $data['password'] ?? '';
     $passwordChange = !empty($newPasswordRaw) && $newPasswordRaw !== '••••••••';
     if ($passwordChange) {
-        if (strlen($newPasswordRaw) < 8) {
-            sendResponse(400, false, 'New password must be at least 8 characters');
-        }
-        // If current_password is provided, verify it (used by user self-service page).
+        // If current_password is provided, treat as self-service change:
+        // enforce minimum length + verify current password.
         $currentPasswordRaw = $data['current_password'] ?? '';
-        if ($currentPasswordRaw !== '' && !password_verify($currentPasswordRaw, $currentUser['password'])) {
-            sendResponse(400, false, 'Current password is incorrect');
+        if ($currentPasswordRaw !== '') {
+            if (strlen($newPasswordRaw) < 8) {
+                sendResponse(400, false, 'New password must be at least 8 characters');
+            }
+            if (!password_verify($currentPasswordRaw, $currentUser['password'])) {
+                sendResponse(400, false, 'Current password is incorrect');
+            }
         }
     }
 
