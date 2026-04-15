@@ -83,6 +83,9 @@ const EMPTY_FORM = {
   first_name: "",
   last_name:  "",
   email:      "",
+  phone:      "",
+  address:    "",
+  postalcode: "",
   password:   "",
   status:     "user",
 };
@@ -225,6 +228,9 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
     { label: "First Name", id: "first_name", type: "text",  placeholder: "First name" },
     { label: "Last Name",  id: "last_name",  type: "text",  placeholder: "Last name" },
     { label: "Email",      id: "email",      type: "email", placeholder: "email@example.com" },
+    { label: "Phone",      id: "phone",      type: "text",  placeholder: "Phone number" },
+    { label: "Address",    id: "address",    type: "text",  placeholder: "Street address" },
+    { label: "Postal Code",id: "postalcode", type: "text",  placeholder: "Postal code" },
     {
       label: "Password", id: "password", type: "password",
       placeholder: mode === "edit" ? "Leave blank to keep current password" : "Password",
@@ -429,6 +435,9 @@ export default function UsersPage() {
       first_name: user.first_name ?? "",
       last_name:  user.last_name  ?? "",
       email:      user.email,
+      phone:      user.phone ?? "",
+      address:    user.address ?? "",
+      postalcode: user.postalcode ?? "",
       password:   "",
       status:     user.status?.toLowerCase(),
     });
@@ -454,6 +463,11 @@ export default function UsersPage() {
 
   function buildFormData(extraFields = {}) {
     const fd = new FormData();
+    // Fallback token for servers that drop Authorization on multipart.
+    try {
+      const token = localStorage.getItem("token");
+      if (token) fd.append("auth_token", token);
+    } catch {}
     Object.entries(form).forEach(([k, v]) => fd.append(k, v ?? ""));
     Object.entries(extraFields).forEach(([k, v]) => fd.append(k, v ?? ""));
     if (imageFile)   fd.append("image",        imageFile);
@@ -472,6 +486,9 @@ export default function UsersPage() {
       last_name: last,
       username,
       email: form.email,
+      phone: form.phone ?? "",
+      address: form.address ?? "",
+      postalcode: form.postalcode ?? "",
       status: form.status,
       image_url: removeImage ? null : (imagePreview ?? prev?.image_url ?? null),
       totalSpent: prev?.totalSpent ?? "₱0.00",

@@ -476,6 +476,16 @@ a:hover {
   border-color: #c9873a;
   box-shadow: 0 0 0 2px rgba(201, 135, 58, 0.12);
 }
+.co-input-locked {
+  background: #f3f4f6;
+  color: #6b7280;
+  border-color: #e5e7eb;
+  cursor: not-allowed;
+}
+.co-input-locked:focus {
+  border-color: #e5e7eb;
+  box-shadow: none;
+}
 .co-pay-options {
   display: grid;
   grid-template-columns: 1fr 1fr;

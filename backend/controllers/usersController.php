@@ -65,8 +65,14 @@ function getRequesterRole(): ?string
             $header = $all['Authorization'] ?? $all['authorization'] ?? '';
         }
     }
-    if (!$header || !preg_match('/Bearer\s+(.+)/i', $header, $m)) return null;
-    $token = trim($m[1]);
+    // Some servers drop Authorization headers on multipart/form-data requests.
+    // Fallback to form/query token if present.
+    $token = '';
+    if ($header && preg_match('/Bearer\s+(.+)/i', $header, $m)) {
+        $token = trim($m[1]);
+    } else {
+        $token = trim((string)($_POST['auth_token'] ?? $_GET['auth_token'] ?? ''));
+    }
     if ($token === '') return null;
 
     try {
@@ -101,8 +107,12 @@ function getRequesterId(): int
             $header = $all['Authorization'] ?? $all['authorization'] ?? '';
         }
     }
-    if (!$header || !preg_match('/Bearer\s+(.+)/i', $header, $m)) return 0;
-    $token = trim($m[1]);
+    $token = '';
+    if ($header && preg_match('/Bearer\s+(.+)/i', $header, $m)) {
+        $token = trim($m[1]);
+    } else {
+        $token = trim((string)($_POST['auth_token'] ?? $_GET['auth_token'] ?? ''));
+    }
     if ($token === '') return 0;
     try {
         $decoded = verifyJWT($token);
@@ -189,7 +199,11 @@ function listUsers(): void
         SELECT
             id, first_name, last_name,
             CONCAT(first_name, ' ', last_name) AS username,
-            email, role AS status, created_at,
+            email,
+            COALESCE(phone, '') AS phone,
+            COALESCE(address, '') AS address,
+            COALESCE(postalcode, '') AS postalcode,
+            role AS status, created_at,
             {$passwordLenSelect}
             image_name,
             (SELECT COALESCE(SUM(total_price), 0)
@@ -215,6 +229,9 @@ function listUsers(): void
             'first_name' => $u['first_name'],
             'last_name'  => $u['last_name'],
             'email'      => $u['email'],
+            'phone'      => $u['phone'] ?? '',
+            'address'    => $u['address'] ?? '',
+            'postalcode' => $u['postalcode'] ?? '',
             'status'     => ucfirst($u['status']),
             'created_at' => $u['created_at'],
             'totalSpent' => '₱' . number_format($u['total_spent'], 2),
@@ -239,6 +256,9 @@ function addUser(array $data): void
     $first_name = trim($data['first_name'] ?? '');
     $last_name  = trim($data['last_name']  ?? '');
     $email      = trim($data['email']      ?? '');
+    $phone      = trim($data['phone']      ?? '');
+    $address    = trim($data['address']    ?? '');
+    $postalcode = trim($data['postalcode'] ?? '');
     $password   = $data['password']        ?? '';
     $role       = strtolower($data['status'] ?? 'user');
     $requesterRole = getRequesterRole();
@@ -269,31 +289,37 @@ function addUser(array $data): void
 
     if (usersHasPasswordLenColumn()) {
         $stmt = $conn->prepare("
-            INSERT INTO users (first_name, last_name, email, password, password_len, role, image_name, image_blob, image_type)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO users (first_name, last_name, email, phone, address, postalcode, password, password_len, role, image_name, image_blob, image_type)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->bindValue(1, $first_name);
         $stmt->bindValue(2, $last_name);
         $stmt->bindValue(3, $email);
-        $stmt->bindValue(4, $hashed);
-        $stmt->bindValue(5, $passwordLen, PDO::PARAM_INT);
-        $stmt->bindValue(6, $role);
-        $stmt->bindValue(7, $image ? $image['name'] : null);
-        $stmt->bindValue(8, $image ? $image['blob'] : null, PDO::PARAM_LOB);
-        $stmt->bindValue(9, $image ? $image['type'] : null);
+        $stmt->bindValue(4, $phone);
+        $stmt->bindValue(5, $address);
+        $stmt->bindValue(6, $postalcode);
+        $stmt->bindValue(7, $hashed);
+        $stmt->bindValue(8, $passwordLen, PDO::PARAM_INT);
+        $stmt->bindValue(9, $role);
+        $stmt->bindValue(10, $image ? $image['name'] : null);
+        $stmt->bindValue(11, $image ? $image['blob'] : null, PDO::PARAM_LOB);
+        $stmt->bindValue(12, $image ? $image['type'] : null);
     } else {
         $stmt = $conn->prepare("
-            INSERT INTO users (first_name, last_name, email, password, role, image_name, image_blob, image_type)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO users (first_name, last_name, email, phone, address, postalcode, password, role, image_name, image_blob, image_type)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->bindValue(1, $first_name);
         $stmt->bindValue(2, $last_name);
         $stmt->bindValue(3, $email);
-        $stmt->bindValue(4, $hashed);
-        $stmt->bindValue(5, $role);
-        $stmt->bindValue(6, $image ? $image['name'] : null);
-        $stmt->bindValue(7, $image ? $image['blob'] : null, PDO::PARAM_LOB);
-        $stmt->bindValue(8, $image ? $image['type'] : null);
+        $stmt->bindValue(4, $phone);
+        $stmt->bindValue(5, $address);
+        $stmt->bindValue(6, $postalcode);
+        $stmt->bindValue(7, $hashed);
+        $stmt->bindValue(8, $role);
+        $stmt->bindValue(9, $image ? $image['name'] : null);
+        $stmt->bindValue(10, $image ? $image['blob'] : null, PDO::PARAM_LOB);
+        $stmt->bindValue(11, $image ? $image['type'] : null);
     }
     $stmt->execute();
 
@@ -313,6 +339,9 @@ function updateUser(array $data): void
     $first_name = trim($data['first_name']   ?? '');
     $last_name  = trim($data['last_name']    ?? '');
     $email      = trim($data['email']        ?? '');
+    $phone      = trim($data['phone']        ?? '');
+    $address    = trim($data['address']      ?? '');
+    $postalcode = trim($data['postalcode']   ?? '');
     $role       = strtolower($data['status'] ?? 'user');
     $removeImg  = ($data['remove_image']     ?? '') === '1';
     $requesterRole = getRequesterRole();
@@ -335,7 +364,8 @@ function updateUser(array $data): void
 
     $currentTargetRole = strtolower((string) $currentUser['role']);
     // Block admins from modifying superadmin accounts (server-side enforcement).
-    if ($currentTargetRole === 'superadmin' && $requesterRole !== 'superadmin') {
+    // Allow self-edit even if role detection misfires; otherwise require superadmin.
+    if ($currentTargetRole === 'superadmin' && !($requesterId > 0 && $requesterId === $id) && $requesterRole !== 'superadmin') {
         sendResponse(403, false, 'Only superadmin can edit a SuperAdmin account');
     }
     // Block admins from editing other Admin accounts' info (unless superadmin).
@@ -382,7 +412,7 @@ function updateUser(array $data): void
     if ($image) {
         // ── New image uploaded ───────────────────────────────────────────
         $sql = "UPDATE users
-                SET first_name=?, last_name=?, email=?, role=?,
+                SET first_name=?, last_name=?, email=?, phone=?, address=?, postalcode=?, role=?,
                     image_name=?, image_type=?, image_blob=?"
              . ($passwordChange ? ($hasPasswordLen ? ", password=?, password_len=?" : ", password=?") : "")
              . ", updated_at=NOW() WHERE id=?";
@@ -392,6 +422,9 @@ function updateUser(array $data): void
         $stmt->bindValue($i++, $first_name);
         $stmt->bindValue($i++, $last_name);
         $stmt->bindValue($i++, $email);
+        $stmt->bindValue($i++, $phone);
+        $stmt->bindValue($i++, $address);
+        $stmt->bindValue($i++, $postalcode);
         $stmt->bindValue($i++, $role);
         $stmt->bindValue($i++, $image['name']);
         $stmt->bindValue($i++, $image['type']);
@@ -408,13 +441,13 @@ function updateUser(array $data): void
     } elseif ($removeImg) {
         // ── Remove existing image ────────────────────────────────────────
         $sql = "UPDATE users
-                SET first_name=?, last_name=?, email=?, role=?,
+                SET first_name=?, last_name=?, email=?, phone=?, address=?, postalcode=?, role=?,
                     image_name=NULL, image_type=NULL, image_blob=NULL"
              . ($passwordChange ? ($hasPasswordLen ? ", password=?, password_len=?" : ", password=?") : "")
              . ", updated_at=NOW() WHERE id=?";
 
         $stmt   = $conn->prepare($sql);
-        $params = [$first_name, $last_name, $email, $role];
+        $params = [$first_name, $last_name, $email, $phone, $address, $postalcode, $role];
         if ($passwordChange) {
             $params[] = $hashedPassword;
             if ($hasPasswordLen) {
@@ -427,12 +460,12 @@ function updateUser(array $data): void
     } else {
         // ── Text fields only ─────────────────────────────────────────────
         $sql = "UPDATE users
-                SET first_name=?, last_name=?, email=?, role=?"
+                SET first_name=?, last_name=?, email=?, phone=?, address=?, postalcode=?, role=?"
              . ($passwordChange ? ($hasPasswordLen ? ", password=?, password_len=?" : ", password=?") : "")
              . ", updated_at=NOW() WHERE id=?";
 
         $stmt   = $conn->prepare($sql);
-        $params = [$first_name, $last_name, $email, $role];
+        $params = [$first_name, $last_name, $email, $phone, $address, $postalcode, $role];
         if ($passwordChange) {
             $params[] = $hashedPassword;
             if ($hasPasswordLen) {

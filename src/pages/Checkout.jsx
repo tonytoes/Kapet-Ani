@@ -14,14 +14,21 @@ function Checkout() {
   const [placing, setPlacing] = useState(false);
   const [error, setError] = useState("");
   const [paymentNotice, setPaymentNotice] = useState("");
+  const isLoggedIn = useMemo(() => {
+    try {
+      return Boolean(localStorage.getItem("token") && localStorage.getItem("user"));
+    } catch {
+      return false;
+    }
+  }, []);
   const [form, setForm] = useState(() => {
     const u = JSON.parse(localStorage.getItem("user") || "null");
     return {
       name: `${u?.first_name || ""} ${u?.last_name || ""}`.trim(),
       email: u?.email || "",
-      phone: "",
-      address: "",
-      postalcode: "",
+      phone: u?.phone || "",
+      address: u?.address || "",
+      postalcode: u?.postalcode || "",
       payment_mode: "COD",
       payment_id: "",
     };
@@ -131,14 +138,32 @@ function Checkout() {
             <div className="co-card">
               <h3>Customer Info</h3>
               <div className="co-grid-2">
-                <div><label>Email</label><input type="email" value={form.email} onChange={(e) => onChange("email", e.target.value)} /></div>
+                <div>
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => onChange("email", e.target.value)}
+                    readOnly={isLoggedIn}
+                    className={isLoggedIn ? "co-input-locked" : ""}
+                  />
+                </div>
                 <div><label>Phone</label><input type="text" value={form.phone} onChange={(e) => onChange("phone", e.target.value)} /></div>
               </div>
             </div>
 
             <div className="co-card">
               <h3>Shipping Address</h3>
-              <div><label>Full Name</label><input type="text" value={form.name} onChange={(e) => onChange("name", e.target.value)} /></div>
+              <div>
+                <label>Full Name</label>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => onChange("name", e.target.value)}
+                  readOnly={isLoggedIn}
+                  className={isLoggedIn ? "co-input-locked" : ""}
+                />
+              </div>
               <div><label>Street Address</label><input type="text" value={form.address} onChange={(e) => onChange("address", e.target.value)} /></div>
               <div><label>Postal Code</label><input type="text" value={form.postalcode} onChange={(e) => onChange("postalcode", e.target.value)} /></div>
             </div>

@@ -93,7 +93,14 @@ function User() {
   const [user, setUser] = useState(() => getStoredUser());
   const [form, setForm] = useState(() => {
     const u = getStoredUser();
-    return { first_name: u?.first_name || "", last_name: u?.last_name || "", email: u?.email || "" };
+    return {
+      first_name: u?.first_name || "",
+      last_name: u?.last_name || "",
+      email: u?.email || "",
+      phone: u?.phone || "",
+      address: u?.address || "",
+      postalcode: u?.postalcode || "",
+    };
   });
   const [passwordForm, setPasswordForm] = useState({ current: "", next: "", confirm: "" });
   const [showPasswords, setShowPasswords] = useState({
@@ -155,6 +162,9 @@ function User() {
         first_name: parsed.first_name || "",
         last_name: parsed.last_name || "",
         email: parsed.email || "",
+        phone: parsed.phone || "",
+        address: parsed.address || "",
+        postalcode: parsed.postalcode || "",
       });
       const cachedAvatar = getStoredAvatarByUserId(parsed.id);
       if (cachedAvatar) setImagePreview(cachedAvatar);
@@ -210,6 +220,9 @@ function User() {
         first_name: me.first_name,
         last_name: me.last_name,
         email: me.email,
+        phone: me.phone || "",
+        address: me.address || "",
+        postalcode: me.postalcode || "",
         created_at: me.created_at ?? currentUser.created_at,
       };
       localStorage.setItem("user", JSON.stringify(updated));
@@ -218,6 +231,9 @@ function User() {
         first_name: me.first_name || "",
         last_name: me.last_name || "",
         email: me.email || "",
+        phone: me.phone || "",
+        address: me.address || "",
+        postalcode: me.postalcode || "",
       });
     } catch {
       // silent, page still works with local data
@@ -281,7 +297,10 @@ function User() {
 
   async function handleSave(e) {
     e.preventDefault();
-    if (!user?.id) return;
+    // Use freshest stored user to avoid mismatched IDs.
+    const latestStored = getStoredUser();
+    const effectiveUser = latestStored?.id ? latestStored : user;
+    if (!effectiveUser?.id) return;
     setSaving(true);
     setMessage("");
     setMessageType("success");
@@ -295,12 +314,16 @@ function User() {
 
       const token = localStorage.getItem("token");
       const fd = new FormData();
-      fd.append("id", String(user.id));
+      fd.append("auth_token", String(token || ""));
+      fd.append("id", String(effectiveUser.id));
       fd.append("_method", "PUT");
       fd.append("first_name", form.first_name.trim());
       fd.append("last_name", form.last_name.trim());
       fd.append("email", form.email.trim());
-      fd.append("status", (user.role || "user").toLowerCase());
+      fd.append("phone", String(form.phone || "").trim());
+      fd.append("address", String(form.address || "").trim());
+      fd.append("postalcode", String(form.postalcode || "").trim());
+      fd.append("status", (effectiveUser.role || effectiveUser.status || "user").toLowerCase());
       if (passwordForm.next) {
         fd.append("current_password", passwordForm.current);
         fd.append("new_password", passwordForm.next);
@@ -317,10 +340,13 @@ function User() {
       if (!data.success) throw new Error(data.message || "Failed to save profile");
 
       const updatedUser = {
-        ...user,
+        ...effectiveUser,
         first_name: form.first_name.trim(),
         last_name: form.last_name.trim(),
         email: form.email.trim(),
+        phone: String(form.phone || "").trim(),
+        address: String(form.address || "").trim(),
+        postalcode: String(form.postalcode || "").trim(),
       };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setUser(updatedUser);
@@ -447,6 +473,18 @@ function User() {
                   <label>Email</label>
                   <input type="email" value={form.email} onChange={e => onChange("email", e.target.value)} placeholder="Email" />
                 </div>
+                <div className="input-group">
+                  <label>Phone</label>
+                  <input type="text" value={form.phone} onChange={e => onChange("phone", e.target.value)} placeholder="Phone number" />
+                </div>
+                <div className="input-group">
+                  <label>Address</label>
+                  <input type="text" value={form.address} onChange={e => onChange("address", e.target.value)} placeholder="Street address" />
+                </div>
+                <div className="input-group">
+                  <label>Postal Code</label>
+                  <input type="text" value={form.postalcode} onChange={e => onChange("postalcode", e.target.value)} placeholder="Postal code" />
+                </div>
                 <div className="password-block">
                   <h4>Change Password</h4>
                   <div className="input-group">
@@ -526,6 +564,9 @@ function User() {
               <div className="account-grid">
                 <div className="account-item"><span>Full Name</span><strong>{`${form.first_name} ${form.last_name}`.trim() || "—"}</strong></div>
                 <div className="account-item"><span>Email</span><strong>{form.email || "—"}</strong></div>
+                <div className="account-item"><span>Phone</span><strong>{form.phone || "—"}</strong></div>
+                <div className="account-item"><span>Address</span><strong>{form.address || "—"}</strong></div>
+                <div className="account-item"><span>Postal Code</span><strong>{form.postalcode || "—"}</strong></div>
                 <div className="account-item"><span>Role</span><strong>{String(user.role || "user").toUpperCase()}</strong></div>
                 <div className="account-item"><span>Account Creation Date</span><strong>{joinedDate}</strong></div>
               </div>
