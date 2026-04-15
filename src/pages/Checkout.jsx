@@ -32,6 +32,13 @@ function Checkout() {
     setCart(current);
   }, []);
 
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+    if (!user) {
+      navigate("/login");
+    }
+  }, [navigate]);
+
   const subtotal = useMemo(() => getCartSubtotal(cart), [cart]);
   const shipping = useMemo(() => (cart.length ? 49 : 0), [cart.length]);
   const total = subtotal + shipping;

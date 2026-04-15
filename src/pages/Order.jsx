@@ -78,8 +78,6 @@ function Order() {
           </aside>
         </div>
       </div>
-      <Newsletter />
-      <Footer />
     </div>
   );
 }
