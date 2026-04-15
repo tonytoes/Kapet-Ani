@@ -7,10 +7,71 @@ import { LINK_PATH } from "../admin/data/LinkPath.jsx";
 
 const API = `${LINK_PATH}authController.php`;
 
+function EyeIcon({ open }) {
+  return open ? (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        d="M2 12C3.8 8.2 7.5 6 12 6C16.5 6 20.2 8.2 22 12C20.2 15.8 16.5 18 12 18C7.5 18 3.8 15.8 2 12Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
+  ) : (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        d="M3 3L21 21"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M10.6 6.2C11.1 6.07 11.55 6 12 6C16.5 6 20.2 8.2 22 12C21.15 13.79 19.85 15.28 18.23 16.37"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M6.1 7.9C4.39 8.99 3.01 10.43 2 12C3.8 15.8 7.5 18 12 18C13.81 18 15.48 17.64 16.94 16.99"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.9 9.9C9.36 10.44 9 11.18 9 12C9 13.66 10.34 15 12 15C12.82 15 13.56 14.64 14.1 14.1"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function Login() {
   const [activeForm, setActiveForm] = useState("login");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
 
   const [loginData, setLoginData] = useState({
     email: "",
@@ -177,16 +238,27 @@ function Login() {
                   }
                 />
 
-                <input
-                  type="password"
-                  placeholder="Password"
-                  className="input1"
-                  required
-                  value={loginData.password}
-                  onChange={(e) =>
-                    setLoginData({ ...loginData, password: e.target.value })
-                  }
-                />
+                <div className="password-input-wrap">
+                  <input
+                    type={showLoginPassword ? "text" : "password"}
+                    placeholder="Password"
+                    className="input1 password-input"
+                    required
+                    value={loginData.password}
+                    onChange={(e) =>
+                      setLoginData({ ...loginData, password: e.target.value })
+                    }
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowLoginPassword((prev) => !prev)}
+                    aria-label={showLoginPassword ? "Hide password" : "Show password"}
+                    title={showLoginPassword ? "Hide password" : "Show password"}
+                  >
+                    <EyeIcon open={showLoginPassword} />
+                  </button>
+                </div>
 
                 <button type="submit" className="button1" disabled={loading}>
                   {loading ? "Logging in..." : "Login"}
@@ -252,19 +324,30 @@ function Login() {
                   }
                 />
 
-                <input
-                  type="password"
-                  placeholder="Password"
-                  className="input1"
-                  required
-                  value={registerData.password}
-                  onChange={(e) =>
-                    setRegisterData({
-                      ...registerData,
-                      password: e.target.value,
-                    })
-                  }
-                />
+                <div className="password-input-wrap">
+                  <input
+                    type={showRegisterPassword ? "text" : "password"}
+                    placeholder="Password"
+                    className="input1 password-input"
+                    required
+                    value={registerData.password}
+                    onChange={(e) =>
+                      setRegisterData({
+                        ...registerData,
+                        password: e.target.value,
+                      })
+                    }
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowRegisterPassword((prev) => !prev)}
+                    aria-label={showRegisterPassword ? "Hide password" : "Show password"}
+                    title={showRegisterPassword ? "Hide password" : "Show password"}
+                  >
+                    <EyeIcon open={showRegisterPassword} />
+                  </button>
+                </div>
                 {error && <p className="error-message">{error}</p>}
 
                 <button type="submit" className="button1" disabled={loading}>

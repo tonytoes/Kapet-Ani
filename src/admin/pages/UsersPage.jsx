@@ -16,6 +16,60 @@ import { useCache }  from "../data/CacheContext";   // ← NEW
 const API        = `${LINK_PATH}usersController.php`;
 const CACHE_KEY  = "users";
 
+function EyeIcon({ open }) {
+  return open ? (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        d="M2 12C3.8 8.2 7.5 6 12 6C16.5 6 20.2 8.2 22 12C20.2 15.8 16.5 18 12 18C7.5 18 3.8 15.8 2 12Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
+  ) : (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path d="M3 3L21 21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path
+        d="M10.6 6.2C11.1 6.07 11.55 6 12 6C16.5 6 20.2 8.2 22 12C21.15 13.79 19.85 15.28 18.23 16.37"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M6.1 7.9C4.39 8.99 3.01 10.43 2 12C3.8 15.8 7.5 18 12 18C13.81 18 15.48 17.64 16.94 16.99"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.9 9.9C9.36 10.44 9 11.18 9 12C9 13.66 10.34 15 12 15C12.82 15 13.56 14.64 14.1 14.1"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function authHeader() {
   const token = localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -111,7 +165,7 @@ function ImageBlock({ preview, onFileChange, onRemove }) {
 
 // ─── User Form ────────────────────────────────────────────────────────────────
 
-function ThemedSelect({ value, onChange, options, placeholder = "Select role" }) {
+function ThemedSelect({ value, onChange, options, placeholder = "Select role", disabled = false }) {
   const [open, setOpen] = useState(false);
   const boxRef = useRef(null);
   const selected = options.find(o => o.value === value);
@@ -129,9 +183,10 @@ function ThemedSelect({ value, onChange, options, placeholder = "Select role" })
       <button
         type="button"
         className="kp-select-trigger"
-        onClick={() => setOpen(prev => !prev)}
+        onClick={() => !disabled && setOpen(prev => !prev)}
         aria-haspopup="listbox"
         aria-expanded={open}
+        disabled={disabled}
       >
         <span>{selected?.label ?? placeholder}</span>
         <i className="bi bi-chevron-down" />
@@ -158,12 +213,20 @@ function ThemedSelect({ value, onChange, options, placeholder = "Select role" })
 }
 
 function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveImage, canAssignElevated }) {
+  const [showPassword, setShowPassword] = useState(false);
+  const roleLocked = !canAssignElevated && (form.status === "admin" || form.status === "superadmin");
+
+  useEffect(() => {
+    // Reset toggle when switching between users / modes.
+    setShowPassword(false);
+  }, [mode, form?.email]);
+
   const fields = [
     { label: "First Name", id: "first_name", type: "text",  placeholder: "First name" },
     { label: "Last Name",  id: "last_name",  type: "text",  placeholder: "Last name" },
     { label: "Email",      id: "email",      type: "email", placeholder: "email@example.com" },
     {
-      label: "Password", id: "password", type: "text",
+      label: "Password", id: "password", type: "password",
       placeholder: mode === "edit" ? "Leave blank to keep current password" : "Password",
     },
   ];
@@ -187,8 +250,34 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
       {fields.map(f => (
         <div className="form-group" key={f.id}>
           <label className="form-label">{f.label}</label>
-          <input className="form-control" type={f.type} placeholder={f.placeholder}
-            value={form[f.id]} onChange={e => onChange(f.id, e.target.value)} />
+          {f.id === "password" ? (
+            <div className="kp-admin-password-wrap">
+              <input
+                className="form-control kp-admin-password-input"
+                type={showPassword ? "text" : "password"}
+                placeholder={f.placeholder}
+                value={form[f.id]}
+                onChange={e => onChange(f.id, e.target.value)}
+              />
+              <button
+                type="button"
+                className="kp-admin-password-toggle"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                title={showPassword ? "Hide password" : "Show password"}
+              >
+                <EyeIcon open={showPassword} />
+              </button>
+            </div>
+          ) : (
+            <input
+              className="form-control"
+              type={f.type}
+              placeholder={f.placeholder}
+              value={form[f.id]}
+              onChange={e => onChange(f.id, e.target.value)}
+            />
+          )}
         </div>
       ))}
       <div className="form-group">
@@ -197,6 +286,7 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
           value={form.status}
           onChange={v => onChange("status", v)}
           options={roleOptions}
+          disabled={roleLocked}
         />
       </div>
     </>
@@ -210,6 +300,16 @@ export default function UsersPage() {
   const cache = useCache();   // ← NEW
   const canManage = canManageAdminPanels();
   const canAssignElevated = canAssignElevatedRoles();
+  const currentUserId = useMemo(() => {
+    try {
+      const raw = localStorage.getItem("user");
+      const u = raw ? JSON.parse(raw) : null;
+      const id = Number(u?.id || 0);
+      return Number.isFinite(id) ? id : 0;
+    } catch {
+      return 0;
+    }
+  }, []);
 
   const [users,      setUsers]      = useState(() => cache.get(CACHE_KEY) ?? []);
   const [loading,    setLoading]    = useState(() => cache.get(CACHE_KEY) === null);
@@ -312,6 +412,18 @@ export default function UsersPage() {
 
   function openEdit(user) {
     if (!canManage) return;
+    const targetRole = String(user?.status || "").toLowerCase();
+    if (!canAssignElevated && targetRole === "superadmin") {
+      showToast("Only superadmin can edit a SuperAdmin account", "error");
+      return;
+    }
+    if (!canAssignElevated && targetRole === "admin") {
+      const targetId = Number(user?.id || 0);
+      if (!(currentUserId > 0 && targetId > 0 && targetId === currentUserId)) {
+        showToast("Only superadmin can edit other Admin accounts", "error");
+        return;
+      }
+    }
     setSelectedId(user.id);
     setForm({
       first_name: user.first_name ?? "",

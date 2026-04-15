@@ -150,6 +150,39 @@
   outline: none;
 }
 
+.profile-password-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.profile-password-input {
+  padding-right: 42px !important;
+}
+
+.profile-password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: #8b7a69;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  z-index: 2;
+}
+
+.profile-password-toggle:hover {
+  color: #c9873a;
+}
+
+.profile-password-toggle svg {
+  display: block;
+}
+
 .input-group input:focus {
   border-color: #c9873a;
   box-shadow: 0 0 0 3px rgba(201, 135, 58, 0.14);

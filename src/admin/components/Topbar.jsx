@@ -11,6 +11,60 @@ const ADMIN_PAGES = [
   { value: "websitecontent", label: "Website Content" },
 ];
 
+function EyeIcon({ open }) {
+  return open ? (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        d="M2 12C3.8 8.2 7.5 6 12 6C16.5 6 20.2 8.2 22 12C20.2 15.8 16.5 18 12 18C7.5 18 3.8 15.8 2 12Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
+  ) : (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path d="M3 3L21 21" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path
+        d="M10.6 6.2C11.1 6.07 11.55 6 12 6C16.5 6 20.2 8.2 22 12C21.15 13.79 19.85 15.28 18.23 16.37"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M6.1 7.9C4.39 8.99 3.01 10.43 2 12C3.8 15.8 7.5 18 12 18C13.81 18 15.48 17.64 16.94 16.99"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.9 9.9C9.36 10.44 9 11.18 9 12C9 13.66 10.34 15 12 15C12.82 15 13.56 14.64 14.1 14.1"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export default function Topbar({ title, onToggle, currentPage, onNavigate }) {
   const [userData,     setUserData]     = useState(() => {
     const raw = localStorage.getItem("user");
@@ -34,6 +88,11 @@ export default function Topbar({ title, onToggle, currentPage, onNavigate }) {
     current_password: "",
     new_password: "",
     confirm_password: "",
+  });
+  const [showPassword, setShowPassword] = useState({
+    current_password: false,
+    new_password: false,
+    confirm_password: false,
   });
   const [prefsForm, setPrefsForm] = useState({
     defaultPage: localStorage.getItem("admin.defaultPage") || "dashboard",
@@ -116,6 +175,11 @@ export default function Topbar({ title, onToggle, currentPage, onNavigate }) {
     setSettingsTab("account");
     setSettingsMsg("");
     setSettingsErr("");
+    setShowPassword({
+      current_password: false,
+      new_password: false,
+      confirm_password: false,
+    });
   }
 
   async function handleSaveAccount() {
@@ -411,29 +475,62 @@ export default function Topbar({ title, onToggle, currentPage, onNavigate }) {
               {settingsTab === "password" && (
                 <div className="kp-settings-form">
                   <label className="form-label">Current password</label>
-                  <input
-                    className="form-control"
-                    value={passwordForm.current_password}
-                    onChange={e => setPasswordForm(prev => ({ ...prev, current_password: e.target.value }))}
-                    placeholder="Current password"
-                    type="password"
-                  />
+                  <div className="kp-settings-password-wrap">
+                    <input
+                      className="form-control kp-settings-password-input"
+                      value={passwordForm.current_password}
+                      onChange={e => setPasswordForm(prev => ({ ...prev, current_password: e.target.value }))}
+                      placeholder="Current password"
+                      type={showPassword.current_password ? "text" : "password"}
+                    />
+                    <button
+                      type="button"
+                      className="kp-settings-password-toggle"
+                      onClick={() => setShowPassword((prev) => ({ ...prev, current_password: !prev.current_password }))}
+                      aria-label={showPassword.current_password ? "Hide password" : "Show password"}
+                      title={showPassword.current_password ? "Hide password" : "Show password"}
+                    >
+                      <EyeIcon open={showPassword.current_password} />
+                    </button>
+                  </div>
                   <label className="form-label">New password</label>
-                  <input
-                    className="form-control"
-                    value={passwordForm.new_password}
-                    onChange={e => setPasswordForm(prev => ({ ...prev, new_password: e.target.value }))}
-                    placeholder="New password"
-                    type="password"
-                  />
+                  <div className="kp-settings-password-wrap">
+                    <input
+                      className="form-control kp-settings-password-input"
+                      value={passwordForm.new_password}
+                      onChange={e => setPasswordForm(prev => ({ ...prev, new_password: e.target.value }))}
+                      placeholder="New password"
+                      type={showPassword.new_password ? "text" : "password"}
+                    />
+                    <button
+                      type="button"
+                      className="kp-settings-password-toggle"
+                      onClick={() => setShowPassword((prev) => ({ ...prev, new_password: !prev.new_password }))}
+                      aria-label={showPassword.new_password ? "Hide password" : "Show password"}
+                      title={showPassword.new_password ? "Hide password" : "Show password"}
+                    >
+                      <EyeIcon open={showPassword.new_password} />
+                    </button>
+                  </div>
                   <label className="form-label">Confirm new password</label>
-                  <input
-                    className="form-control"
-                    value={passwordForm.confirm_password}
-                    onChange={e => setPasswordForm(prev => ({ ...prev, confirm_password: e.target.value }))}
-                    placeholder="Confirm new password"
-                    type="password"
-                  />
+                  <div className="kp-settings-password-wrap">
+                    <input
+                      className="form-control kp-settings-password-input"
+                      value={passwordForm.confirm_password}
+                      onChange={e => setPasswordForm(prev => ({ ...prev, confirm_password: e.target.value }))}
+                      placeholder="Confirm new password"
+                      type={showPassword.confirm_password ? "text" : "password"}
+                    />
+                    <button
+                      type="button"
+                      className="kp-settings-password-toggle"
+                      onClick={() => setShowPassword((prev) => ({ ...prev, confirm_password: !prev.confirm_password }))}
+                      aria-label={showPassword.confirm_password ? "Hide password" : "Show password"}
+                      title={showPassword.confirm_password ? "Hide password" : "Show password"}
+                    >
+                      <EyeIcon open={showPassword.confirm_password} />
+                    </button>
+                  </div>
                   <button className="btn btn-primary" onClick={handleSavePassword} disabled={savingPassword}>
                     {savingPassword ? "Updating..." : "Change password"}
                   </button>

@@ -247,7 +247,7 @@ export default function TransactionsPage() {
 
       <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}>
         <PageHeader
-          title={<><span>All Transaction Log</span> <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>({filtered.length})</span></>}
+          title={<><span>Transaction Log</span> <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>({filtered.length})</span></>}
           search={search} onSearch={setSearch}
           showCategories categories={statusCategories}
           categoryValue={statusFilter} onCategoryChange={setStatusFilter}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import "../styles/Product.css";
 import Newsletter from "../components/layout/Newsletter.jsx";
 import Footer from "../components/layout/Footer.jsx";
@@ -49,6 +49,8 @@ function Product() {
   const [contentMap, setContentMap] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredItems, setFilteredItems] = useState([]);
+  const [recentlyAddedId, setRecentlyAddedId] = useState(null);
+  const addFeedbackTimerRef = useRef(null);
   const itemsPerPage = 6;
 
   const addToCart = useCallback((product) => {
@@ -191,6 +193,21 @@ function Product() {
     }
   };
 
+  const handleCardAddToCart = (e, product) => {
+    e.stopPropagation();
+    if (product.qty <= 0) return;
+    addToCart(product);
+    setRecentlyAddedId(product.id);
+    window.clearTimeout(addFeedbackTimerRef.current);
+    addFeedbackTimerRef.current = window.setTimeout(() => {
+      setRecentlyAddedId(null);
+    }, 1400);
+  };
+
+  useEffect(() => {
+    return () => window.clearTimeout(addFeedbackTimerRef.current);
+  }, []);
+
   useEffect(() => {
     loadProducts();
   }, [loadProducts]);
@@ -318,14 +335,15 @@ function Product() {
                     )}
                   </div>
                   <button
-                    className="shop-btn"
+                    className={`shop-btn ${recentlyAddedId === product.id ? "added" : ""}`}
                     disabled={product.qty <= 0}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (product.qty > 0) addToCart(product);
-                    }}
+                    onClick={(e) => handleCardAddToCart(e, product)}
                   >
-                    {product.qty <= 0 ? txt("outOfStockLabel") : txt("addToCartLabel")}
+                    {product.qty <= 0
+                      ? txt("outOfStockLabel")
+                      : recentlyAddedId === product.id
+                        ? txt("modalItemAdded")
+                        : txt("addToCartLabel")}
                   </button>
                 </div>
               ))}

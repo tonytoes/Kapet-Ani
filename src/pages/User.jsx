@@ -10,6 +10,65 @@ const API = `${LINK_PATH}usersController.php`;
 const ORDERS_API = `${LINK_PATH}Transactionscontroller.php`;
 const AVATAR_CACHE_PREFIX = "avatarCache:";
 
+function EyeIcon({ open }) {
+  return open ? (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        d="M2 12C3.8 8.2 7.5 6 12 6C16.5 6 20.2 8.2 22 12C20.2 15.8 16.5 18 12 18C7.5 18 3.8 15.8 2 12Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
+  ) : (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        d="M3 3L21 21"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M10.6 6.2C11.1 6.07 11.55 6 12 6C16.5 6 20.2 8.2 22 12C21.15 13.79 19.85 15.28 18.23 16.37"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M6.1 7.9C4.39 8.99 3.01 10.43 2 12C3.8 15.8 7.5 18 12 18C13.81 18 15.48 17.64 16.94 16.99"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.9 9.9C9.36 10.44 9 11.18 9 12C9 13.66 10.34 15 12 15C12.82 15 13.56 14.64 14.1 14.1"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function getStoredUser() {
   try {
     const raw = localStorage.getItem("user");
@@ -37,6 +96,11 @@ function User() {
     return { first_name: u?.first_name || "", last_name: u?.last_name || "", email: u?.email || "" };
   });
   const [passwordForm, setPasswordForm] = useState({ current: "", next: "", confirm: "" });
+  const [showPasswords, setShowPasswords] = useState({
+    current: false,
+    next: false,
+    confirm: false,
+  });
   const [imagePreview, setImagePreview] = useState(() => {
     const u = getStoredUser();
     return getStoredAvatarByUserId(u?.id) || u?.image_url || null;
@@ -167,6 +231,10 @@ function User() {
   }
   function onPasswordChange(key, value) {
     setPasswordForm(prev => ({ ...prev, [key]: value }));
+  }
+
+  function togglePasswordVisibility(key) {
+    setShowPasswords((prev) => ({ ...prev, [key]: !prev[key] }));
   }
 
   function handleFileChange(e) {
@@ -348,15 +416,66 @@ function User() {
                   <h4>Change Password</h4>
                   <div className="input-group">
                     <label>Current</label>
-                    <input type="password" value={passwordForm.current} onChange={e => onPasswordChange("current", e.target.value)} placeholder="Current password" />
+                    <div className="profile-password-wrap">
+                      <input
+                        type={showPasswords.current ? "text" : "password"}
+                        className="profile-password-input"
+                        value={passwordForm.current}
+                        onChange={e => onPasswordChange("current", e.target.value)}
+                        placeholder="Current password"
+                      />
+                      <button
+                        type="button"
+                        className="profile-password-toggle"
+                        onClick={() => togglePasswordVisibility("current")}
+                        aria-label={showPasswords.current ? "Hide password" : "Show password"}
+                        title={showPasswords.current ? "Hide password" : "Show password"}
+                      >
+                        <EyeIcon open={showPasswords.current} />
+                      </button>
+                    </div>
                   </div>
                   <div className="input-group">
                     <label>New</label>
-                    <input type="password" value={passwordForm.next} onChange={e => onPasswordChange("next", e.target.value)} placeholder="New password (min 8 chars)" />
+                    <div className="profile-password-wrap">
+                      <input
+                        type={showPasswords.next ? "text" : "password"}
+                        className="profile-password-input"
+                        value={passwordForm.next}
+                        onChange={e => onPasswordChange("next", e.target.value)}
+                        placeholder="New password (min 8 chars)"
+                      />
+                      <button
+                        type="button"
+                        className="profile-password-toggle"
+                        onClick={() => togglePasswordVisibility("next")}
+                        aria-label={showPasswords.next ? "Hide password" : "Show password"}
+                        title={showPasswords.next ? "Hide password" : "Show password"}
+                      >
+                        <EyeIcon open={showPasswords.next} />
+                      </button>
+                    </div>
                   </div>
                   <div className="input-group">
                     <label>Confirm</label>
-                    <input type="password" value={passwordForm.confirm} onChange={e => onPasswordChange("confirm", e.target.value)} placeholder="Confirm new password" />
+                    <div className="profile-password-wrap">
+                      <input
+                        type={showPasswords.confirm ? "text" : "password"}
+                        className="profile-password-input"
+                        value={passwordForm.confirm}
+                        onChange={e => onPasswordChange("confirm", e.target.value)}
+                        placeholder="Confirm new password"
+                      />
+                      <button
+                        type="button"
+                        className="profile-password-toggle"
+                        onClick={() => togglePasswordVisibility("confirm")}
+                        aria-label={showPasswords.confirm ? "Hide password" : "Show password"}
+                        title={showPasswords.confirm ? "Hide password" : "Show password"}
+                      >
+                        <EyeIcon open={showPasswords.confirm} />
+                      </button>
+                    </div>
                   </div>
                 </div>
                 {message && <p className={`profile-msg ${messageType === "error" ? "error" : "success"}`}>{message}</p>}

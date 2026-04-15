@@ -6,7 +6,7 @@ const NAV_ITEMS = [
   { page: "inventory",      icon: "bi-box-seam",       label: "Inventory" },
   { page: "inventoryalert", icon: "bi-graph-down",       label: "Inventory Alert" },
   { page: "users",          icon: "bi-people",         label: "Users" },
-  { page: "transactions",   icon: "bi-receipt",        label: "All Transaction Log" },
+  { page: "transactions",   icon: "bi-receipt",        label: "Transaction Log" },
   { page: "websitecontent", icon: "bi-pencil-square",  label: "Website Content" },
 ];
 

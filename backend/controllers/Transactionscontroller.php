@@ -50,13 +50,17 @@ function getTransactions(): void
 {
     global $conn;
 
+    $archiveEmail = 'deleted.user@system.local';
     $stmt = $conn->query("
         SELECT
             o.id,
             o.user_id,
             o.tracking_no,
-            o.name,
-            o.email,
+            o.name AS order_name,
+            o.email AS order_email,
+            u.first_name AS user_first_name,
+            u.last_name  AS user_last_name,
+            u.email      AS user_email,
             o.phone,
             o.address,
             o.postalcode,
@@ -68,21 +72,38 @@ function getTransactions(): void
             COUNT(oi.id) AS item_count,
             SUM(oi.qty)  AS total_qty
         FROM orders o
+        LEFT JOIN users u ON u.id = o.user_id
         LEFT JOIN order_items oi ON oi.order_id = o.id
-        GROUP BY o.id
+        GROUP BY
+            o.id, o.user_id, o.tracking_no,
+            o.name, o.email, u.first_name, u.last_name, u.email,
+            o.phone, o.address, o.postalcode,
+            o.total_price, o.payment_mode, o.payment_id, o.status, o.created_at
         ORDER BY o.created_at DESC
     ");
 
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $formatted = array_map(fn($r) => [
+    $formatted = array_map(function ($r) use ($archiveEmail) {
+        $userEmail = isset($r['user_email']) ? (string)$r['user_email'] : '';
+        $isArchive = $userEmail !== '' && strtolower($userEmail) === strtolower($archiveEmail);
+        $hasRealUser = !$isArchive && ((int)($r['user_id'] ?? 0) > 0) && $userEmail !== '';
+
+        $liveName = trim(((string)($r['user_first_name'] ?? '')) . ' ' . ((string)($r['user_last_name'] ?? '')));
+        $orderName = (string)($r['order_name'] ?? '');
+        $orderEmail = (string)($r['order_email'] ?? '');
+
+        $displayName = $hasRealUser && $liveName !== '' ? $liveName : $orderName;
+        $displayEmail = $hasRealUser ? $userEmail : $orderEmail;
+
+        return [
         // dbId  = real integer PK used for UPDATE queries
         // trackingId = the human-readable #TRK... shown in the UI
         'dbId'        => (int) $r['id'],
         'userId'      => (int) ($r['user_id'] ?? 0),
         'trackingId'  => '#' . $r['tracking_no'],
-        'username'    => $r['name'],
-        'email'       => $r['email'],
+        'username'    => $displayName,
+        'email'       => $displayEmail,
         'phone'       => $r['phone'],
         'address'     => $r['address'],
         'postalcode'  => $r['postalcode'],
@@ -93,7 +114,8 @@ function getTransactions(): void
         'status'      => $r['status'],
         'date'        => date('M d, Y', strtotime($r['created_at'])),
         'timestamp'   => (int) strtotime($r['created_at']),
-    ], $rows);
+        ];
+    }, $rows);
 
     sendResponse(200, true, 'Transactions fetched', ['transactions' => $formatted]);
 }

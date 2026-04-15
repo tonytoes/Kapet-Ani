@@ -373,6 +373,11 @@ body {
   text-transform: uppercase;
   font-size: 0.8rem;
 }
+
+.shop-btn.added {
+  background: #8b5e3c;
+  box-shadow: 0 0 0 1px rgba(139, 94, 60, 0.18), 0 6px 14px rgba(139, 94, 60, 0.22);
+}
 /* This darkens the screen and centers the modal */
 .pp-overlay {
   position: fixed;

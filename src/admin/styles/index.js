@@ -146,6 +146,23 @@ const STYLES = `
     overflow: auto;
   }
   .kp-settings-form { display: grid; gap: 8px; }
+  .kp-settings-password-wrap { position: relative; }
+  .kp-settings-password-input { padding-right: 40px; }
+  .kp-settings-password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: #8B7A69;
+    padding: 0;
+    line-height: 0;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .kp-settings-password-toggle:hover { color: var(--brand-mid); }
+  .kp-settings-password-toggle svg { display: block; }
   .kp-settings-note { font-size: 0.76rem; color: var(--text-muted); margin-top: 2px; margin-bottom: 6px; }
   .kp-settings-alert {
     border-radius: 10px;
@@ -406,6 +423,23 @@ const STYLES = `
   .form-control { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border-light); border-radius: var(--radius-input); font-family: var(--font-body); font-size: 0.83rem; color: var(--text-primary); background: #fff; outline: none; transition: border-color 0.14s; }
   .form-control:focus { border-color: var(--brand-mid); }
   .form-control::placeholder { color: var(--text-muted); }
+  .kp-admin-password-wrap { position: relative; }
+  .kp-admin-password-input { padding-right: 40px; }
+  .kp-admin-password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: #8B7A69;
+    padding: 0;
+    line-height: 0;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .kp-admin-password-toggle:hover { color: var(--brand-mid); }
+  .kp-admin-password-toggle svg { display: block; }
   select.form-control {
     appearance: none;
     -webkit-appearance: none;
@@ -446,6 +480,11 @@ const STYLES = `
     justify-content: space-between;
     cursor: pointer;
     transition: all 0.16s ease;
+  }
+  .kp-select-trigger:disabled {
+    cursor: not-allowed;
+    opacity: 0.72;
+    background: #F9FAFB;
   }
   .kp-select.open .kp-select-trigger,
   .kp-select-trigger:focus {
