@@ -1,3 +1,4 @@
+/* Local fallback tokens to prevent invisible text if variables are missing */
 :root {
   --brown-deep: #2c1a0e;
   --brown-rich: #5a3825;
@@ -5,9 +6,6 @@
   --brown-warm: #a0724a;
   --gold: #b08d57;
   --gold-light: #c9a96e;
-  --cream: #f5f0e8;
-  --cream-light: #faf7f2;
-  --bg-light: #f2f2f0;
   --white: #ffffff;
   --text-dark: #1e120a;
   --text-mid: #5a3825;
@@ -135,6 +133,7 @@
 }
 .featured-card {
   cursor: pointer;
+  text-align: center;
 }
 .featured-img-wrap {
   position: relative;
@@ -174,6 +173,12 @@
   color: white;
 }
 
+.featured-card .post-title,
+.featured-card .post-excerpt,
+.featured-card .post-date {
+  text-align: center;
+}
+
 /* ── POST TEXT ── */
 .post-title {
   font-size: 0.95rem;
@@ -196,7 +201,8 @@
   font-size: 0.62rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--text-light);
+  color: #7c5a45 !important;
+  opacity: 1;
 }
 
 /* ── LATEST POSTS ── */
@@ -264,18 +270,18 @@
 }
 .sidebar-about-text {
   font-size: 0.92rem;
-  color: var(--text-light);
+  color: #6b7280;
   line-height: 1.7;
   margin-bottom: 12px;
 }
 .sidebar-link {
   font-size: 0.8rem;
-  color: var(--gold);
+  color: #8b5a2b;
   font-weight: 500;
   transition: color 0.2s;
 }
 .sidebar-link:hover {
-  color: var(--brown-mid);
+  color: #6f451f;
 }
 .sidebar-categories {
   list-style: none;

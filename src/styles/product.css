@@ -334,6 +334,16 @@ body {
   color: var(--text-color);
 }
 
+.product-discount-row {
+  min-height: 18px;
+  font-size: 0.78rem;
+  margin-bottom: 10px;
+}
+
+.product-discount-placeholder {
+  visibility: hidden;
+}
+
 .product-card.hidden {
   display: none;
 }
@@ -364,6 +374,64 @@ body {
   font-size: 0.8rem;
 }
 
+.shop-btn.added {
+  background: #8b5e3c;
+  box-shadow: 0 0 0 1px rgba(139, 94, 60, 0.18), 0 6px 14px rgba(139, 94, 60, 0.22);
+}
+/* This darkens the screen and centers the modal */
+.pp-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.75); /* Dark semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Ensures it sits above your Navbar (z-index 100) */
+  backdrop-filter: blur(4px); /* Adds a modern blur effect */
+}
+
+/* This is the white box containing product details */
+.pp-modal {
+  background: white;
+  width: 90%;
+  max-width: 1000px;
+  max-height: 90vh;
+  border-radius: 12px;
+  position: relative;
+  overflow-y: auto; /* Allows scrolling INSIDE the modal if content is long */
+  padding: 40px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  animation: modalPop 0.3s ease-out;
+}
+
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Close button (the ✕) */
+.pp-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #f3e5d8;
+  border: none;
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #4a321f;
+  transition: background 0.2s;
+}
+
+.pp-modal-close:hover {
+  background: #b59378;
+  color: white;
+}
 @media (max-width: 1024px) {
   .product-grid {
     grid-template-columns: repeat(2, 1fr);

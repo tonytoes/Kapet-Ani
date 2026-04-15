@@ -1,232 +1,85 @@
+import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import '../styles/order_confirmation.css';
-import rattan_basket from '../assets/images/Rattan_Basket.png';
-import bamboo_basket from '../assets/images/Bamboo_Basket.png';
-import palm_basket from '../assets/images/Palm_Basket.png';
-import Navbar from '../components/layout/Navbar.jsx';
 import Newsletter from "../components/layout/Newsletter.jsx"; 
 import Footer from '../components/layout/Footer.jsx';
 
+function Order() {
+  const navigate = useNavigate();
+  const order = useMemo(() => {
+    try {
+      const raw = sessionStorage.getItem("last_order");
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }, []);
 
-function App() {
-  return (
-    <div className="App order-page">
-      <header className="App-header">
-        <>
-          <title>Order Confirmation Page</title>
-          <meta charSet="UTF-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <div className="container text-center base">
-            <div className="row align-items-start COframe">
-            <div className="col">
-                <h1>Your order has been placed</h1>
-                <h5>
-                Thanks for shopping with us. A confirmation email should arrive in a
-                few minutes.
-                </h5>
-                <div className="row">
-                <a href="index.html" id="homeB">
-                    &lt;Home
-                </a>
-                </div>
-                <div className="row parent">
-                <div className="col-7 leftside">
-                    {/* Customer Info Section */}
-                    <div className="row" id="customerInfo">
-                    <h5 className="upperSection">Customer Info</h5>
-                    <div className="col bottomSection">
-                        <div className="row">
-                        <div className="col">
-                            <div className="row">
-                            <h5>Email Address</h5>
-                            </div>
-                            <div className="row">
-                            <h6>fake_email@gmail.com</h6>
-                            </div>
-                        </div>
-                        <div className="col">
-                            <div className="row">
-                            <h5>Shipping Address</h5>
-                            </div>
-                            <div className="row">
-                            <h6>Fake Name</h6>
-                            </div>
-                            <div className="row">
-                            <h6>398 11th St Floor 2</h6>
-                            </div>
-                            <div className="row">
-                            <h6>San Francisco CA 94103</h6>
-                            </div>
-                            <div className="row">
-                            <h6>USA</h6>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                    </div>
-                    {/* Items in Order Section */}
-                    <div className="row" id="itemsInOrder">
-                    <h5 className="upperSection">Items in Order</h5>
-                    <div className="col bottomSection">
-                        <div className="row items">
-                        <div className="col">
-                            <div className="row item" id="firstItem">
-                            <div className="col itemInfo">
-                                <div className="row">
-                                <div className="col">
-                                    <img src={rattan_basket} alt="" />
-                                </div>
-                                <div className="col">
-                                    <p className="productTitle">Rattan Basket</p>
-                                    <p>Quantity:1</p>
-                                </div>
-                                </div>
-                            </div>
-                            <div className="col price">
-                                <p>$ 99.00 USD</p>
-                            </div>
-                            </div>
-                            <div className="row item" id="secondItem">
-                            <div className="col itemInfo">
-                                <div className="row">
-                                <div className="col">
-                                    <img src={bamboo_basket} alt="" />
-                                </div>
-                                <div className="col">
-                                    <p className="productTitle">Bamboo Basket</p>
-                                    <p>Quantity:1</p>
-                                </div>
-                                </div>
-                            </div>
-                            <div className="col price">
-                                <p>$ 39.00 USD</p>
-                            </div>
-                            </div>
-                            <div className="row item" id="thirdItem">
-                            <div className="col itemInfo">
-                                <div className="row">
-                                <div className="col">
-                                    <img src={palm_basket} alt="" />
-                                </div>
-                                <div className="col">
-                                    <p className="productTitle">Bamboo Basket</p>
-                                    <p>Quantity:1</p>
-                                </div>
-                                </div>
-                            </div>
-                            <div className="col price">
-                                <p>$ 15.00 USD</p>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                    </div>
-                    {/* Shipping Method */}
-                    <div className="row" id="shippingMethod">
-                    <h5 className="upperSection">Shipping Method</h5>
-                    <div className="col">
-                        <div className="row shippingOptions">
-                        <div className="col">
-                            <div className="col" id="selectedSM">
-                            <p>FLAT-RATE</p>
-                            <p>STANDARD FLAT-RATE FOR ALL SHIPMENTS</p>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                    </div>
-                    {/* Payment Info */}
-                    <div className="row" id="paymentInfo">
-                    <h5 className="upperSection">Payment Info</h5>
-                    <div className="col bottomSection">
-                        <div className="row">
-                        <div className="col">
-                            <div className="row">
-                            <h5>Payment Info</h5>
-                            </div>
-                            <div className="row">
-                            <h6>Visa 4242 3/2030</h6>
-                            </div>
-                        </div>
-                        <div className="col">
-                            <div className="row">
-                            <h5>Billing Address</h5>
-                            </div>
-                            <div className="row">
-                            <h6>Fake Name</h6>
-                            </div>
-                            <div className="row">
-                            <h6>398 11th St Floor 2</h6>
-                            </div>
-                            <div className="row">
-                            <h6>San Francisco CA 94103</h6>
-                            </div>
-                            <div className="row">
-                            <h6>USA</h6>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                {/* Order Summary */}
-                <div className="col-5 rightside" id="orderSum">
-                    <div className="row osTitle">
-                    <h5>Order Summary</h5>
-                    </div>
-                    <div className="row osBody">
-                    <div className="col">
-                        <div className="row" id="SubTotal">
-                        <div className="col">
-                            <h6>Subtotal</h6>
-                        </div>
-                        <div className="col">
-                            <h6 id="subtotal">$ 153.00 USD</h6>
-                        </div>
-                        </div>
-                        <div className="row" id="FlatRate">
-                        <div className="col">
-                            <h6>Flat-Rate</h6>
-                        </div>
-                        <div className="col">
-                            <h6 id="flatrate">$ 18.90 USD</h6>
-                        </div>
-                        </div>
-                        <div className="row" id="Total">
-                        <div className="col">
-                            <h6 id="totalText">Total</h6>
-                        </div>
-                        <div className="col">
-                            <h6 id="total">$ 171.90 USD</h6>
-                        </div>
-                        </div>
-                    </div>
-                    </div>
-                    <div className="row">
-                    <button id="continueShopping">Continue Shopping</button>
-                    </div>
-                </div>
-                </div>
-            </div>
-            </div>
+  if (!order) {
+    return (
+      <div className="order-modern-page">
+        <div className="order-modern-wrap">
+          <div className="order-modern-card" style={{ textAlign: "center" }}>
+            <h2>No recent order found.</h2>
+            <button className="order-primary-btn" onClick={() => navigate("/product")}>Continue Shopping</button>
+          </div>
         </div>
-        {/* More Section and Footer */}
-        <section id="moreSection">
-            <div className="container text-center">
-            <h6>
-                Don't Miss Out On Our Latest News, Update, Tips, And Special Offers
-            </h6>
-            <h5>Subscribe to get the Latest News</h5>
-            <input type="text" id="subEmail" />
-            <button id="subscribe">Subscribe</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="order-modern-page">
+      <div className="order-modern-wrap">
+        <div className="order-header">
+          <div className="order-checkmark">✓</div>
+          <h1>Your order has been placed</h1>
+          <p>Tracking: <strong>{order.trackingId}</strong> · Payment: <strong>{order.paymentMode}</strong></p>
+          <a href="/product" className="order-back-link">&lt; Back to Products</a>
+        </div>
+
+        <div className="order-grid">
+          <section className="order-modern-card">
+            <h3>Customer Info</h3>
+            <div className="order-info-grid">
+              <div><span>Name</span><strong>{order.customer?.name || "—"}</strong></div>
+              <div><span>Email</span><strong>{order.customer?.email || "—"}</strong></div>
+              <div><span>Phone</span><strong>{order.customer?.phone || "—"}</strong></div>
+              <div><span>Address</span><strong>{order.customer?.address || "—"}</strong></div>
+              <div><span>Postal</span><strong>{order.customer?.postalcode || "—"}</strong></div>
+              <div><span>Payment Ref</span><strong>{order.paymentId || "—"}</strong></div>
             </div>
-        </section>
-        <Footer/>
-        {/* End of More Section and Footer */}
-        </>
-      </header>
+          </section>
+
+          <section className="order-modern-card">
+            <h3>Items in Order</h3>
+            <div className="order-items-list">
+              {order.items?.map((it) => (
+                <div className="order-item-row" key={it.id}>
+                  <img src={it.image} alt={it.name} />
+                  <div>
+                    <div className="order-item-name">{it.name}</div>
+                    <div className="order-item-meta">Qty: {it.qty}</div>
+                  </div>
+                  <div className="order-item-price">
+                    {(Number(it.price) * Number(it.qty)).toLocaleString("en-PH", { style: "currency", currency: "PHP" })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <aside className="order-modern-card order-summary-card">
+            <h3>Order Summary</h3>
+            <div className="order-row"><span>Subtotal</span><strong>{Number(order.subtotal || 0).toLocaleString("en-PH", { style: "currency", currency: "PHP" })}</strong></div>
+            <div className="order-row"><span>Shipping</span><strong>{Number(order.shipping || 0).toLocaleString("en-PH", { style: "currency", currency: "PHP" })}</strong></div>
+            <div className="order-row total"><span>Total</span><strong>{Number(order.total || 0).toLocaleString("en-PH", { style: "currency", currency: "PHP" })}</strong></div>
+            <button className="order-primary-btn" onClick={() => navigate("/product")}>Continue Shopping</button>
+          </aside>
+        </div>
+      </div>
     </div>
   );
 }
 
-export default App;
+export default Order;

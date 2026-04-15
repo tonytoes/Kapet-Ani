@@ -81,7 +81,7 @@
 
 #main-navbar .nav-links li a:hover,
 #main-navbar .nav-links li a.active {
-  color: var(--brown-deep);
+  color: rgb(151, 80, 48);
 }
 
 .nav-actions {
@@ -98,11 +98,46 @@
   stroke-width: 2;
 }
 
-.nav-icon1:hover {
-  stroke: var(--brown-deep);
+.nav-avatar-link2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
 }
 
-#main-navbar .nav-cart {
+.nav-avatar-img2 {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(151, 80, 48, 0.35);
+  background: #fff;
+}
+
+.nav-icon1:hover {
+  stroke: var(--brown-rich);
+}
+
+.nav-admin-btn2 {
+  text-decoration: none;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: rgb(151, 80, 48);
+  border: 1px solid rgba(151, 80, 48, 0.45);
+  padding: 6px 10px;
+  border-radius: 999px;
+  transition: all 0.18s ease;
+}
+
+.nav-admin-btn2:hover {
+  color: var(--brown-rich);
+  border-color: var(--brown-rich);
+  background: rgba(151, 80, 48, 0.08);
+}
+
+.nav-cart {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -113,7 +148,7 @@
 }
 
 #main-navbar .nav-cart:hover {
-  color: var(--brown-deep);
+  color: var(--brown-rich);
 }
 
 .cart-badge {

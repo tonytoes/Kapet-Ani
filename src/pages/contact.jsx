@@ -5,9 +5,52 @@ import "../styles/contact.css";
 import Navbar from "../components/layout/Navbar.jsx";
 import Footer from "../components/layout/Footer.jsx";
 import Newsletter from "../components/layout/Newsletter.jsx";
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { LINK_PATH } from "../admin/data/LinkPath.jsx";
+
+const API_CONTENT = `${LINK_PATH}WebsiteContentController.php?page=contact`;
+const DEFAULTS = {
+  heroLine1: "Let's showcase Filipino Merchants",
+  heroLine2: "Together",
+  connectTitle: "Let's Connect",
+  connectDesc: "We’d love to hear from you! Your thoughts, experiences, and feedback help us grow and continue delivering meaningful coffee and cultural products. Share your reviews, suggestions, and stories with us, and let us know how Kape’t Ani has become part of your daily rituals.",
+  officesLabel: "OUR OFFICES",
+  office1Image: office1,
+  office1Branch: "Main Branch",
+  office1Address: "Congressional Avenue, San Beda St., Quezon City",
+  openingTimesLabel: "Opening Times",
+  office1HoursMonFri: "Mon - Fri 08:00 to 22:00",
+  office1HoursSat: "Sat - 09:00 to 20:00",
+  office1HoursSun: "Sun - 12:00 to 18:00",
+  office2Image: office2,
+  office2Branch: "Main Branch",
+  office2Address: "Congressional Avenue, San Beda St., Quezon City",
+  office2HoursMonFri: "Mon - Fri 08:00 to 22:00",
+  office2HoursSat: "Sat - 09:00 to 20:00",
+  office2HoursSun: "Sun - 12:00 to 18:00",
+  contactFormLabel: "CONTACT FORM",
+  contactFormDesc: "Drop us your message and I'll get back to you as soon as possible.",
+  formNameLabel: "Name",
+  formNamePlaceholder: "Your full name",
+  formEmailLabel: "Email",
+  formEmailPlaceholder: "your@email.com",
+  formMessageLabel: "Message",
+  formMessagePlaceholder: "Your Message",
+  formSendButton: "Send Message",
+  contactAddressLabel: "CONTACT FORM",
+  contactAddressText: "Kape't Pamana, 11 Sumulong Highway, Brgy. Sta. Cruz",
+  callUsLabel: "Call US",
+  callUsValue: "+63 (917) 1234567",
+  emailUsLabel: "Email Us",
+  emailUsValue: "kapetpamana@gmail.com",
+  mapEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7721.649797554171!2d121.16023039427121!3d14.609048625508008!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397b9003bb23f0f%3A0x3b8ac521ba0a2f61!2sStarbucks%2011%20Sumulong%20Highway%20Antipolo!5e0!3m2!1sen!2sph!4v1774162957750!5m2!1sen!2sph",
+};
 
 function Contact() {
+  const [contentMap, setContentMap] = useState({});
+  const txt = useCallback((k) => contentMap[k]?.title || contentMap[k]?.description || DEFAULTS[k] || "", [contentMap]);
+  const img = useCallback((k) => contentMap[k]?.image_url || DEFAULTS[k] || "", [contentMap]);
+
   useEffect(() => {
     const navbar = document.getElementById("navbar");
 
@@ -39,6 +82,23 @@ function Contact() {
     };
   }, []);
 
+  useEffect(() => {
+    const loadContent = async () => {
+      try {
+        const res = await fetch(API_CONTENT);
+        const data = await res.json();
+        const map = {};
+        (data?.items || []).forEach((item) => {
+          if (item?.content_key) map[item.content_key] = item;
+        });
+        setContentMap(map);
+      } catch {
+        setContentMap({});
+      }
+    };
+    loadContent();
+  }, []);
+
   return (
     <>
       <Navbar activePage="contact" />
@@ -50,13 +110,12 @@ function Contact() {
                </video>
                <div className="hero-overlay" />
                <div className="hero-content">
-                 <p className="hero-eyebrow">Est. 1996 &nbsp;·&nbsp; Filipino Heritage</p>
                  <h1 className="hero-headline">
-                   From Filipino Hands
+                   {txt("heroLine1")}
                    <br />
-                   <em>to global streets</em>
+                   <em> {txt("heroLine2")}</em>
                  </h1>
-                 <a href="#featured" className="btn-primary">Explore Our Products</a>
+                
                </div>
                <div className="scroll-hint">
                  <div className="scroll-arrow" />
@@ -68,19 +127,15 @@ function Contact() {
           <div className="wrap">
             <div className="review-headline">
               <h1 className="text-center" style={{ fontFamily: "Karla, sans-serif" }}>
-                Let's Connect
+                {txt("connectTitle")}
               </h1>
               <p className="text-center lh-base" style={{ fontFamily: "Karla, sans-serif", fontSize: "18px" }}>
-                We’d love to hear from you! Your thoughts, experiences, and
-                feedback help us grow and continue delivering meaningful coffee
-                and cultural products. Share your reviews, suggestions, and
-                stories with us, and let us know how Kape’t Ani has become part
-                of your daily rituals.
+                {txt("connectDesc")}
               </p>
             </div>
             <div className="review-subheadline">
               <div className="decoline"></div>
-              <span className="label mx-3 ">OUR OFFICES</span>
+              <span className="label mx-3 ">{txt("officesLabel")}</span>
               <div className="decoline"></div>
             </div>
           </div>
@@ -92,46 +147,46 @@ function Contact() {
           <div className="offices-wrap d-flex flex-row justify-content-center align-items-start align-content-start gap-5">
             <div className="officeWrap text-center">
               <div className="officeImage">
-                <img src={office1} className="img-fluid mb-5" />
+                <img src={img("office1Image")} className="img-fluid mb-5" />
               </div>
               <div className="officeInfo">
-                <span className="label mb-2">Main Branch</span>
+                <span className="label mb-2">{txt("office1Branch")}</span>
                 <span className="officeHeadline mb-2">
-                  Congressional Avenue, San Beda St., Quezon City
+                  {txt("office1Address")}
                 </span>
-                <span className="label my-3">Opening Times</span>
+                <span className="label my-3">{txt("openingTimesLabel")}</span>
                 <ul className="list-unstyled">
                   <li>
-                    <p>Mon - Fri 08:00 to 22:00</p>
+                    <p>{txt("office1HoursMonFri")}</p>
                   </li>
                   <li>
-                    <p>Sat - 09:00 to 20:00</p>
+                    <p>{txt("office1HoursSat")}</p>
                   </li>
                   <li>
-                    <p>Sun - 12:00 to 18:00</p>
+                    <p>{txt("office1HoursSun")}</p>
                   </li>
                 </ul>
               </div>
             </div>
             <div className="officeWrap text-center">
               <div className="officeImage">
-                <img src={office2} className="img-fluid mb-5" />
+                <img src={img("office2Image")} className="img-fluid mb-5" />
               </div>
               <div className="officeInfo">
-                <span className="label mb-2">Main Branch</span>
+                <span className="label mb-2">{txt("office2Branch")}</span>
                 <span className="officeHeadline mb-2">
-                  Congressional Avenue, San Beda St., Quezon City
+                  {txt("office2Address")}
                 </span>
-                <span className="label my-3">Opening Times</span>
+                <span className="label my-3">{txt("openingTimesLabel")}</span>
                 <ul className="list-unstyled">
                   <li>
-                    <p>Mon - Fri 08:00 to 22:00</p>
+                    <p>{txt("office2HoursMonFri")}</p>
                   </li>
                   <li>
-                    <p>Sat - 09:00 to 20:00</p>
+                    <p>{txt("office2HoursSat")}</p>
                   </li>
                   <li>
-                    <p>Sun - 12:00 to 18:00</p>
+                    <p>{txt("office2HoursSun")}</p>
                   </li>
                 </ul>
               </div>
@@ -144,55 +199,54 @@ function Contact() {
         <div className="wrap">
           <div className="reviewForm d-flex align-items-stretch">
             <div className="formWrap d-flex flex-column align-item-stretch">
-              <span className="mb-3 label">CONTACT FORM</span>
+              <span className="mb-3 label">{txt("contactFormLabel")}</span>
               <span className="mb-3" style={{ fontFamily: "Karla, sans-serif" }}>
-                Drop us your message and I'll get back to you as soon as
-                possible.
+                {txt("contactFormDesc")}
               </span>
               <form className="d-flex flex-column">
                 <label htmlFor="name" className="form-label">
-                  Name
+                  {txt("formNameLabel")}
                 </label>
                 <input
                   id="name"
                   type="text"
-                  placeholder="Your full name"
+                  placeholder={txt("formNamePlaceholder")}
                   className="form-control px-3 py-3"
                 />
                 <label htmlFor="email" className="form-label">
-                  Email
+                  {txt("formEmailLabel")}
                 </label>
                 <input
                   id="email"
                   type="email"
-                  placeholder="your@email.com"
+                  placeholder={txt("formEmailPlaceholder")}
                   className="form-control px-3 py-3"
                 />
                 <label htmlFor="message" className="form-label">
-                  Message
+                  {txt("formMessageLabel")}
                 </label>
                 <textarea
                   id="message"
-                  placeholder="Your Message"
+                  placeholder={txt("formMessagePlaceholder")}
                   className="form-control px-3 py-3 mb-5"
                 ></textarea>
                 <button type="submit" className="btn btn-primary">
-                  Send Message
+                  {txt("formSendButton")}
                 </button>
               </form>
             </div>
             <div className="contactWrap">
               <div className="contactInfo">
-                <span className="mb-3 label">CONTACT FORM</span>
-                <span className="mb-5 contactHeadline">Kape't Pamana, 11 Sumulong Highway, Brgy. Sta. Cruz</span>
+                <span className="mb-3 label">{txt("contactAddressLabel")}</span>
+                <span className="mb-5 contactHeadline">{txt("contactAddressText")}</span>
               </div>
               <div className="contactInfo">
-                <span className="label">Call US</span>
-                <span>+63 (917) 1234567</span>
+                <span className="label">{txt("callUsLabel")}</span>
+                <span>{txt("callUsValue")}</span>
               </div>
               <div className="contactInfo">
-                <span className="label">Email Us</span>
-                <a href="">kapetpamana@gmail.com</a>
+                <span className="label">{txt("emailUsLabel")}</span>
+                <a href={`mailto:${txt("emailUsValue")}`}>{txt("emailUsValue")}</a>
               </div>
             </div>
           </div>
@@ -200,7 +254,7 @@ function Contact() {
         <div className="location">
           <div className="embedLocation">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7721.649797554171!2d121.16023039427121!3d14.609048625508008!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397b9003bb23f0f%3A0x3b8ac521ba0a2f61!2sStarbucks%2011%20Sumulong%20Highway%20Antipolo!5e0!3m2!1sen!2sph!4v1774162957750!5m2!1sen!2sph"
+              src={txt("mapEmbedUrl")}
               width="100%"
               height="450"
               style={{ border: "0" }}
