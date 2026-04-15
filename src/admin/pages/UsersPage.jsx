@@ -473,7 +473,7 @@ export default function UsersPage() {
   function openEdit(user) {
     if (!canManage) return;
     const targetRole = String(user?.status || "").toLowerCase();
-    if (!canAssignElevated && targetRole === "superadmin") {
+    if (!canAssignElevated && targetRole === "superadmin" && Number(user.id) !== currentUserId) {
       showToast("Only superadmin can edit a SuperAdmin account", "error");
       return;
     }

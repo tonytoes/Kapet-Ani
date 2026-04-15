@@ -27,7 +27,6 @@ function usersHasPasswordLenColumn(): bool
     if ($cached !== null) return $cached;
     global $conn;
     try {
-        // Prefer SHOW COLUMNS to avoid INFORMATION_SCHEMA permission issues.
         $stmt = $conn->query("SHOW COLUMNS FROM `users` LIKE 'password_len'");
         $cached = (bool) $stmt->fetch(PDO::FETCH_ASSOC);
         return $cached;
@@ -37,17 +36,12 @@ function usersHasPasswordLenColumn(): bool
     }
 }
 
-// ── Reliable multipart detection ─────────────────────────────────────────
-// $_FILES is populated by PHP whenever it parsed a multipart body,
-// regardless of which server variable holds the Content-Type header.
 function isMultipart(): bool
 {
     if (!empty($_FILES)) return true;
-
     $ct = $_SERVER['CONTENT_TYPE']
        ?? $_SERVER['HTTP_CONTENT_TYPE']
        ?? '';
-
     return str_contains($ct, 'multipart/form-data');
 }
 
@@ -65,8 +59,6 @@ function getRequesterRole(): ?string
             $header = $all['Authorization'] ?? $all['authorization'] ?? '';
         }
     }
-    // Some servers drop Authorization headers on multipart/form-data requests.
-    // Fallback to form/query token if present.
     $token = '';
     if ($header && preg_match('/Bearer\s+(.+)/i', $header, $m)) {
         $token = trim($m[1]);
@@ -86,8 +78,6 @@ function getRequesterRole(): ?string
                 return strtolower((string) $row['role']);
             }
         }
-
-        // Fallback to role claim in token if DB lookup fails.
         $role = $decoded->data->role ?? null;
         return is_string($role) ? strtolower($role) : null;
     } catch (Throwable $e) {
@@ -129,8 +119,6 @@ try {
         ? $_POST
         : (json_decode(file_get_contents("php://input"), true) ?? []);
 
-    // React sends PUT+file as POST with _method=PUT because PHP does not
-    // populate $_POST/$_FILES for multipart PUT requests on most servers.
     $override = strtoupper($data['_method'] ?? '');
     if ($method === 'POST' && $override === 'PUT') {
         $method = 'PUT';
@@ -164,7 +152,6 @@ function extractImage(): ?array
         sendResponse(400, false, 'Image must be under 10 MB');
     }
 
-    // ✅ FIX: reliable MIME detection (works on Hostinger)
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime  = finfo_file($finfo, $file['tmp_name']);
     finfo_close($finfo);
@@ -206,6 +193,8 @@ function listUsers(): void
             role AS status, created_at,
             {$passwordLenSelect}
             image_name,
+            -- ↓ FIX: include updated_at so we can build a cache-busting URL
+            COALESCE(UNIX_TIMESTAMP(updated_at), UNIX_TIMESTAMP(created_at), 0) AS image_ts,
             (SELECT COALESCE(SUM(total_price), 0)
              FROM orders WHERE user_id = users.id) AS total_spent
         FROM users
@@ -221,7 +210,9 @@ function listUsers(): void
         if ($len > 15) $len = 15;
         $imageUrl = null;
         if (!empty($u['image_name'])) {
-            $imageUrl = LINK_PATH . "getImage.php?id=" . $u['id'];
+            // ↓ FIX: append &t=<timestamp> so browsers re-fetch after an image update
+            $ts = (int)($u['image_ts'] ?? 0);
+            $imageUrl = LINK_PATH . "getImage.php?id=" . $u['id'] . ($ts > 0 ? "&t={$ts}" : "");
         }
         return [
             'id'         => (int) $u['id'],
@@ -363,16 +354,12 @@ function updateUser(array $data): void
     }
 
     $currentTargetRole = strtolower((string) $currentUser['role']);
-    // Block admins from modifying superadmin accounts (server-side enforcement).
-    // Allow self-edit even if role detection misfires; otherwise require superadmin.
     if ($currentTargetRole === 'superadmin' && !($requesterId > 0 && $requesterId === $id) && $requesterRole !== 'superadmin') {
         sendResponse(403, false, 'Only superadmin can edit a SuperAdmin account');
     }
-    // Block admins from editing other Admin accounts' info (unless superadmin).
     if ($currentTargetRole === 'admin' && $requesterRole !== 'superadmin' && $requesterId > 0 && $requesterId !== $id) {
         sendResponse(403, false, 'Only superadmin can edit other Admin accounts');
     }
-    // Prevent admins from changing the role of other Admin accounts.
     if ($currentTargetRole === 'admin' && $requesterRole !== 'superadmin' && $role !== $currentTargetRole) {
         sendResponse(403, false, 'Only superadmin can change an Admin user role');
     }
@@ -387,8 +374,6 @@ function updateUser(array $data): void
     $newPasswordRaw = $data['new_password'] ?? $data['password'] ?? '';
     $passwordChange = !empty($newPasswordRaw) && $newPasswordRaw !== '••••••••';
     if ($passwordChange) {
-        // If current_password is provided, treat as self-service change:
-        // enforce minimum length + verify current password.
         $currentPasswordRaw = $data['current_password'] ?? '';
         if ($currentPasswordRaw !== '') {
             if (strlen($newPasswordRaw) < 8) {
@@ -410,7 +395,6 @@ function updateUser(array $data): void
     $hasPasswordLen = usersHasPasswordLenColumn();
 
     if ($image) {
-        // ── New image uploaded ───────────────────────────────────────────
         $sql = "UPDATE users
                 SET first_name=?, last_name=?, email=?, phone=?, address=?, postalcode=?, role=?,
                     image_name=?, image_type=?, image_blob=?"
@@ -439,7 +423,6 @@ function updateUser(array $data): void
         $stmt->execute();
 
     } elseif ($removeImg) {
-        // ── Remove existing image ────────────────────────────────────────
         $sql = "UPDATE users
                 SET first_name=?, last_name=?, email=?, phone=?, address=?, postalcode=?, role=?,
                     image_name=NULL, image_type=NULL, image_blob=NULL"
@@ -458,7 +441,6 @@ function updateUser(array $data): void
         $stmt->execute($params);
 
     } else {
-        // ── Text fields only ─────────────────────────────────────────────
         $sql = "UPDATE users
                 SET first_name=?, last_name=?, email=?, phone=?, address=?, postalcode=?, role=?"
              . ($passwordChange ? ($hasPasswordLen ? ", password=?, password_len=?" : ", password=?") : "")
@@ -493,7 +475,6 @@ function deleteUser(array $data): void
     try {
         $conn->beginTransaction();
 
-        // Archive user receives ownership of historical orders.
         $archiveStmt = $conn->prepare("SELECT id FROM users WHERE email = ? LIMIT 1");
         $archiveStmt->execute(['deleted.user@system.local']);
         $archiveUser = $archiveStmt->fetch(PDO::FETCH_ASSOC);
@@ -508,11 +489,9 @@ function deleteUser(array $data): void
             throw new RuntimeException('Archive user cannot be deleted.');
         }
 
-        // Remove dependent cart rows first to satisfy FK constraints.
         $clearCart = $conn->prepare("DELETE FROM cart_items WHERE user_id = ?");
         $clearCart->execute([$id]);
 
-        // Preserve historical orders by reassigning to archive user.
         $moveOrders = $conn->prepare("UPDATE orders SET user_id = ? WHERE user_id = ?");
         $moveOrders->execute([$archiveUserId, $id]);
 
@@ -524,7 +503,6 @@ function deleteUser(array $data): void
     } catch (Throwable $e) {
         if ($conn->inTransaction()) $conn->rollBack();
 
-        // Keep message user-friendly for known FK blockers.
         if (str_contains($e->getMessage(), 'orders_ibfk_1')) {
             sendResponse(409, false, 'Cannot delete this user yet because they have order records.');
         }

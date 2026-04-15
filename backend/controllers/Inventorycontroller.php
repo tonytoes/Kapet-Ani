@@ -1,4 +1,4 @@
-<?php
+<?php //inventorycontroll
 ob_start();
 ini_set('display_errors', 0);
 error_reporting(0);
@@ -139,7 +139,8 @@ function listProducts(): void
             p.image_name, p.image_type,
             p.category_id,
             p.discount, p.totalprice,
-            c.name AS category_name
+            c.name AS category_name,
+            COALESCE(UNIX_TIMESTAMP(p.updated_at), 0) AS image_ts
         FROM products p
         LEFT JOIN categories c ON c.id = p.category_id
         ORDER BY p.id DESC
@@ -151,7 +152,8 @@ function listProducts(): void
         $imageUrl = null;
         if (!empty($p['image_name']) && !empty($p['image_type'])) {
             // Keep image URL stable for browser caching.
-            $imageUrl = LINK_PATH . "Getproductimage.php?id=" . $p['id'];
+            $ts = (int)($p['image_ts'] ?? 0);
+            $imageUrl = LINK_PATH . "Getproductimage.php?id=" . $p['id'] . ($ts > 0 ? "&t={$ts}" : "");
         }
 
         $qty    = (int) $p['qty'];

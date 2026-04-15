@@ -232,6 +232,7 @@ function User() {
         address: me.address || "",
         postalcode: me.postalcode || "",
         created_at: me.created_at ?? currentUser.created_at,
+        image_name: me.image_name || currentUser.image_name || null,  // ← ADD THIS
       };
       localStorage.setItem("user", JSON.stringify(updated));
       setUser(updated);
@@ -349,21 +350,22 @@ function User() {
       if (!data.success) throw new Error(data.message || "Failed to save profile");
 
       const updatedUser = {
-        ...effectiveUser,
-        first_name: form.first_name.trim(),
-        last_name: form.last_name.trim(),
-        email: form.email.trim(),
-        phone: composeStoredPhone(phoneCountry, form.phone),
-        address: String(form.address || "").trim(),
-        postalcode: String(form.postalcode || "").trim(),
-      };
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      setUser(updatedUser);
-      setMessage("Profile updated successfully.");
-      setMessageType("success");
-      setPasswordForm({ current: "", next: "", confirm: "" });
-      window.dispatchEvent(new Event("userUpdated"));
-      fetchProfile(updatedUser);
+      ...effectiveUser,
+      first_name: form.first_name.trim(),
+      last_name: form.last_name.trim(),
+      email: form.email.trim(),
+      phone: composeStoredPhone(phoneCountry, form.phone),
+      address: String(form.address || "").trim(),
+      postalcode: String(form.postalcode || "").trim(),
+      image_name: imageFile ? imageFile.name : (removeImage ? null : effectiveUser.image_name),
+    };
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    setUser(updatedUser);
+    setMessage("Profile updated successfully.");
+    setMessageType("success");
+    setPasswordForm({ current: "", next: "", confirm: "" });
+    window.dispatchEvent(new Event("userUpdated"));
+    fetchProfile(updatedUser);
     } catch (err) {
       setMessage(err.message || "Failed to save profile");
       setMessageType("error");
