@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LINK_PATH } from "../admin/data/LinkPath.jsx";
 import { getCartItems, getCartSubtotal, saveCartItems } from "../utils/cart";
+import { PHONE_COUNTRIES, digitsOnly, formatLocalPhone11, splitStoredPhone, composeStoredPhone } from "../utils/phone";
 import Newsletter from '../components/layout/Newsletter';
 import Footer from '../components/layout/Footer';
 
@@ -23,16 +24,22 @@ function Checkout() {
   }, []);
   const [form, setForm] = useState(() => {
     const u = JSON.parse(localStorage.getItem("user") || "null");
+    const phoneParts = splitStoredPhone(u?.phone || "");
     return {
       name: `${u?.first_name || ""} ${u?.last_name || ""}`.trim(),
       email: u?.email || "",
-      phone: u?.phone || "",
+      phone: phoneParts.local,
       address: u?.address || "",
       postalcode: u?.postalcode || "",
       payment_mode: "COD",
       payment_id: "",
     };
   });
+  const [phoneCountry, setPhoneCountry] = useState(() => {
+    const u = JSON.parse(localStorage.getItem("user") || "null");
+    return splitStoredPhone(u?.phone || "").iso2;
+  });
+  const selectedPhoneCountry = PHONE_COUNTRIES.find((c) => c.iso2 === phoneCountry) || PHONE_COUNTRIES[0];
 
   useEffect(() => {
     const current = getCartItems();
@@ -74,7 +81,7 @@ function Checkout() {
         user_id: user?.id || 0,
         name: form.name,
         email: form.email,
-        phone: form.phone,
+        phone: composeStoredPhone(phoneCountry, form.phone),
         address: form.address,
         postalcode: form.postalcode,
         payment_mode: form.payment_mode,
@@ -148,7 +155,40 @@ function Checkout() {
                     className={isLoggedIn ? "co-input-locked" : ""}
                   />
                 </div>
-                <div><label>Phone</label><input type="text" value={form.phone} onChange={(e) => onChange("phone", e.target.value)} /></div>
+                <div>
+                  <label>Phone</label>
+                  <div className="co-phone-wrap">
+                    <div className="co-phone-country">
+                      <img
+                        src={selectedPhoneCountry?.flagUrl}
+                        alt={`${selectedPhoneCountry?.name || "Country"} flag`}
+                        className="co-phone-flag"
+                        loading="lazy"
+                      />
+                      <select
+                        className="co-phone-cc"
+                        value={phoneCountry}
+                        onChange={(e) => setPhoneCountry(e.target.value)}
+                        aria-label="Country code"
+                      >
+                        {PHONE_COUNTRIES.map((c) => (
+                          <option key={c.iso2} value={c.iso2}>
+                            {c.iso2 === phoneCountry
+                              ? `+${c.dialCode}`
+                              : `${c.name} (+${c.dialCode})`}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={formatLocalPhone11(form.phone)}
+                      onChange={(e) => onChange("phone", digitsOnly(e.target.value, 11))}
+                      placeholder="0000 000 0000"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -165,7 +205,15 @@ function Checkout() {
                 />
               </div>
               <div><label>Street Address</label><input type="text" value={form.address} onChange={(e) => onChange("address", e.target.value)} /></div>
-              <div><label>Postal Code</label><input type="text" value={form.postalcode} onChange={(e) => onChange("postalcode", e.target.value)} /></div>
+              <div>
+                <label>Postal Code</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={form.postalcode}
+                  onChange={(e) => onChange("postalcode", digitsOnly(e.target.value, 10))}
+                />
+              </div>
             </div>
 
             <div className="co-card">

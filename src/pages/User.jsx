@@ -5,6 +5,7 @@ import Navbar2 from "../components/layout/Navbar2.jsx";
 import Newsletter from "../components/layout/Newsletter";
 import Footer from "../components/layout/Footer.jsx";
 import { LINK_PATH } from "../admin/data/LinkPath.jsx";
+import { PHONE_COUNTRIES, digitsOnly, formatLocalPhone11, splitStoredPhone, composeStoredPhone } from "../utils/phone";
 
 const API = `${LINK_PATH}usersController.php`;
 const ORDERS_API = `${LINK_PATH}Transactionscontroller.php`;
@@ -93,15 +94,21 @@ function User() {
   const [user, setUser] = useState(() => getStoredUser());
   const [form, setForm] = useState(() => {
     const u = getStoredUser();
+    const phoneParts = splitStoredPhone(u?.phone || "");
     return {
       first_name: u?.first_name || "",
       last_name: u?.last_name || "",
       email: u?.email || "",
-      phone: u?.phone || "",
+      phone: phoneParts.local,
       address: u?.address || "",
       postalcode: u?.postalcode || "",
     };
   });
+  const [phoneCountry, setPhoneCountry] = useState(() => {
+    const u = getStoredUser();
+    return splitStoredPhone(u?.phone || "").iso2;
+  });
+  const selectedPhoneCountry = PHONE_COUNTRIES.find((c) => c.iso2 === phoneCountry) || PHONE_COUNTRIES[0];
   const [passwordForm, setPasswordForm] = useState({ current: "", next: "", confirm: "" });
   const [showPasswords, setShowPasswords] = useState({
     current: false,
@@ -162,10 +169,11 @@ function User() {
         first_name: parsed.first_name || "",
         last_name: parsed.last_name || "",
         email: parsed.email || "",
-        phone: parsed.phone || "",
+        phone: splitStoredPhone(parsed.phone || "").local,
         address: parsed.address || "",
         postalcode: parsed.postalcode || "",
       });
+      setPhoneCountry(splitStoredPhone(parsed.phone || "").iso2);
       const cachedAvatar = getStoredAvatarByUserId(parsed.id);
       if (cachedAvatar) setImagePreview(cachedAvatar);
       fetchProfile(parsed);
@@ -231,10 +239,11 @@ function User() {
         first_name: me.first_name || "",
         last_name: me.last_name || "",
         email: me.email || "",
-        phone: me.phone || "",
+        phone: splitStoredPhone(me.phone || "").local,
         address: me.address || "",
         postalcode: me.postalcode || "",
       });
+      setPhoneCountry(splitStoredPhone(me.phone || "").iso2);
     } catch {
       // silent, page still works with local data
     }
@@ -320,7 +329,7 @@ function User() {
       fd.append("first_name", form.first_name.trim());
       fd.append("last_name", form.last_name.trim());
       fd.append("email", form.email.trim());
-      fd.append("phone", String(form.phone || "").trim());
+      fd.append("phone", composeStoredPhone(phoneCountry, form.phone));
       fd.append("address", String(form.address || "").trim());
       fd.append("postalcode", String(form.postalcode || "").trim());
       fd.append("status", (effectiveUser.role || effectiveUser.status || "user").toLowerCase());
@@ -344,7 +353,7 @@ function User() {
         first_name: form.first_name.trim(),
         last_name: form.last_name.trim(),
         email: form.email.trim(),
-        phone: String(form.phone || "").trim(),
+        phone: composeStoredPhone(phoneCountry, form.phone),
         address: String(form.address || "").trim(),
         postalcode: String(form.postalcode || "").trim(),
       };
@@ -475,7 +484,37 @@ function User() {
                 </div>
                 <div className="input-group">
                   <label>Phone</label>
-                  <input type="text" value={form.phone} onChange={e => onChange("phone", e.target.value)} placeholder="Phone number" />
+                  <div className="profile-phone-wrap">
+                    <div className="profile-phone-country">
+                      <img
+                        src={selectedPhoneCountry?.flagUrl}
+                        alt={`${selectedPhoneCountry?.name || "Country"} flag`}
+                        className="profile-phone-flag"
+                        loading="lazy"
+                      />
+                      <select
+                        className="profile-phone-cc"
+                        value={phoneCountry}
+                        onChange={(e) => setPhoneCountry(e.target.value)}
+                        aria-label="Country code"
+                      >
+                        {PHONE_COUNTRIES.map((c) => (
+                          <option key={c.iso2} value={c.iso2}>
+                            {c.iso2 === phoneCountry ? `+${c.dialCode}` : `${c.name} (+${c.dialCode})`}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      autoComplete="tel-national"
+                      className="profile-phone-input"
+                      value={formatLocalPhone11(form.phone)}
+                      onChange={(e) => onChange("phone", digitsOnly(e.target.value, 11))}
+                      placeholder="0000 000 0000"
+                    />
+                  </div>
                 </div>
                 <div className="input-group">
                   <label>Address</label>
@@ -483,7 +522,14 @@ function User() {
                 </div>
                 <div className="input-group">
                   <label>Postal Code</label>
-                  <input type="text" value={form.postalcode} onChange={e => onChange("postalcode", e.target.value)} placeholder="Postal code" />
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="postal-code"
+                    value={form.postalcode}
+                    onChange={e => onChange("postalcode", digitsOnly(e.target.value, 10))}
+                    placeholder="Postal code"
+                  />
                 </div>
                 <div className="password-block">
                   <h4>Change Password</h4>

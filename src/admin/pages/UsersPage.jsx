@@ -12,6 +12,7 @@ import { maskEmail } from "../utils";
 import { canAssignElevatedRoles, canManageAdminPanels } from "../utils";
 import { LINK_PATH } from "../data/LinkPath.jsx";
 import { useCache }  from "../data/CacheContext";   // ← NEW
+import { PHONE_COUNTRIES, digitsOnly, formatLocalPhone11, splitStoredPhone, composeStoredPhone } from "../../utils/phone";
 
 const API        = `${LINK_PATH}usersController.php`;
 const CACHE_KEY  = "users";
@@ -217,6 +218,8 @@ function ThemedSelect({ value, onChange, options, placeholder = "Select role", d
 
 function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveImage, canAssignElevated }) {
   const [showPassword, setShowPassword] = useState(false);
+  const [phoneCountry, setPhoneCountry] = useState(() => splitStoredPhone(form.phone || "").iso2);
+  const selectedPhoneCountry = PHONE_COUNTRIES.find((c) => c.iso2 === phoneCountry) || PHONE_COUNTRIES[0];
   const roleLocked = !canAssignElevated && (form.status === "admin" || form.status === "superadmin");
 
   useEffect(() => {
@@ -224,11 +227,15 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
     setShowPassword(false);
   }, [mode, form?.email]);
 
+  useEffect(() => {
+    setPhoneCountry(splitStoredPhone(form.phone || "").iso2);
+  }, [form.phone]);
+
   const fields = [
     { label: "First Name", id: "first_name", type: "text",  placeholder: "First name" },
     { label: "Last Name",  id: "last_name",  type: "text",  placeholder: "Last name" },
     { label: "Email",      id: "email",      type: "email", placeholder: "email@example.com" },
-    { label: "Phone",      id: "phone",      type: "text",  placeholder: "Phone number" },
+    { label: "Phone",      id: "phone",      type: "tel",   placeholder: "0000 000 0000" },
     { label: "Address",    id: "address",    type: "text",  placeholder: "Street address" },
     { label: "Postal Code",id: "postalcode", type: "text",  placeholder: "Postal code" },
     {
@@ -276,13 +283,60 @@ function UserForm({ form, onChange, mode, imagePreview, onFileChange, onRemoveIm
               </button>
             </div>
           ) : (
-            <input
-              className="form-control"
-              type={f.type}
-              placeholder={f.placeholder}
-              value={form[f.id]}
-              onChange={e => onChange(f.id, e.target.value)}
-            />
+            f.id === "phone" ? (
+              <div className="kp-admin-phone-wrap">
+                <div className="kp-admin-phone-country">
+                  <img
+                    src={selectedPhoneCountry?.flagUrl}
+                    alt={`${selectedPhoneCountry?.name || "Country"} flag`}
+                    className="kp-admin-phone-flag"
+                    loading="lazy"
+                  />
+                  <select
+                    className="kp-admin-phone-cc"
+                    value={phoneCountry}
+                    onChange={(e) => {
+                      const next = e.target.value;
+                      setPhoneCountry(next);
+                      const local = splitStoredPhone(form.phone || "").local;
+                      onChange("phone", composeStoredPhone(next, local));
+                    }}
+                    aria-label="Country code"
+                  >
+                    {PHONE_COUNTRIES.map((c) => (
+                      <option key={c.iso2} value={c.iso2}>
+                        {c.iso2 === phoneCountry ? `+${c.dialCode}` : `${c.name} (+${c.dialCode})`}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <input
+                  className="form-control kp-admin-phone-input"
+                  type="text"
+                  inputMode="numeric"
+                  placeholder={f.placeholder}
+                  value={formatLocalPhone11(splitStoredPhone(form.phone || "", phoneCountry).local)}
+                  onChange={e => onChange("phone", composeStoredPhone(phoneCountry, digitsOnly(e.target.value, 11)))}
+                />
+              </div>
+            ) : f.id === "postalcode" ? (
+              <input
+                className="form-control"
+                type="text"
+                inputMode="numeric"
+                placeholder={f.placeholder}
+                value={form.postalcode}
+                onChange={e => onChange("postalcode", digitsOnly(e.target.value, 10))}
+              />
+            ) : (
+              <input
+                className="form-control"
+                type={f.type}
+                placeholder={f.placeholder}
+                value={form[f.id]}
+                onChange={e => onChange(f.id, e.target.value)}
+              />
+            )
           )}
         </div>
       ))}

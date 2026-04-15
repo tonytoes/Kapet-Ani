@@ -256,9 +256,9 @@ function addUser(array $data): void
     $first_name = trim($data['first_name'] ?? '');
     $last_name  = trim($data['last_name']  ?? '');
     $email      = trim($data['email']      ?? '');
-    $phone      = trim($data['phone']      ?? '');
+    $phone      = preg_replace('/\D+/', '', (string)($data['phone'] ?? '')) ?? '';
     $address    = trim($data['address']    ?? '');
-    $postalcode = trim($data['postalcode'] ?? '');
+    $postalcode = preg_replace('/\D+/', '', (string)($data['postalcode'] ?? '')) ?? '';
     $password   = $data['password']        ?? '';
     $role       = strtolower($data['status'] ?? 'user');
     $requesterRole = getRequesterRole();
@@ -339,9 +339,9 @@ function updateUser(array $data): void
     $first_name = trim($data['first_name']   ?? '');
     $last_name  = trim($data['last_name']    ?? '');
     $email      = trim($data['email']        ?? '');
-    $phone      = trim($data['phone']        ?? '');
+    $phone      = preg_replace('/\D+/', '', (string)($data['phone'] ?? '')) ?? '';
     $address    = trim($data['address']      ?? '');
-    $postalcode = trim($data['postalcode']   ?? '');
+    $postalcode = preg_replace('/\D+/', '', (string)($data['postalcode'] ?? '')) ?? '';
     $role       = strtolower($data['status'] ?? 'user');
     $removeImg  = ($data['remove_image']     ?? '') === '1';
     $requesterRole = getRequesterRole();
