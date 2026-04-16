@@ -1,4 +1,4 @@
-<?php
+<?php //usercontroll
 ob_start();
 ini_set('display_errors', 0);
 error_reporting(0);
@@ -27,7 +27,6 @@ function usersHasPasswordLenColumn(): bool
     if ($cached !== null) return $cached;
     global $conn;
     try {
-        // Prefer SHOW COLUMNS to avoid INFORMATION_SCHEMA permission issues.
         $stmt = $conn->query("SHOW COLUMNS FROM `users` LIKE 'password_len'");
         $cached = (bool) $stmt->fetch(PDO::FETCH_ASSOC);
         return $cached;
@@ -37,17 +36,12 @@ function usersHasPasswordLenColumn(): bool
     }
 }
 
-// ── Reliable multipart detection ─────────────────────────────────────────
-// $_FILES is populated by PHP whenever it parsed a multipart body,
-// regardless of which server variable holds the Content-Type header.
 function isMultipart(): bool
 {
     if (!empty($_FILES)) return true;
-
     $ct = $_SERVER['CONTENT_TYPE']
        ?? $_SERVER['HTTP_CONTENT_TYPE']
        ?? '';
-
     return str_contains($ct, 'multipart/form-data');
 }
 
@@ -65,8 +59,12 @@ function getRequesterRole(): ?string
             $header = $all['Authorization'] ?? $all['authorization'] ?? '';
         }
     }
-    if (!$header || !preg_match('/Bearer\s+(.+)/i', $header, $m)) return null;
-    $token = trim($m[1]);
+    $token = '';
+    if ($header && preg_match('/Bearer\s+(.+)/i', $header, $m)) {
+        $token = trim($m[1]);
+    } else {
+        $token = trim((string)($_POST['auth_token'] ?? $_GET['auth_token'] ?? ''));
+    }
     if ($token === '') return null;
 
     try {
@@ -80,8 +78,6 @@ function getRequesterRole(): ?string
                 return strtolower((string) $row['role']);
             }
         }
-
-        // Fallback to role claim in token if DB lookup fails.
         $role = $decoded->data->role ?? null;
         return is_string($role) ? strtolower($role) : null;
     } catch (Throwable $e) {
@@ -101,8 +97,12 @@ function getRequesterId(): int
             $header = $all['Authorization'] ?? $all['authorization'] ?? '';
         }
     }
-    if (!$header || !preg_match('/Bearer\s+(.+)/i', $header, $m)) return 0;
-    $token = trim($m[1]);
+    $token = '';
+    if ($header && preg_match('/Bearer\s+(.+)/i', $header, $m)) {
+        $token = trim($m[1]);
+    } else {
+        $token = trim((string)($_POST['auth_token'] ?? $_GET['auth_token'] ?? ''));
+    }
     if ($token === '') return 0;
     try {
         $decoded = verifyJWT($token);
@@ -119,8 +119,6 @@ try {
         ? $_POST
         : (json_decode(file_get_contents("php://input"), true) ?? []);
 
-    // React sends PUT+file as POST with _method=PUT because PHP does not
-    // populate $_POST/$_FILES for multipart PUT requests on most servers.
     $override = strtoupper($data['_method'] ?? '');
     if ($method === 'POST' && $override === 'PUT') {
         $method = 'PUT';
@@ -154,7 +152,6 @@ function extractImage(): ?array
         sendResponse(400, false, 'Image must be under 10 MB');
     }
 
-    // ✅ FIX: reliable MIME detection (works on Hostinger)
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mime  = finfo_file($finfo, $file['tmp_name']);
     finfo_close($finfo);
@@ -189,9 +186,15 @@ function listUsers(): void
         SELECT
             id, first_name, last_name,
             CONCAT(first_name, ' ', last_name) AS username,
-            email, role AS status, created_at,
+            email,
+            COALESCE(phone, '') AS phone,
+            COALESCE(address, '') AS address,
+            COALESCE(postalcode, '') AS postalcode,
+            role AS status, created_at,
             {$passwordLenSelect}
             image_name,
+            -- ↓ FIX: include updated_at so we can build a cache-busting URL
+            COALESCE(UNIX_TIMESTAMP(updated_at), UNIX_TIMESTAMP(created_at), 0) AS image_ts,
             (SELECT COALESCE(SUM(total_price), 0)
              FROM orders WHERE user_id = users.id) AS total_spent
         FROM users
@@ -207,7 +210,9 @@ function listUsers(): void
         if ($len > 15) $len = 15;
         $imageUrl = null;
         if (!empty($u['image_name'])) {
-            $imageUrl = LINK_PATH . "getImage.php?id=" . $u['id'];
+            // ↓ FIX: append &t=<timestamp> so browsers re-fetch after an image update
+            $ts = (int)($u['image_ts'] ?? 0);
+            $imageUrl = LINK_PATH . "getImage.php?id=" . $u['id'] . ($ts > 0 ? "&t={$ts}" : "");
         }
         return [
             'id'         => (int) $u['id'],
@@ -215,6 +220,9 @@ function listUsers(): void
             'first_name' => $u['first_name'],
             'last_name'  => $u['last_name'],
             'email'      => $u['email'],
+            'phone'      => $u['phone'] ?? '',
+            'address'    => $u['address'] ?? '',
+            'postalcode' => $u['postalcode'] ?? '',
             'status'     => ucfirst($u['status']),
             'created_at' => $u['created_at'],
             'totalSpent' => '₱' . number_format($u['total_spent'], 2),
@@ -239,6 +247,9 @@ function addUser(array $data): void
     $first_name = trim($data['first_name'] ?? '');
     $last_name  = trim($data['last_name']  ?? '');
     $email      = trim($data['email']      ?? '');
+    $phone      = preg_replace('/\D+/', '', (string)($data['phone'] ?? '')) ?? '';
+    $address    = trim($data['address']    ?? '');
+    $postalcode = preg_replace('/\D+/', '', (string)($data['postalcode'] ?? '')) ?? '';
     $password   = $data['password']        ?? '';
     $role       = strtolower($data['status'] ?? 'user');
     $requesterRole = getRequesterRole();
@@ -269,31 +280,37 @@ function addUser(array $data): void
 
     if (usersHasPasswordLenColumn()) {
         $stmt = $conn->prepare("
-            INSERT INTO users (first_name, last_name, email, password, password_len, role, image_name, image_blob, image_type)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO users (first_name, last_name, email, phone, address, postalcode, password, password_len, role, image_name, image_blob, image_type)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->bindValue(1, $first_name);
         $stmt->bindValue(2, $last_name);
         $stmt->bindValue(3, $email);
-        $stmt->bindValue(4, $hashed);
-        $stmt->bindValue(5, $passwordLen, PDO::PARAM_INT);
-        $stmt->bindValue(6, $role);
-        $stmt->bindValue(7, $image ? $image['name'] : null);
-        $stmt->bindValue(8, $image ? $image['blob'] : null, PDO::PARAM_LOB);
-        $stmt->bindValue(9, $image ? $image['type'] : null);
+        $stmt->bindValue(4, $phone);
+        $stmt->bindValue(5, $address);
+        $stmt->bindValue(6, $postalcode);
+        $stmt->bindValue(7, $hashed);
+        $stmt->bindValue(8, $passwordLen, PDO::PARAM_INT);
+        $stmt->bindValue(9, $role);
+        $stmt->bindValue(10, $image ? $image['name'] : null);
+        $stmt->bindValue(11, $image ? $image['blob'] : null, PDO::PARAM_LOB);
+        $stmt->bindValue(12, $image ? $image['type'] : null);
     } else {
         $stmt = $conn->prepare("
-            INSERT INTO users (first_name, last_name, email, password, role, image_name, image_blob, image_type)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO users (first_name, last_name, email, phone, address, postalcode, password, role, image_name, image_blob, image_type)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         $stmt->bindValue(1, $first_name);
         $stmt->bindValue(2, $last_name);
         $stmt->bindValue(3, $email);
-        $stmt->bindValue(4, $hashed);
-        $stmt->bindValue(5, $role);
-        $stmt->bindValue(6, $image ? $image['name'] : null);
-        $stmt->bindValue(7, $image ? $image['blob'] : null, PDO::PARAM_LOB);
-        $stmt->bindValue(8, $image ? $image['type'] : null);
+        $stmt->bindValue(4, $phone);
+        $stmt->bindValue(5, $address);
+        $stmt->bindValue(6, $postalcode);
+        $stmt->bindValue(7, $hashed);
+        $stmt->bindValue(8, $role);
+        $stmt->bindValue(9, $image ? $image['name'] : null);
+        $stmt->bindValue(10, $image ? $image['blob'] : null, PDO::PARAM_LOB);
+        $stmt->bindValue(11, $image ? $image['type'] : null);
     }
     $stmt->execute();
 
@@ -313,6 +330,9 @@ function updateUser(array $data): void
     $first_name = trim($data['first_name']   ?? '');
     $last_name  = trim($data['last_name']    ?? '');
     $email      = trim($data['email']        ?? '');
+    $phone      = preg_replace('/\D+/', '', (string)($data['phone'] ?? '')) ?? '';
+    $address    = trim($data['address']      ?? '');
+    $postalcode = preg_replace('/\D+/', '', (string)($data['postalcode'] ?? '')) ?? '';
     $role       = strtolower($data['status'] ?? 'user');
     $removeImg  = ($data['remove_image']     ?? '') === '1';
     $requesterRole = getRequesterRole();
@@ -334,15 +354,12 @@ function updateUser(array $data): void
     }
 
     $currentTargetRole = strtolower((string) $currentUser['role']);
-    // Block admins from modifying superadmin accounts (server-side enforcement).
-    if ($currentTargetRole === 'superadmin' && $requesterRole !== 'superadmin') {
+    if ($currentTargetRole === 'superadmin' && !($requesterId > 0 && $requesterId === $id) && $requesterRole !== 'superadmin') {
         sendResponse(403, false, 'Only superadmin can edit a SuperAdmin account');
     }
-    // Block admins from editing other Admin accounts' info (unless superadmin).
     if ($currentTargetRole === 'admin' && $requesterRole !== 'superadmin' && $requesterId > 0 && $requesterId !== $id) {
         sendResponse(403, false, 'Only superadmin can edit other Admin accounts');
     }
-    // Prevent admins from changing the role of other Admin accounts.
     if ($currentTargetRole === 'admin' && $requesterRole !== 'superadmin' && $role !== $currentTargetRole) {
         sendResponse(403, false, 'Only superadmin can change an Admin user role');
     }
@@ -357,8 +374,6 @@ function updateUser(array $data): void
     $newPasswordRaw = $data['new_password'] ?? $data['password'] ?? '';
     $passwordChange = !empty($newPasswordRaw) && $newPasswordRaw !== '••••••••';
     if ($passwordChange) {
-        // If current_password is provided, treat as self-service change:
-        // enforce minimum length + verify current password.
         $currentPasswordRaw = $data['current_password'] ?? '';
         if ($currentPasswordRaw !== '') {
             if (strlen($newPasswordRaw) < 8) {
@@ -380,9 +395,8 @@ function updateUser(array $data): void
     $hasPasswordLen = usersHasPasswordLenColumn();
 
     if ($image) {
-        // ── New image uploaded ───────────────────────────────────────────
         $sql = "UPDATE users
-                SET first_name=?, last_name=?, email=?, role=?,
+                SET first_name=?, last_name=?, email=?, phone=?, address=?, postalcode=?, role=?,
                     image_name=?, image_type=?, image_blob=?"
              . ($passwordChange ? ($hasPasswordLen ? ", password=?, password_len=?" : ", password=?") : "")
              . ", updated_at=NOW() WHERE id=?";
@@ -392,6 +406,9 @@ function updateUser(array $data): void
         $stmt->bindValue($i++, $first_name);
         $stmt->bindValue($i++, $last_name);
         $stmt->bindValue($i++, $email);
+        $stmt->bindValue($i++, $phone);
+        $stmt->bindValue($i++, $address);
+        $stmt->bindValue($i++, $postalcode);
         $stmt->bindValue($i++, $role);
         $stmt->bindValue($i++, $image['name']);
         $stmt->bindValue($i++, $image['type']);
@@ -406,15 +423,14 @@ function updateUser(array $data): void
         $stmt->execute();
 
     } elseif ($removeImg) {
-        // ── Remove existing image ────────────────────────────────────────
         $sql = "UPDATE users
-                SET first_name=?, last_name=?, email=?, role=?,
+                SET first_name=?, last_name=?, email=?, phone=?, address=?, postalcode=?, role=?,
                     image_name=NULL, image_type=NULL, image_blob=NULL"
              . ($passwordChange ? ($hasPasswordLen ? ", password=?, password_len=?" : ", password=?") : "")
              . ", updated_at=NOW() WHERE id=?";
 
         $stmt   = $conn->prepare($sql);
-        $params = [$first_name, $last_name, $email, $role];
+        $params = [$first_name, $last_name, $email, $phone, $address, $postalcode, $role];
         if ($passwordChange) {
             $params[] = $hashedPassword;
             if ($hasPasswordLen) {
@@ -425,14 +441,13 @@ function updateUser(array $data): void
         $stmt->execute($params);
 
     } else {
-        // ── Text fields only ─────────────────────────────────────────────
         $sql = "UPDATE users
-                SET first_name=?, last_name=?, email=?, role=?"
+                SET first_name=?, last_name=?, email=?, phone=?, address=?, postalcode=?, role=?"
              . ($passwordChange ? ($hasPasswordLen ? ", password=?, password_len=?" : ", password=?") : "")
              . ", updated_at=NOW() WHERE id=?";
 
         $stmt   = $conn->prepare($sql);
-        $params = [$first_name, $last_name, $email, $role];
+        $params = [$first_name, $last_name, $email, $phone, $address, $postalcode, $role];
         if ($passwordChange) {
             $params[] = $hashedPassword;
             if ($hasPasswordLen) {
@@ -460,7 +475,6 @@ function deleteUser(array $data): void
     try {
         $conn->beginTransaction();
 
-        // Archive user receives ownership of historical orders.
         $archiveStmt = $conn->prepare("SELECT id FROM users WHERE email = ? LIMIT 1");
         $archiveStmt->execute(['deleted.user@system.local']);
         $archiveUser = $archiveStmt->fetch(PDO::FETCH_ASSOC);
@@ -475,11 +489,9 @@ function deleteUser(array $data): void
             throw new RuntimeException('Archive user cannot be deleted.');
         }
 
-        // Remove dependent cart rows first to satisfy FK constraints.
         $clearCart = $conn->prepare("DELETE FROM cart_items WHERE user_id = ?");
         $clearCart->execute([$id]);
 
-        // Preserve historical orders by reassigning to archive user.
         $moveOrders = $conn->prepare("UPDATE orders SET user_id = ? WHERE user_id = ?");
         $moveOrders->execute([$archiveUserId, $id]);
 
@@ -491,7 +503,6 @@ function deleteUser(array $data): void
     } catch (Throwable $e) {
         if ($conn->inTransaction()) $conn->rollBack();
 
-        // Keep message user-friendly for known FK blockers.
         if (str_contains($e->getMessage(), 'orders_ibfk_1')) {
             sendResponse(409, false, 'Cannot delete this user yet because they have order records.');
         }

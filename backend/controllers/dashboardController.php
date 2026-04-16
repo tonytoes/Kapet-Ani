@@ -19,6 +19,7 @@ if ($action === 'selling')      getTopSelling();
 if ($action === 'sales_trend')  getSalesTrend();
 if ($action === 'order_status') getOrderStatusBreakdown();
 if ($action === 'category_sales') getCategorySales();
+if ($action === 'heatmap')      getTxHeatmap();
 
 http_response_code(400);
 echo json_encode(['success' => false, 'message' => 'Unknown action']);
@@ -34,14 +35,14 @@ function getDashboardStats()
 
     $stmt = $conn->query("
         SELECT
-            COALESCE(SUM(total_price), 0) AS totalSales,
+            COALESCE(SUM(CASE WHEN status = 'confirmed' THEN total_price ELSE 0 END), 0) AS totalSales,
             COALESCE(SUM(CASE WHEN MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE()) THEN total_price ELSE 0 END), 0) AS salesMonth,
             COALESCE(SUM(CASE WHEN DATE(created_at) = CURDATE() THEN total_price ELSE 0 END), 0) AS salesToday,
             COUNT(*) AS totalOrders,
             COUNT(CASE WHEN status = 'pending' THEN 1 END) AS pendingOrders,
             COUNT(CASE WHEN DATE(created_at) = CURDATE() THEN 1 END) AS ordersToday
         FROM orders
-        WHERE status IN ('confirmed','shipped','delivered','pending')
+        WHERE status IN ('confirmed','pending')
     ");
     $salesData = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -49,7 +50,7 @@ function getDashboardStats()
     $stmt = $conn->query("
         SELECT COALESCE(SUM(total_price), 0) AS salesLastMonth
         FROM orders
-        WHERE status IN ('confirmed','shipped','delivered')
+        WHERE status IN ('confirmed')
           AND MONTH(created_at) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
           AND YEAR(created_at)  = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))
     ");
@@ -130,8 +131,6 @@ function getLowStock()
 {
     global $conn;
 
-    // Read enabled alert rules so dashboard can respect custom minimum thresholds.
-    // If no rule exists for a product, we keep the legacy behavior (qty <= 10).
     $ruleStmt = $conn->query("
         SELECT product_id, stock_condition, rule_value
         FROM inventory_alert
@@ -158,7 +157,6 @@ function getLowStock()
         $qty = (int) $p['qty'];
         $hasAlertRule = !empty($rulesByProduct[$id]);
 
-        // Always include out-of-stock items.
         $triggered = $qty === 0;
 
         if (!$triggered && $hasAlertRule) {
@@ -180,7 +178,6 @@ function getLowStock()
             }
         }
 
-        // Legacy fallback when no custom rule exists.
         if (!$triggered && !$hasAlertRule && $qty <= 10) {
             $triggered = true;
         }
@@ -220,7 +217,7 @@ function getTopSelling()
         FROM order_items oi
         JOIN products p ON oi.prod_id = p.id
         JOIN orders o ON oi.order_id = o.id
-        WHERE o.status IN ('confirmed','shipped','delivered')
+        WHERE o.status IN ('confirmed')
         GROUP BY oi.prod_id
         ORDER BY total_sold DESC
         LIMIT 5
@@ -254,14 +251,13 @@ function getSalesTrend()
             COALESCE(SUM(total_price), 0) AS revenue,
             COUNT(*) AS orders
         FROM orders
-        WHERE status IN ('confirmed','shipped','delivered')
+        WHERE status IN ('confirmed')
           AND created_at >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
         GROUP BY DATE(created_at)
         ORDER BY day ASC
     ");
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Fill in missing days with 0
     $map = [];
     foreach ($rows as $r) $map[$r['day']] = $r;
 
@@ -331,7 +327,7 @@ function getCategorySales()
         JOIN products p ON oi.prod_id = p.id
         JOIN orders o ON oi.order_id = o.id
         LEFT JOIN categories c ON p.category_id = c.id
-        WHERE o.status IN ('confirmed','shipped','delivered')
+        WHERE o.status IN ('confirmed')
         GROUP BY p.category_id
         ORDER BY revenue DESC
         LIMIT 6
@@ -350,5 +346,35 @@ function getCategorySales()
     }, $rows, array_keys($rows));
 
     echo json_encode(['success' => true, 'categories' => $formatted]);
+    exit();
+}
+
+
+// ─────────────────────────────────────────────────────────
+// 📅 ORDER ACTIVITY HEATMAP (last 365 days)
+// ─────────────────────────────────────────────────────────
+function getTxHeatmap()
+{
+    global $conn;
+
+    $conn->exec("SET time_zone = '+08:00'");
+
+    $stmt = $conn->query("
+        SELECT DATE(created_at) AS day, COUNT(*) AS total
+        FROM orders
+        WHERE status IN('confirmed','pending')
+          AND created_at >= DATE_SUB(CURDATE(), INTERVAL 364 DAY)
+        GROUP BY DATE(created_at)
+        ORDER BY day ASC
+    ");
+
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $map = [];
+    foreach ($rows as $r) {
+        $map[$r['day']] = (int) $r['total'];
+    }
+
+    echo json_encode(['success' => true, 'heatmap' => $map]);
     exit();
 }

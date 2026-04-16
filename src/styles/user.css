@@ -188,6 +188,67 @@
   box-shadow: 0 0 0 3px rgba(201, 135, 58, 0.14);
 }
 
+.profile-phone-wrap {
+  position: relative;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 10px;
+  align-items: center;
+}
+.profile-phone-country {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  column-gap: 8px;
+  align-items: center;
+  height: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f9fafb;
+  padding: 0 8px;
+}
+.profile-phone-flag {
+  width: 24px;
+  height: 18px;
+  object-fit: cover;
+  border-radius: 2px;
+  border: none;
+  pointer-events: none;
+}
+.profile-phone-cc {
+  height: 100%;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  color: #6b7280;
+  font-weight: 700;
+  display: block;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.86rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.profile-phone-cc:focus {
+  outline: none;
+  box-shadow: none;
+  border: none;
+  }
+
+
+.profile-phone-input {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+}
+
+
+
 .password-block {
   margin-top: 6px;
   padding-top: 14px;

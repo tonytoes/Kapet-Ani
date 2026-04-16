@@ -1,4 +1,4 @@
-const STYLES = `
+const STYLES = ` 
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -330,7 +330,7 @@ const STYLES = `
   .badge-superadmin  { background: #F3E8FF; color: #9333EA; }
   .badge-customer    { background: var(--color-blue-bg); color: var(--color-blue); }
   .badge-outofstock { background: var(--color-red-bg); color: var(--color-red); }
-  .badge-lowstock { background: var(--color-red-bg); color: #ff4c4c; }
+  .badge-lowstock { background: #FFF7ED; color: #F97316; }
   .badge-cancelled { background: var(--color-red-bg); color: var(--color-red); }
 
   /* Page header */
@@ -440,6 +440,47 @@ const STYLES = `
   }
   .kp-admin-password-toggle:hover { color: var(--brand-mid); }
   .kp-admin-password-toggle svg { display: block; }
+  .kp-admin-phone-wrap { display: grid; grid-template-columns: 120px 1fr; gap: 10px; align-items: center; }
+  .kp-admin-phone-country {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    column-gap: 8px;
+    align-items: center;
+    height: 40px;
+    border: 1.5px solid var(--border-light);
+    border-radius: 12px;
+    background: #F9FAFB;
+    padding: 0 8px;
+  }
+  .kp-admin-phone-flag {
+    width: 24px;
+    height: 18px;
+    object-fit: cover;
+    border-radius: 2px;
+    border: none;
+    pointer-events: none;
+  }
+  .kp-admin-phone-cc {
+    height: 40px;
+    border: none;
+    border-radius: 12px;
+    background: transparent;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    color: var(--text-muted);
+    font-weight: 800;
+    display: block;
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.82rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    user-select: none;
+  }
+  .kp-admin-phone-input { font-variant-numeric: tabular-nums; letter-spacing: 0.08em; }
   select.form-control {
     appearance: none;
     -webkit-appearance: none;
@@ -449,9 +490,18 @@ const STYLES = `
     background-repeat: no-repeat;
     background-position: right 12px center;
     background-size: 14px;
+    border: none;
   }
+
+  .kp-admin-phone-cc:focus {
+  outline: none;
+  box-shadow: none;
+  border: none;
+  }
+
   select.form-control:focus {
     box-shadow: 0 0 0 2px rgba(201,135,58,0.12);
+    border: none;
   }
   select.form-control option {
     background: #FFFFFF;

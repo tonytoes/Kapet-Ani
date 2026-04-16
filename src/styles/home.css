@@ -484,29 +484,3 @@
   opacity: 1;
   transform: translateY(0);
 }
-
-/* ── RESPONSIVE ── */
-@media (max-width: 768px) {
-  .featured-grid {
-    grid-template-columns: 1fr;
-  }
-  .products-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  .blog-grid {
-    grid-template-columns: 1fr;
-  }
-  .voucher-inner {
-    grid-template-columns: 1fr;
-  }
-  .footer-inner {
-    grid-template-columns: 1fr 1fr;
-  }
-  .subscribe-card {
-    grid-template-columns: 1fr;
-    padding: 40px;
-  }
-  .nav-links {
-    display: none;
-  }
-}

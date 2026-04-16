@@ -6,8 +6,9 @@ import reuel from '../assets/images/reuel.jpg';
 import samuel from '../assets/images/samuel.jpeg';
 import jmm from '../assets/images/jmm.png';
 import miura from '../assets/images/miura.png';
-import aboutcoffee from '../assets/images/aboutcoffee.jpg';
-import aboutcoffee1 from '../assets/images/aboutcoffee1.jpg';
+import aboutcoffee from '../assets/images/craft.jpg';
+import aboutcoffee1 from '../assets/images/heritage.jpg';
+import Chatbot from '../components/layout/Chatbot.jsx';
 import Footer from '../components/layout/Footer';
 import Navbar from '../components/layout/Navbar';
 import Newsletter from '../components/layout/Newsletter';
@@ -230,7 +231,7 @@ const About = () => {
           </div>
         </div>
       </section>
-
+      <Chatbot />
       <Newsletter />
       <Footer />
     </div>

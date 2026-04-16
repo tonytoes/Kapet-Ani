@@ -462,8 +462,10 @@ a:hover {
   color: #7b5a3d;
   margin: 8px 0 4px;
 }
-.co-card input,
-.co-card select {
+
+
+.co-card input:not(.co-phone-wrap input),
+.co-card select:not(.co-phone-cc) {
   width: 100%;
   border: 1px solid #e6d9c7;
   border-radius: 10px;
@@ -471,10 +473,96 @@ a:hover {
   outline: none;
   background: #fff;
 }
-.co-card input:focus,
-.co-card select:focus {
+
+.co-card input:not(.co-phone-wrap input):focus,
+.co-card select:not(.co-phone-cc):focus {
   border-color: #c9873a;
   box-shadow: 0 0 0 2px rgba(201, 135, 58, 0.12);
+}
+
+
+.co-phone-wrap {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 10px;
+  align-items: center;
+}
+.co-phone-country {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  column-gap: 8px;
+  align-items: center;
+  min-height: 42px;
+  border: 1px solid #e6d9c7;
+  border-radius: 10px;
+  background: #f9fafb;
+  padding: 0 8px;
+}
+
+.co-phone-flag {
+  width: 24px;
+  height: 18px;
+  object-fit: cover;
+  border-radius: 2px;
+  border: none;
+  pointer-events: none;
+}
+.co-phone-cc {
+  height: 42px;
+  border-radius: 10px;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  color: #606266;
+  font-weight: 700;
+  display: block;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.86rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  user-select: none;
+  border: none;
+  outline: none; 
+  box-shadow: none; 
+}
+
+.co-phone-cc:focus {
+  outline: none;
+  box-shadow: none;
+  border: none;
+}
+
+.co-phone-wrap input[type="text"] {
+  border: 1px solid #e6d9c7;
+  border-radius: 10px;
+  padding: 10px 12px;
+  outline: none;
+  background: #fff;
+  width: 100%;
+  font-size: 0.9rem;
+  color: #1f2937;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+}
+.co-phone-wrap input[type="text"]:focus {
+  border-color: #c9873a;
+  box-shadow: 0 0 0 2px rgba(201, 135, 58, 0.12);
+}
+
+
+.co-input-locked {
+  background: #f3f4f6;
+  color: #6b7280;
+  border-color: #e5e7eb;
+  cursor: not-allowed;
+}
+.co-input-locked:focus {
+  border-color: #e5e7eb;
+  box-shadow: none;
 }
 .co-pay-options {
   display: grid;

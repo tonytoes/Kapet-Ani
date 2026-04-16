@@ -10,6 +10,7 @@ import Newsletter from "../components/layout/Newsletter";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import coffeeVideo from "../assets/video/coffee_video3.mp4";
+import Chatbot from '../components/layout/Chatbot.jsx';
 import { LINK_PATH } from "../admin/data/LinkPath.jsx";
 
 const API_CONTENT = `${LINK_PATH}WebsiteContentController.php?page=blogs`;
@@ -404,6 +405,7 @@ function Blogs() {
             </div>
             <p className="quote-author">{txt("quoteAuthor")}</p>
           </section>
+          <Chatbot />
           <Newsletter />
           <Footer />
         </div>

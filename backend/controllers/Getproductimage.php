@@ -22,5 +22,5 @@ if (!$row || empty($row['image_blob'])) {
 
 header("Content-Type: " . $row['image_type']);
 header("Content-Length: " . strlen($row['image_blob']));
-header("Cache-Control: public, max-age=300, stale-while-revalidate=600");
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 echo $row['image_blob'];

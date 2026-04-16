@@ -6,6 +6,7 @@ import Navbar from "../components/layout/Navbar.jsx";
 import Footer from "../components/layout/Footer.jsx";
 import Newsletter from "../components/layout/Newsletter.jsx";
 import { useEffect, useState, useCallback } from "react";
+import Chatbot from '../components/layout/Chatbot.jsx';
 import { LINK_PATH } from "../admin/data/LinkPath.jsx";
 
 const API_CONTENT = `${LINK_PATH}WebsiteContentController.php?page=contact`;
@@ -263,6 +264,7 @@ function Contact() {
               referrerPolicy="no-referrer-when-downgrade"
             ></iframe>
           </div>
+          <Chatbot />
           <Newsletter/>
           <Footer />
         </div>

@@ -1,3 +1,8 @@
+/**
+ * src/admin/pages/TransactionsPage.jsx
+ * Paginated: 30 rows per page
+ */
+
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Badge      from "../components/Badge";
 import PageHeader from "../components/PageHeader";
@@ -8,10 +13,85 @@ import { useCache }  from "../data/CacheContext";
 
 const API       = `${LINK_PATH}Transactionscontroller.php`;
 const CACHE_KEY = "transactions";
+const PAGE_SIZE = 30;
 
 function authHeader() {
   const token = localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+// ─── Pagination Bar ───────────────────────────────────────────────────────────
+
+function PaginationBar({ page, totalPages, totalItems, onPage }) {
+  const safePage = Math.min(page, totalPages);
+  const start    = (safePage - 1) * PAGE_SIZE + 1;
+  const end      = Math.min(safePage * PAGE_SIZE, totalItems);
+
+  const pageNums = Array.from({ length: totalPages }, (_, i) => i + 1)
+    .filter(n => n === 1 || n === totalPages || Math.abs(n - safePage) <= 1)
+    .reduce((acc, n, idx, arr) => {
+      if (idx > 0 && n - arr[idx - 1] > 1) acc.push("…");
+      acc.push(n);
+      return acc;
+    }, []);
+
+  const btnBase = {
+    padding: "5px 10px", borderRadius: 7,
+    border: "1.5px solid var(--border, #e5e7eb)",
+    background: "none", fontSize: "0.82rem", fontWeight: 600,
+    transition: "background 0.15s", cursor: "pointer",
+  };
+
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      padding: "12px 16px",
+      borderTop: "1px solid var(--border, #e5e7eb)",
+      background: "var(--bg-surface, #fff)",
+      flexWrap: "wrap", gap: 8,
+    }}>
+      <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", fontWeight: 500 }}>
+        Showing {start}–{end} of {totalItems} transactions
+      </span>
+      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+        <button
+          onClick={() => onPage(p => Math.max(1, p - 1))}
+          disabled={safePage === 1}
+          style={{ ...btnBase, color: safePage === 1 ? "var(--text-muted)" : "var(--text)", cursor: safePage === 1 ? "not-allowed" : "pointer" }}
+        >
+          <i className="bi bi-chevron-left" />
+        </button>
+
+        {pageNums.map((item, idx) =>
+          item === "…" ? (
+            <span key={`el-${idx}`} style={{ padding: "0 4px", color: "var(--text-muted)", fontSize: "0.82rem" }}>…</span>
+          ) : (
+            <button
+              key={item}
+              onClick={() => onPage(item)}
+              style={{
+                ...btnBase,
+                minWidth: 32, padding: "5px 8px",
+                borderColor: safePage === item ? "var(--brand-mid, #8b5cf6)" : "var(--border, #e5e7eb)",
+                background:  safePage === item ? "var(--brand-mid, #8b5cf6)" : "none",
+                color:       safePage === item ? "#fff" : "var(--text)",
+              }}
+            >
+              {item}
+            </button>
+          )
+        )}
+
+        <button
+          onClick={() => onPage(p => Math.min(totalPages, p + 1))}
+          disabled={safePage === totalPages}
+          style={{ ...btnBase, color: safePage === totalPages ? "var(--text-muted)" : "var(--text)", cursor: safePage === totalPages ? "not-allowed" : "pointer" }}
+        >
+          <i className="bi bi-chevron-right" />
+        </button>
+      </div>
+    </div>
+  );
 }
 
 // ─── Toast ─────────────────────────────────────────────────────────────────
@@ -55,21 +135,19 @@ function DetailRow({ label, value }) {
   );
 }
 
-// ─── Order Panel (NO close button — SlidePanel already has one) ─────────────
+// ─── Order Panel ─────────────────────────────────────────────────────────────
 
 const EDITABLE_STATUSES = ['pending', 'confirmed', 'cancelled'];
 
 function OrderPanel({ order, onClose, onSave, saving }) {
   const [status, setStatus] = useState(order.status);
 
-  // Reset dropdown when a different order is opened
   useEffect(() => { setStatus(order.status); }, [order.dbId]);
 
   const changed = status !== order.status;
 
   return (
     <>
-      {/* Order details */}
       <div style={{ padding: "14px 16px", background: "#F9FAFB", borderRadius: 10, border: "1.5px solid var(--border-light)", marginBottom: 20 }}>
         <DetailRow label="Order ID"   value={order.trackingId} />
         <DetailRow label="Customer"   value={order.username} />
@@ -84,7 +162,6 @@ function OrderPanel({ order, onClose, onSave, saving }) {
         <DetailRow label="Date"       value={order.date} />
       </div>
 
-      {/* Status selector */}
       <div className="form-group">
         <label className="form-label">Order Status</label>
         <select className="form-control" value={status} onChange={e => setStatus(e.target.value)}>
@@ -94,7 +171,6 @@ function OrderPanel({ order, onClose, onSave, saving }) {
         </select>
       </div>
 
-      {/* Badge preview */}
       <div style={{ marginBottom: 20, display: "flex", alignItems: "center", gap: 8 }}>
         <Badge status={order.status} />
         {changed && (
@@ -105,7 +181,6 @@ function OrderPanel({ order, onClose, onSave, saving }) {
         )}
       </div>
 
-      {/* Footer — inside panel scroll area, no extra close button */}
       <div style={{ display: "flex", gap: 10, paddingTop: 16, borderTop: "1px solid var(--border-light)" }}>
         <button className="btn btn-cancel" onClick={onClose} disabled={saving}>Cancel</button>
         <button
@@ -136,6 +211,7 @@ export default function TransactionsPage() {
   const [search,       setSearch]       = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortOrder,    setSortOrder]    = useState("desc");
+  const [page,         setPage]         = useState(1);
   const [selected,     setSelected]     = useState(null);
   const [panelOpen,    setPanelOpen]    = useState(false);
   const [saving,       setSaving]       = useState(false);
@@ -189,6 +265,13 @@ export default function TransactionsPage() {
     );
     return res;
   }, [transactions, search, statusFilter, sortOrder]);
+
+  // ─── Pagination derived values ────────────────────────────────────────────
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage   = Math.min(page, totalPages);
+  const pageSlice  = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const resetPage  = () => setPage(1);
 
   function openOrder(t) {
     if (!canManage) return;
@@ -248,11 +331,14 @@ export default function TransactionsPage() {
       <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}>
         <PageHeader
           title={<><span>Transaction Log</span> <span style={{ color: "var(--text-muted)", fontWeight: 600 }}>({filtered.length})</span></>}
-          search={search} onSearch={setSearch}
-          showCategories categories={statusCategories}
-          categoryValue={statusFilter} onCategoryChange={setStatusFilter}
+          search={search}
+          onSearch={v => { setSearch(v); resetPage(); }}
+          showCategories
+          categories={statusCategories}
+          categoryValue={statusFilter}
+          onCategoryChange={v => { setStatusFilter(v); resetPage(); }}
           sortOrder={sortOrder}
-          onToggleSort={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")}
+          onToggleSort={() => { setSortOrder(prev => prev === "asc" ? "desc" : "asc"); resetPage(); }}
         />
 
         {error && (
@@ -278,7 +364,7 @@ export default function TransactionsPage() {
                       </div>
                     </td>
                   </tr>
-                ) : filtered.length === 0 ? (
+                ) : pageSlice.length === 0 ? (
                   <tr>
                     <td colSpan={7} style={{ textAlign: "center", padding: 40 }}>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, color: "var(--text-muted)" }}>
@@ -288,7 +374,7 @@ export default function TransactionsPage() {
                     </td>
                   </tr>
                 ) : (
-                  filtered.map((t, i) => (
+                  pageSlice.map((t, i) => (
                     <tr
                       key={`${t.trackingId}-${i}`}
                       className={`${canManage ? "clickable" : ""}${selected?.dbId === t.dbId ? " selected" : ""}`}
@@ -307,10 +393,19 @@ export default function TransactionsPage() {
               </tbody>
             </table>
           </div>
+
+          {/* ── Pagination ── */}
+          {!loading && filtered.length > PAGE_SIZE && (
+            <PaginationBar
+              page={safePage}
+              totalPages={totalPages}
+              totalItems={filtered.length}
+              onPage={setPage}
+            />
+          )}
         </div>
       </div>
 
-      {/* SlidePanel already renders title + X button — OrderPanel adds no extra header */}
       {canManage && (
         <SlidePanel
           isOpen={panelOpen}
